@@ -1,0 +1,1344 @@
+{
+  "dataset": {
+    "db_path": "data/reddit_technology_recent.db",
+    "sampled_comments": 100,
+    "sampled_topics": 10,
+    "sampling": {
+      "posts_per_topic": 4,
+      "comments_per_post": 4,
+      "comments_per_topic_cap": 10,
+      "top_level_only": true,
+      "min_comment_body_chars": 40,
+      "min_comment_score": 1
+    }
+  },
+  "methods": {
+    "deberta_base_nli": {
+      "model_name": "MoritzLaurer/DeBERTa-v3-base-mnli-fever-anli",
+      "description": "A stronger DeBERTa NLI model that reads each post-comment pair and scores whether the comment agrees with or disagrees with the post."
+    },
+    "deberta_small_nli": {
+      "model_name": "cross-encoder/nli-deberta-v3-small",
+      "description": "A smaller DeBERTa NLI model using the same agree/disagree framing. It is lighter and often more decisive, which creates useful contrast with the larger model."
+    }
+  },
+  "topics": [
+    {
+      "topic_id": 0,
+      "label": "AI / Work and Society",
+      "keywords": [
+        "AI",
+        "Human",
+        "Generated",
+        "AI Generated",
+        "Job",
+        "AI Agent",
+        "Agent",
+        "Future",
+        "Anthropic",
+        "Bubble"
+      ],
+      "share_pct": 21.45,
+      "top_domains": [
+        "youtube.com",
+        "techcrunch.com",
+        "theguardian.com"
+      ],
+      "representative_titles": [
+        "Adobe Animate is shutting down on March 1st as company focuses on AI.",
+        "Marriage over, \u20ac100,000 down the drain: the AI users whose lives were wrecked by delusion",
+        "Kathleen Kennedy Just Told an AI Conference She\u2019s Not So Sure About AI"
+      ],
+      "sample_size": 10,
+      "methods": {
+        "deberta_base_nli": {
+          "sampled_comments": 10,
+          "non_neutral_comments": 8,
+          "support_comments": 0,
+          "oppose_comments": 8,
+          "neutral_comments": 2,
+          "dominant_raw_stance": "oppose",
+          "dominant_position_text": "Most sampled top-level comments push back against the main claims made by the posts in this topic.",
+          "agreement_rate": 1.0,
+          "disagreement_rate": 0.0,
+          "user_groups": {
+            "aligned_users": 8,
+            "opposing_users": 0,
+            "unresolved_users": 0,
+            "aligned_authors": [
+              "BeardedDragon1917",
+              "ChafterMies",
+              "No_Release_6643",
+              "Oldpuzzlehead",
+              "Onefortwo",
+              "Stuck_in_a_thing",
+              "TheVenetianMask",
+              "creaturefeature16"
+            ],
+            "opposing_authors": []
+          },
+          "aligned_side": {
+            "summary": "Key arguments on this side focus on days, job, days job, zero.",
+            "top_terms": [
+              "days",
+              "job",
+              "days job",
+              "zero",
+              "job days",
+              "especially"
+            ],
+            "representative_comments": [
+              "If you are replaced by AI, you will work zero days a week and have zero income to show for it. I really don\u2019t see how the economy continues if AI is as successful as AI companies hopes.",
+              "AI is massive overkill to just detect those words. I guess they like wasting money.",
+              "They don\u2019t even need to use AI, they can just have a couple dozen expats in Miami circle around a camera with signs and pretend to be part of a big celebration crowd."
+            ]
+          },
+          "opposing_side": {
+            "summary": "No high-confidence comments were assigned to this side.",
+            "top_terms": [],
+            "representative_comments": []
+          }
+        },
+        "deberta_small_nli": {
+          "sampled_comments": 10,
+          "non_neutral_comments": 6,
+          "support_comments": 0,
+          "oppose_comments": 6,
+          "neutral_comments": 4,
+          "dominant_raw_stance": "oppose",
+          "dominant_position_text": "Most sampled top-level comments push back against the main claims made by the posts in this topic.",
+          "agreement_rate": 1.0,
+          "disagreement_rate": 0.0,
+          "user_groups": {
+            "aligned_users": 6,
+            "opposing_users": 0,
+            "unresolved_users": 0,
+            "aligned_authors": [
+              "Barcaroni",
+              "BeardedDragon1917",
+              "ChafterMies",
+              "Oldpuzzlehead",
+              "Stuck_in_a_thing",
+              "creaturefeature16"
+            ],
+            "opposing_authors": []
+          },
+          "aligned_side": {
+            "summary": "Key arguments on this side focus on days, days job, job, zero.",
+            "top_terms": [
+              "days",
+              "days job",
+              "job",
+              "zero",
+              "job days",
+              "gonna"
+            ],
+            "representative_comments": [
+              "If you are replaced by AI, you will work zero days a week and have zero income to show for it. I really don\u2019t see how the economy continues if AI is as successful as AI companies hopes.",
+              "Yeah? Are they gonna AI generate some customers?",
+              "They don\u2019t even need to use AI, they can just have a couple dozen expats in Miami circle around a camera with signs and pretend to be part of a big celebration crowd."
+            ]
+          },
+          "opposing_side": {
+            "summary": "No high-confidence comments were assigned to this side.",
+            "top_terms": [],
+            "representative_comments": []
+          }
+        }
+      },
+      "method_overlap": {
+        "sampled_comments": 10,
+        "both_non_neutral": 5,
+        "stance_agreement_rate": 1.0,
+        "aligned_comments": 5,
+        "disagreed_comments": 0
+      }
+    },
+    {
+      "topic_id": 1,
+      "label": "Social Media Regulation",
+      "keywords": [
+        "Social",
+        "Media",
+        "Social Media",
+        "Ban",
+        "Media Ban",
+        "Australia",
+        "Children",
+        "Addiction",
+        "Kid",
+        "Trial"
+      ],
+      "share_pct": 3.25,
+      "top_domains": [
+        "theguardian.com",
+        "reuters.com",
+        "nytimes.com"
+      ],
+      "representative_titles": [
+        "AOC says people are being 'algorithmically polarized' by social media",
+        "I am a 15-year-old girl. Let me show you the vile misogyny that confronts me on social media every day",
+        "MrBeast's former manager Reed Duchscher, says the age of social-media superstars is fading: \"As social-media algorithms get better at tailoring content to individual user interests, the opportunity for stars to show up across feeds becomes much harder,\" Duchscher said."
+      ],
+      "sample_size": 10,
+      "methods": {
+        "deberta_base_nli": {
+          "sampled_comments": 10,
+          "non_neutral_comments": 5,
+          "support_comments": 0,
+          "oppose_comments": 5,
+          "neutral_comments": 5,
+          "dominant_raw_stance": "oppose",
+          "dominant_position_text": "Most sampled top-level comments push back against the main claims made by the posts in this topic.",
+          "agreement_rate": 1.0,
+          "disagreement_rate": 0.0,
+          "user_groups": {
+            "aligned_users": 5,
+            "opposing_users": 0,
+            "unresolved_users": 0,
+            "aligned_authors": [
+              "AtaracticGoat",
+              "Fabulous-Farmer7474",
+              "IncorrectAddress",
+              "Ultimatelee",
+              "ericccdl"
+            ],
+            "opposing_authors": []
+          },
+          "aligned_side": {
+            "summary": "Key arguments on this side focus on problem tree, overall, fruit, problem.",
+            "top_terms": [
+              "problem tree",
+              "overall",
+              "fruit",
+              "problem",
+              "overall fruit",
+              "rotten overall"
+            ],
+            "representative_comments": [
+              "I think the first thing she said is one of the biggest problems.\n\nI'm a 40yo dude and I see all kinds of shit on my social media that I don't want to.  I see random posts from people I don't follow and Facebook forces me to see tiktok videos now.\n\nWe need to be able to disable all this unwanted crap.  When I was a kid the only content we saw was what was posted by our friends.  God I miss those days.\n\nEveryone should be able to disable this crap, but we definitely shouldn't be exposing minors to \"random\" content like this.",
+              "Genuinely would hate to be a teenager these days, social media is terrible.",
+              "This gives me hope. We need more legislators that understand technology in order for it to be properly regulated."
+            ]
+          },
+          "opposing_side": {
+            "summary": "No high-confidence comments were assigned to this side.",
+            "top_terms": [],
+            "representative_comments": []
+          }
+        },
+        "deberta_small_nli": {
+          "sampled_comments": 10,
+          "non_neutral_comments": 3,
+          "support_comments": 0,
+          "oppose_comments": 3,
+          "neutral_comments": 7,
+          "dominant_raw_stance": "oppose",
+          "dominant_position_text": "Most sampled top-level comments push back against the main claims made by the posts in this topic.",
+          "agreement_rate": 1.0,
+          "disagreement_rate": 0.0,
+          "user_groups": {
+            "aligned_users": 3,
+            "opposing_users": 0,
+            "unresolved_users": 0,
+            "aligned_authors": [
+              "Fabulous-Farmer7474",
+              "Persimmon-Mission",
+              "Ultimatelee"
+            ],
+            "opposing_authors": []
+          },
+          "aligned_side": {
+            "summary": "Key arguments on this side focus on rage baiting, rage, baiting, rotten.",
+            "top_terms": [
+              "rage baiting",
+              "rage",
+              "baiting",
+              "rotten",
+              "overall",
+              "overall fruit"
+            ],
+            "representative_comments": [
+              "Like he alone is the problem. The tree is rotten overall not just some of the fruit.",
+              "Genuinely would hate to be a teenager these days, social media is terrible.",
+              "Algorithms, domestic rage baiting by bots, foreign rage baiting by bots, idiots with internet rage baiting"
+            ]
+          },
+          "opposing_side": {
+            "summary": "No high-confidence comments were assigned to this side.",
+            "top_terms": [],
+            "representative_comments": []
+          }
+        }
+      },
+      "method_overlap": {
+        "sampled_comments": 10,
+        "both_non_neutral": 2,
+        "stance_agreement_rate": 1.0,
+        "aligned_comments": 2,
+        "disagreed_comments": 0
+      }
+    },
+    {
+      "topic_id": 2,
+      "label": "Elon Musk / xAI",
+      "keywords": [
+        "Musk",
+        "Elon",
+        "Elon Musk",
+        "Tesla",
+        "Grok",
+        "xAI",
+        "Spacex",
+        "Grokipedia",
+        "Pay",
+        "Image"
+      ],
+      "share_pct": 4.29,
+      "top_domains": [
+        "theverge.com",
+        "techcrunch.com",
+        "reuters.com"
+      ],
+      "representative_titles": [
+        "Elon Musk\u2019s X must be banned",
+        "Elon Musk\u2019s Worthless, Poisoned Hall of Mirrors",
+        "Elon Musk\u2019s Grokipedia contains copied Wikipedia pages"
+      ],
+      "sample_size": 10,
+      "methods": {
+        "deberta_base_nli": {
+          "sampled_comments": 10,
+          "non_neutral_comments": 7,
+          "support_comments": 0,
+          "oppose_comments": 7,
+          "neutral_comments": 3,
+          "dominant_raw_stance": "oppose",
+          "dominant_position_text": "Most sampled top-level comments push back against the main claims made by the posts in this topic.",
+          "agreement_rate": 1.0,
+          "disagreement_rate": 0.0,
+          "user_groups": {
+            "aligned_users": 7,
+            "opposing_users": 0,
+            "unresolved_users": 0,
+            "aligned_authors": [
+              "All-the-pizza",
+              "Fawnleavez",
+              "NotTakenGreatName",
+              "blackmobius",
+              "lichoniespi",
+              "mx3goose",
+              "thebabes2"
+            ],
+            "opposing_authors": []
+          },
+          "aligned_side": {
+            "summary": "Key arguments on this side focus on tesla, lane, got, years.",
+            "top_terms": [
+              "tesla",
+              "lane",
+              "got",
+              "years",
+              "hondas years",
+              "standard"
+            ],
+            "representative_comments": [
+              "Article: Tesla just dropped a financial bomb: 2025 was officially a nightmare, with profits tanking 46 percent and revenue falling for the first time ever. The car business is bleeding, and they only stayed afloat because more than half their profit came from selling emissions credits to other companies.\n\nElon is trying to pivot to robots and AI to save the day, even as he funnels $2 billion into his other side project, xAI. It\u2019s a total mess, and their once-legendary profit margins have basically vanished into thin air. \ud83d\udcc9\ud83d\udcb8",
+              "\"combining Tesla\u2019s adaptive cruise control (Tesla calls this TACC) and lane-keeping assist (Tesla calls this Autosteer).\"\n\nCongrats Tesla, you've manage to be on par with my wife's Kia Teleuride.",
+              "As they should. If I wasnt getting paid to do a job like that id just stay home. They cant afford to replace the controllers and this could end the shutdown in a matter of days if it got widespead enough"
+            ]
+          },
+          "opposing_side": {
+            "summary": "No high-confidence comments were assigned to this side.",
+            "top_terms": [],
+            "representative_comments": []
+          }
+        },
+        "deberta_small_nli": {
+          "sampled_comments": 10,
+          "non_neutral_comments": 3,
+          "support_comments": 0,
+          "oppose_comments": 3,
+          "neutral_comments": 7,
+          "dominant_raw_stance": "oppose",
+          "dominant_position_text": "Most sampled top-level comments push back against the main claims made by the posts in this topic.",
+          "agreement_rate": 1.0,
+          "disagreement_rate": 0.0,
+          "user_groups": {
+            "aligned_users": 3,
+            "opposing_users": 0,
+            "unresolved_users": 0,
+            "aligned_authors": [
+              "AdditionalCheetah354",
+              "lichoniespi",
+              "mx3goose"
+            ],
+            "opposing_authors": []
+          },
+          "aligned_side": {
+            "summary": "Key arguments on this side focus on tesla, work hard, got, got work.",
+            "top_terms": [
+              "tesla",
+              "work hard",
+              "got",
+              "got work",
+              "hard",
+              "hard bad"
+            ],
+            "representative_comments": [
+              "\"combining Tesla\u2019s adaptive cruise control (Tesla calls this TACC) and lane-keeping assist (Tesla calls this Autosteer).\"\n\nCongrats Tesla, you've manage to be on par with my wife's Kia Teleuride.",
+              "It does not matter because they are selling hype and unrealistic promises. Cannot put a price tag on that",
+              "Behind Jeep and Chrysler\u2026 you got to work hard to be that bad!"
+            ]
+          },
+          "opposing_side": {
+            "summary": "No high-confidence comments were assigned to this side.",
+            "top_terms": [],
+            "representative_comments": []
+          }
+        }
+      },
+      "method_overlap": {
+        "sampled_comments": 10,
+        "both_non_neutral": 2,
+        "stance_agreement_rate": 1.0,
+        "aligned_comments": 2,
+        "disagreed_comments": 0
+      }
+    },
+    {
+      "topic_id": 3,
+      "label": "Data Centers",
+      "keywords": [
+        "Data",
+        "Center",
+        "Data Center",
+        "AI Data",
+        "Breach",
+        "Data Breach",
+        "Space",
+        "Power",
+        "Big",
+        "Personal"
+      ],
+      "share_pct": 5.56,
+      "top_domains": [
+        "techcrunch.com",
+        "reuters.com",
+        "cnbc.com"
+      ],
+      "representative_titles": [
+        "Ohio EPA weighs allowing data centers to dump wastewater into rivers",
+        "Bernie Sanders calls for a pause on new AI data centers in the US",
+        "Maine Is About to Become the First State to Ban New Data Centers"
+      ],
+      "sample_size": 10,
+      "methods": {
+        "deberta_base_nli": {
+          "sampled_comments": 10,
+          "non_neutral_comments": 9,
+          "support_comments": 0,
+          "oppose_comments": 9,
+          "neutral_comments": 1,
+          "dominant_raw_stance": "oppose",
+          "dominant_position_text": "Most sampled top-level comments push back against the main claims made by the posts in this topic.",
+          "agreement_rate": 1.0,
+          "disagreement_rate": 0.0,
+          "user_groups": {
+            "aligned_users": 9,
+            "opposing_users": 0,
+            "unresolved_users": 0,
+            "aligned_authors": [
+              "BaffledInUSA",
+              "Galahad_the_Ranger",
+              "Just_the_nicest_guy",
+              "NewsCards",
+              "TheFoxsWeddingTarot",
+              "Theghostdaddyboo",
+              "casualfrog68",
+              "celtic1888",
+              "nazerall"
+            ],
+            "opposing_authors": []
+          },
+          "aligned_side": {
+            "summary": "Key arguments on this side focus on war, tylenol, case, years.",
+            "top_terms": [
+              "war",
+              "tylenol",
+              "case",
+              "years",
+              "getting",
+              "damage"
+            ],
+            "representative_comments": [
+              "> while damage to data centers in the Middle East is concerning for the region, the global tech industry has bigger concerns. The regional war has disrupted the flow of oil and its derivatives, especially those that go through the Strait of Hormuz. These include aluminum, helium, and LNG \u2014 all of which are crucial in the semiconductor supply chain. And even if the war ends today, the damage to infrastructure could mean it takes months or even years for supplies to return to pre-war levels.\n\nTech companies thought they were getting a POTUS who was \"friendly\" to them, only to realize that the elderly pedophile really has nothing to lose at this point in his life.",
+              "Wouldn't it be funny if Amazon declared war and attacked back? Corporate armies would be terrifying and seem inevitable.",
+              "I work as a data engineer for a consulting company. All the clients I worked with wanted to \u201cimplement AI\u201d in their company and when I asked for details on what they wanted they just shrugged and said it was my job to figure out that part\n\nThe market is being propped up by FOMO. I estimate the house of cards will come crashing down on Q2 or Q3 of next year"
+            ]
+          },
+          "opposing_side": {
+            "summary": "No high-confidence comments were assigned to this side.",
+            "top_terms": [],
+            "representative_comments": []
+          }
+        },
+        "deberta_small_nli": {
+          "sampled_comments": 10,
+          "non_neutral_comments": 8,
+          "support_comments": 0,
+          "oppose_comments": 8,
+          "neutral_comments": 2,
+          "dominant_raw_stance": "oppose",
+          "dominant_position_text": "Most sampled top-level comments push back against the main claims made by the posts in this topic.",
+          "agreement_rate": 1.0,
+          "disagreement_rate": 0.0,
+          "user_groups": {
+            "aligned_users": 8,
+            "opposing_users": 0,
+            "unresolved_users": 0,
+            "aligned_authors": [
+              "BaffledInUSA",
+              "God_of_disruption",
+              "Just_the_nicest_guy",
+              "TheFoxsWeddingTarot",
+              "Theghostdaddyboo",
+              "casualfrog68",
+              "celtic1888",
+              "nazerall"
+            ],
+            "opposing_authors": []
+          },
+          "aligned_side": {
+            "summary": "Key arguments on this side focus on thinking, tylenol, case, text.",
+            "top_terms": [
+              "thinking",
+              "tylenol",
+              "case",
+              "text",
+              "attack",
+              "plans"
+            ],
+            "representative_comments": [
+              "Wouldn't it be funny if Amazon declared war and attacked back? Corporate armies would be terrifying and seem inevitable.",
+              "I hope Bezos feels he\u2019s getting his bribes worth out of all this.",
+              "Didn't Texas just sue the makers of Tylenol yesterday? Lol"
+            ]
+          },
+          "opposing_side": {
+            "summary": "No high-confidence comments were assigned to this side.",
+            "top_terms": [],
+            "representative_comments": []
+          }
+        }
+      },
+      "method_overlap": {
+        "sampled_comments": 10,
+        "both_non_neutral": 7,
+        "stance_agreement_rate": 1.0,
+        "aligned_comments": 7,
+        "disagreed_comments": 0
+      }
+    },
+    {
+      "topic_id": 4,
+      "label": "OpenAI / Anthropic",
+      "keywords": [
+        "OpenAI",
+        "ChatGPT",
+        "Billion",
+        "Anthropic",
+        "Deal",
+        "Sora",
+        "Altman",
+        "Sam",
+        "Sam Altman",
+        "Pentagon"
+      ],
+      "share_pct": 6.99,
+      "top_domains": [
+        "techcrunch.com",
+        "cnbc.com",
+        "reuters.com"
+      ],
+      "representative_titles": [
+        "OpenAI Is in Trouble",
+        "\"Cancel ChatGPT\" movement goes big after OpenAI's latest move",
+        "'No ethics at all': the 'cancel ChatGPT' trend is growing after OpenAI signs a deal with the US military"
+      ],
+      "sample_size": 10,
+      "methods": {
+        "deberta_base_nli": {
+          "sampled_comments": 10,
+          "non_neutral_comments": 10,
+          "support_comments": 0,
+          "oppose_comments": 10,
+          "neutral_comments": 0,
+          "dominant_raw_stance": "oppose",
+          "dominant_position_text": "Most sampled top-level comments push back against the main claims made by the posts in this topic.",
+          "agreement_rate": 1.0,
+          "disagreement_rate": 0.0,
+          "user_groups": {
+            "aligned_users": 10,
+            "opposing_users": 0,
+            "unresolved_users": 0,
+            "aligned_authors": [
+              "DripRoast",
+              "Jeansus_",
+              "Mr_strelac",
+              "Optimoprimo",
+              "Time-Traveling-Doge",
+              "Visa5e",
+              "feldomatic",
+              "neat_stuff",
+              "phylter99",
+              "sidonay"
+            ],
+            "opposing_authors": []
+          },
+          "aligned_side": {
+            "summary": "Key arguments on this side focus on game, play, strange game, game winning.",
+            "top_terms": [
+              "game",
+              "play",
+              "strange game",
+              "game winning",
+              "strange",
+              "winning play"
+            ],
+            "representative_comments": [
+              "Digital assets that are useless and only cosmetic items. The Counterstrike skins are especially known to be a tax haven used to launder illegitimate earnings.",
+              "I mean in-game lootbox skins probably shouldn't be treated as assets...",
+              ">For the average player, this is anything but a welcome change, especially if you're someone new to the game; it lowers the barrier of entry and even makes skin trading less intimidating for the inexperienced.\n\nThis is a really bad sentence, and I have no idea how it made it past the editor. What they're trying to say is that it *is* a welcome change. The phrase \"anything but\" implies it is a very unwelcome change. It's pretty rare that you can fuck up a sentence so bad that it says the exact opposite thing that you intend."
+            ]
+          },
+          "opposing_side": {
+            "summary": "No high-confidence comments were assigned to this side.",
+            "top_terms": [],
+            "representative_comments": []
+          }
+        },
+        "deberta_small_nli": {
+          "sampled_comments": 10,
+          "non_neutral_comments": 6,
+          "support_comments": 2,
+          "oppose_comments": 4,
+          "neutral_comments": 4,
+          "dominant_raw_stance": "oppose",
+          "dominant_position_text": "Most sampled top-level comments push back against the main claims made by the posts in this topic.",
+          "agreement_rate": 0.667,
+          "disagreement_rate": 0.333,
+          "user_groups": {
+            "aligned_users": 4,
+            "opposing_users": 2,
+            "unresolved_users": 0,
+            "aligned_authors": [
+              "Jeansus_",
+              "Optimoprimo",
+              "feldomatic",
+              "sidonay"
+            ],
+            "opposing_authors": [
+              "Mr_strelac",
+              "neat_stuff"
+            ]
+          },
+          "aligned_side": {
+            "summary": "Key arguments on this side focus on game, strange, winning play, winning.",
+            "top_terms": [
+              "game",
+              "strange",
+              "winning play",
+              "winning",
+              "play",
+              "game winning"
+            ],
+            "representative_comments": [
+              "A strange game.  The only winning move is not to play.",
+              "I missed the first hour of the opening ceremonies so I missed the booing, when I went to watch the replay on Peacock - the entire section of time is muted aside from the music playing in the background. No boos, no commentators discussing the boos, no sounds but the faint background music.",
+              "[Resist and Unsubscribe](https://www.resistandunsubscribe.com/)"
+            ]
+          },
+          "opposing_side": {
+            "summary": "Key arguments on this side focus on money, understand, problems, tic.",
+            "top_terms": [
+              "money",
+              "understand",
+              "problems",
+              "tic",
+              "make play",
+              "make"
+            ],
+            "representative_comments": [
+              "Nobody thought to make them play tic tac toe a bunch of times first?",
+              "I can understand them in a way... they have problems with profit and they need money.\n\n... and on the other hand I can't understand them..this is how they lose their reputation and create problems for themselves, which again when you're not good with money, won't help"
+            ]
+          }
+        }
+      },
+      "method_overlap": {
+        "sampled_comments": 10,
+        "both_non_neutral": 6,
+        "stance_agreement_rate": 0.667,
+        "aligned_comments": 4,
+        "disagreed_comments": 2
+      }
+    },
+    {
+      "topic_id": 5,
+      "label": "Google / Gemini",
+      "keywords": [
+        "Google",
+        "Gemini",
+        "Android",
+        "Search",
+        "Google AI",
+        "Google Gemini",
+        "Apple",
+        "Gmail",
+        "Amazon",
+        "Quantum"
+      ],
+      "share_pct": 5.31,
+      "top_domains": [
+        "techcrunch.com",
+        "theverge.com",
+        "cnbc.com"
+      ],
+      "representative_titles": [
+        "'Godfather of AI' Geoffrey Hinton says Google is 'beginning to overtake' OpenAI: 'My guess is Google will win'",
+        "As AI wipes jobs, Google CEO Sundar Pichai says it\u2019s up to everyday people to adapt accordingly: \u2018We will have to work through societal disruption\u2019",
+        "Google Apologizes After AI News Alert About BAFTA Film Awards Debacle Included the N-Word"
+      ],
+      "sample_size": 10,
+      "methods": {
+        "deberta_base_nli": {
+          "sampled_comments": 10,
+          "non_neutral_comments": 8,
+          "support_comments": 0,
+          "oppose_comments": 8,
+          "neutral_comments": 2,
+          "dominant_raw_stance": "oppose",
+          "dominant_position_text": "Most sampled top-level comments push back against the main claims made by the posts in this topic.",
+          "agreement_rate": 1.0,
+          "disagreement_rate": 0.0,
+          "user_groups": {
+            "aligned_users": 8,
+            "opposing_users": 0,
+            "unresolved_users": 0,
+            "aligned_authors": [
+              "Wealist",
+              "e76",
+              "kan0",
+              "pay_the_cheese_tax",
+              "pythagorium",
+              "reddit455",
+              "slothcough",
+              "tc100292"
+            ],
+            "opposing_authors": []
+          },
+          "aligned_side": {
+            "summary": "Key arguments on this side focus on ticketmaster, toss, toss ticketmaster, let.",
+            "top_terms": [
+              "ticketmaster",
+              "toss",
+              "toss ticketmaster",
+              "let",
+              "let toss",
+              "trust"
+            ],
+            "representative_comments": [
+              "The hilarious part is that regardless of the AI blocking, the first result when you search \u201cTrump dementia\u201d is the linked article. \u00a0Great look for Google.",
+              "Friendly reminder that everything you see on the internet is algorithmically and systematically made to entice you to buy something or think in some particular way. Trust nothing",
+              "### If true, that\u2019s a dangerous precedent. \n\nSearch engines shouldn\u2019t be gatekeeping politically inconvenient queries that undermines trust in the whole product."
+            ]
+          },
+          "opposing_side": {
+            "summary": "No high-confidence comments were assigned to this side.",
+            "top_terms": [],
+            "representative_comments": []
+          }
+        },
+        "deberta_small_nli": {
+          "sampled_comments": 10,
+          "non_neutral_comments": 4,
+          "support_comments": 0,
+          "oppose_comments": 4,
+          "neutral_comments": 6,
+          "dominant_raw_stance": "oppose",
+          "dominant_position_text": "Most sampled top-level comments push back against the main claims made by the posts in this topic.",
+          "agreement_rate": 1.0,
+          "disagreement_rate": 0.0,
+          "user_groups": {
+            "aligned_users": 4,
+            "opposing_users": 0,
+            "unresolved_users": 0,
+            "aligned_authors": [
+              "kan0",
+              "pissoutmybutt",
+              "slothcough",
+              "tc100292"
+            ],
+            "opposing_authors": []
+          },
+          "aligned_side": {
+            "summary": "Key arguments on this side focus on look, world, direct, direct link.",
+            "top_terms": [
+              "look",
+              "world",
+              "direct",
+              "direct link",
+              "https",
+              "https jmail"
+            ],
+            "representative_comments": [
+              "The hilarious part is that regardless of the AI blocking, the first result when you search \u201cTrump dementia\u201d is the linked article. \u00a0Great look for Google.",
+              "Direct link, but loading slow. https://jmail.world",
+              "Really interesting project. Way easier to look through than pdfs of scanned papers"
+            ]
+          },
+          "opposing_side": {
+            "summary": "No high-confidence comments were assigned to this side.",
+            "top_terms": [],
+            "representative_comments": []
+          }
+        }
+      },
+      "method_overlap": {
+        "sampled_comments": 10,
+        "both_non_neutral": 3,
+        "stance_agreement_rate": 1.0,
+        "aligned_comments": 3,
+        "disagreed_comments": 0
+      }
+    },
+    {
+      "topic_id": 6,
+      "label": "China / AI Chips",
+      "keywords": [
+        "China",
+        "Nvidia",
+        "Chip",
+        "Power",
+        "Race",
+        "Global",
+        "Robot",
+        "Humanoid",
+        "Tesla",
+        "Sale"
+      ],
+      "share_pct": 14.35,
+      "top_domains": [
+        "reuters.com",
+        "tomshardware.com",
+        "cnbc.com"
+      ],
+      "representative_titles": [
+        "New China law fines influencers if they discuss \u2018serious\u2019 topics without a degree",
+        "Cars with retractable door handles will be banned in China",
+        "Palantir CEO Says a Surveillance State Is Preferable to China Winning the AI Race"
+      ],
+      "sample_size": 10,
+      "methods": {
+        "deberta_base_nli": {
+          "sampled_comments": 10,
+          "non_neutral_comments": 5,
+          "support_comments": 0,
+          "oppose_comments": 5,
+          "neutral_comments": 5,
+          "dominant_raw_stance": "oppose",
+          "dominant_position_text": "Most sampled top-level comments push back against the main claims made by the posts in this topic.",
+          "agreement_rate": 1.0,
+          "disagreement_rate": 0.0,
+          "user_groups": {
+            "aligned_users": 5,
+            "opposing_users": 0,
+            "unresolved_users": 0,
+            "aligned_authors": [
+              "Canalloni",
+              "ChoiceIT",
+              "Deer_Investigator881",
+              "DemandredG",
+              "yogthos"
+            ],
+            "opposing_authors": []
+          },
+          "aligned_side": {
+            "summary": "Key arguments on this side focus on wait cheaper, cars, man, man wait.",
+            "top_terms": [
+              "wait cheaper",
+              "cars",
+              "man",
+              "man wait",
+              "wait",
+              "cheaper cars"
+            ],
+            "representative_comments": [
+              "When industries are scared of competition, it\u2019s a solid tell they\u2019re not actually capitalists, they\u2019re monopolists with very gullible followings.",
+              "Man, just wait until people find out how much cheaper the cars can be",
+              ">As a side note, Karp seems to think most people\u2019s concern with surveillance is that they are going to get caught cheating for some reason. For instance, when giving an example of what he thinks is a valid skeptical question to ask about what Palantir is doing, he said, \u201cIs this product being used to take away my right to go have a hot dog with a coworker I\u2019m flirting with while being married? Which, honestly, I think is the god-given right of people in this country.\u201d He later brings this up again, saying that most surveillance technology isn\u2019t determining, \u201cAm I shagging too many people on the side and lying to my partner?\u201d Your guess is as good as any as to what that\u2019s all about.\n\nwhat an odd thing to say..."
+            ]
+          },
+          "opposing_side": {
+            "summary": "No high-confidence comments were assigned to this side.",
+            "top_terms": [],
+            "representative_comments": []
+          }
+        },
+        "deberta_small_nli": {
+          "sampled_comments": 10,
+          "non_neutral_comments": 7,
+          "support_comments": 0,
+          "oppose_comments": 7,
+          "neutral_comments": 3,
+          "dominant_raw_stance": "oppose",
+          "dominant_position_text": "Most sampled top-level comments push back against the main claims made by the posts in this topic.",
+          "agreement_rate": 1.0,
+          "disagreement_rate": 0.0,
+          "user_groups": {
+            "aligned_users": 7,
+            "opposing_users": 0,
+            "unresolved_users": 0,
+            "aligned_authors": [
+              "BassDaddy0",
+              "Deer_Investigator881",
+              "DemandredG",
+              "Future-Turtle",
+              "Hi_Im_Ken_Adams",
+              "Outrageous_Space8083",
+              "yogthos"
+            ],
+            "opposing_authors": []
+          },
+          "aligned_side": {
+            "summary": "Key arguments on this side focus on cars, man, man wait, wait cheaper.",
+            "top_terms": [
+              "cars",
+              "man",
+              "man wait",
+              "wait cheaper",
+              "wait",
+              "cheaper cars"
+            ],
+            "representative_comments": [
+              "When industries are scared of competition, it\u2019s a solid tell they\u2019re not actually capitalists, they\u2019re monopolists with very gullible followings.",
+              "So according to the article, it's not just about the threat to the US automobile industry, but to the entire car dealership model as well since Chinese brands want to sell direct-to-consumer to reduce prices.\n\n  \nAll those scummy dealers trying to sell undercoating and extended warranties are going to need to find a new revenue model...",
+              "\"What do you mean the threat of invasion makes people want to avoid our goods?\"\n\n-The CEOs who donated to Trump, maybe."
+            ]
+          },
+          "opposing_side": {
+            "summary": "No high-confidence comments were assigned to this side.",
+            "top_terms": [],
+            "representative_comments": []
+          }
+        }
+      },
+      "method_overlap": {
+        "sampled_comments": 10,
+        "both_non_neutral": 3,
+        "stance_agreement_rate": 1.0,
+        "aligned_comments": 3,
+        "disagreed_comments": 0
+      }
+    },
+    {
+      "topic_id": 7,
+      "label": "Microsoft / Windows",
+      "keywords": [
+        "Microsoft",
+        "Window",
+        "Copilot",
+        "Office",
+        "Pc",
+        "Time",
+        "Billion",
+        "Amazon",
+        "Xbox",
+        "Cloud"
+      ],
+      "share_pct": 8.42,
+      "top_domains": [
+        "theregister.com",
+        "windowscentral.com",
+        "tomshardware.com"
+      ],
+      "representative_titles": [
+        "Microsoft AI CEO puzzled that people are unimpressed by AI",
+        "Microsoft Office has been renamed to \u201cMicrosoft 365 Copilot app\u201d",
+        "\u2018Security Disaster\u2019\u2014500 Million Microsoft Users Say No To Windows 11"
+      ],
+      "sample_size": 10,
+      "methods": {
+        "deberta_base_nli": {
+          "sampled_comments": 10,
+          "non_neutral_comments": 8,
+          "support_comments": 0,
+          "oppose_comments": 8,
+          "neutral_comments": 2,
+          "dominant_raw_stance": "oppose",
+          "dominant_position_text": "Most sampled top-level comments push back against the main claims made by the posts in this topic.",
+          "agreement_rate": 1.0,
+          "disagreement_rate": 0.0,
+          "user_groups": {
+            "aligned_users": 8,
+            "opposing_users": 0,
+            "unresolved_users": 0,
+            "aligned_authors": [
+              "DisPear2",
+              "MaliciousTent",
+              "Metal_Icarus",
+              "Secret_Wishbone_2009",
+              "jpiro",
+              "musty_mage",
+              "pixeltackle",
+              "tc100292"
+            ],
+            "opposing_authors": []
+          },
+          "aligned_side": {
+            "summary": "Key arguments on this side focus on job, operating, going, impressed.",
+            "top_terms": [
+              "job",
+              "operating",
+              "going",
+              "impressed",
+              "replacing",
+              "ceos"
+            ],
+            "representative_comments": [
+              "*Wants an operating system, you know like run programs\n\n*Get OS and ads and suggestions and bloat and \"we require online\" and \"would\nyou like...\"\n\n*Can I just write a document in peace?\n\n*No\n\n\nWhy customers mad?",
+              "\u201cWe told people that AI was going to put them out of a job and those ungrateful little shits are asking questions\u201d is more accurate.",
+              "Hard to believe this is remotely going to happen: \"with Windows 12 set to debut a new hardware requirement [...] a dedicated NPU would be required, a specialized processor designed to handle AI tasks.\"\n\nRequiring an NPU would mean Windows 12 couldn't run on a lot of what I see people buying new today. As in currently."
+            ]
+          },
+          "opposing_side": {
+            "summary": "No high-confidence comments were assigned to this side.",
+            "top_terms": [],
+            "representative_comments": []
+          }
+        },
+        "deberta_small_nli": {
+          "sampled_comments": 10,
+          "non_neutral_comments": 7,
+          "support_comments": 0,
+          "oppose_comments": 7,
+          "neutral_comments": 3,
+          "dominant_raw_stance": "oppose",
+          "dominant_position_text": "Most sampled top-level comments push back against the main claims made by the posts in this topic.",
+          "agreement_rate": 1.0,
+          "disagreement_rate": 0.0,
+          "user_groups": {
+            "aligned_users": 7,
+            "opposing_users": 0,
+            "unresolved_users": 0,
+            "aligned_authors": [
+              "DisPear2",
+              "MaliciousTent",
+              "Metal_Icarus",
+              "jpiro",
+              "musty_mage",
+              "pixeltackle",
+              "tc100292"
+            ],
+            "opposing_authors": []
+          },
+          "aligned_side": {
+            "summary": "Key arguments on this side focus on job, operating, starts replacing, impressed.",
+            "top_terms": [
+              "job",
+              "operating",
+              "starts replacing",
+              "impressed",
+              "replacing",
+              "ceos impressed"
+            ],
+            "representative_comments": [
+              "*Wants an operating system, you know like run programs\n\n*Get OS and ads and suggestions and bloat and \"we require online\" and \"would\nyou like...\"\n\n*Can I just write a document in peace?\n\n*No\n\n\nWhy customers mad?",
+              "\u201cWe told people that AI was going to put them out of a job and those ungrateful little shits are asking questions\u201d is more accurate.",
+              "Hard to believe this is remotely going to happen: \"with Windows 12 set to debut a new hardware requirement [...] a dedicated NPU would be required, a specialized processor designed to handle AI tasks.\"\n\nRequiring an NPU would mean Windows 12 couldn't run on a lot of what I see people buying new today. As in currently."
+            ]
+          },
+          "opposing_side": {
+            "summary": "No high-confidence comments were assigned to this side.",
+            "top_terms": [],
+            "representative_comments": []
+          }
+        }
+      },
+      "method_overlap": {
+        "sampled_comments": 10,
+        "both_non_neutral": 7,
+        "stance_agreement_rate": 1.0,
+        "aligned_comments": 7,
+        "disagreed_comments": 0
+      }
+    },
+    {
+      "topic_id": 8,
+      "label": "Apps / Platform Moderation",
+      "keywords": [
+        "App",
+        "Apple",
+        "Ice",
+        "TikTok",
+        "Store",
+        "Free",
+        "Phone",
+        "App Store",
+        "Iphone",
+        "Age"
+      ],
+      "share_pct": 20.58,
+      "top_domains": [
+        "youtu.be",
+        "arstechnica.com",
+        "youtube.com"
+      ],
+      "representative_titles": [
+        "Apple pulls ICEBlock from the App Store. AG Pam Bondi claimed the app is \u2018designed to put ICE agents at risk,\u2019 which its developer denies.",
+        "TikTok users freak out over app's 'immigration status' collection",
+        "MKBHD's Panels wallpaper app is shutting down, here's what's next"
+      ],
+      "sample_size": 10,
+      "methods": {
+        "deberta_base_nli": {
+          "sampled_comments": 10,
+          "non_neutral_comments": 9,
+          "support_comments": 0,
+          "oppose_comments": 9,
+          "neutral_comments": 1,
+          "dominant_raw_stance": "oppose",
+          "dominant_position_text": "Most sampled top-level comments push back against the main claims made by the posts in this topic.",
+          "agreement_rate": 1.0,
+          "disagreement_rate": 0.0,
+          "user_groups": {
+            "aligned_users": 9,
+            "opposing_users": 0,
+            "unresolved_users": 0,
+            "aligned_authors": [
+              "ACasualRead",
+              "Fantastic-Ad-2856",
+              "ForcedEntry420",
+              "FunDmental",
+              "Makenshine",
+              "agk23",
+              "gjglazenburg",
+              "okimlom",
+              "scoff-law"
+            ],
+            "opposing_authors": []
+          },
+          "aligned_side": {
+            "summary": "Key arguments on this side focus on leverage, vital, paid, work.",
+            "top_terms": [
+              "leverage",
+              "vital",
+              "paid",
+              "work",
+              "paying",
+              "grifter"
+            ],
+            "representative_comments": [
+              "Isn't the whole thing that they're not getting paid to work right now?",
+              "Pretty sure when they come to work, they don\u2019t get paid either.",
+              "You cannot replace these people on demand\u2026 you guys are fucked"
+            ]
+          },
+          "opposing_side": {
+            "summary": "No high-confidence comments were assigned to this side.",
+            "top_terms": [],
+            "representative_comments": []
+          }
+        },
+        "deberta_small_nli": {
+          "sampled_comments": 10,
+          "non_neutral_comments": 7,
+          "support_comments": 0,
+          "oppose_comments": 7,
+          "neutral_comments": 3,
+          "dominant_raw_stance": "oppose",
+          "dominant_position_text": "Most sampled top-level comments push back against the main claims made by the posts in this topic.",
+          "agreement_rate": 1.0,
+          "disagreement_rate": 0.0,
+          "user_groups": {
+            "aligned_users": 7,
+            "opposing_users": 0,
+            "unresolved_users": 0,
+            "aligned_authors": [
+              "ACasualRead",
+              "Fantastic-Ad-2856",
+              "ForcedEntry420",
+              "Piltonbadger",
+              "agk23",
+              "gjglazenburg",
+              "okimlom"
+            ],
+            "opposing_authors": []
+          },
+          "aligned_side": {
+            "summary": "Key arguments on this side focus on enemies, grifter, dont, demand.",
+            "top_terms": [
+              "enemies",
+              "grifter",
+              "dont",
+              "demand",
+              "guys",
+              "guys fucked"
+            ],
+            "representative_comments": [
+              "I swear, conservatives are the reigning \u201cfell for it again\u201d world champions.",
+              "The President of the United States has an enemies list. A fucking 79 year old billionaire has an enemies list. That would be a call to the mental hospital and a check-in with your local police department for anybody else. But this guy, not only is it not a call for concern for a large portion of the population, but it\u2019s openly supported and actively going to be pursued.\u00a0",
+              "Didn't Hitler and the Nazis do something similar with their \"Enemies of the state\" spiel?"
+            ]
+          },
+          "opposing_side": {
+            "summary": "No high-confidence comments were assigned to this side.",
+            "top_terms": [],
+            "representative_comments": []
+          }
+        }
+      },
+      "method_overlap": {
+        "sampled_comments": 10,
+        "both_non_neutral": 6,
+        "stance_agreement_rate": 1.0,
+        "aligned_comments": 6,
+        "disagreed_comments": 0
+      }
+    },
+    {
+      "topic_id": 9,
+      "label": "Meta / Smart Glasses",
+      "keywords": [
+        "Meta",
+        "Glasses",
+        "Smart",
+        "Billion",
+        "Smart Glasses",
+        "Amazon",
+        "Metaverse",
+        "Safety",
+        "Privacy",
+        "Ray"
+      ],
+      "share_pct": 8.52,
+      "top_domains": [
+        "techcrunch.com",
+        "theverge.com",
+        "reuters.com"
+      ],
+      "representative_titles": [
+        "How Can Anyone Seriously Doubt Meta Is a Monopoly?",
+        "Meta's smart glasses are filming unwitting naked people",
+        "New Mexico just handed Meta its first courtroom defeat over child safety"
+      ],
+      "sample_size": 10,
+      "methods": {
+        "deberta_base_nli": {
+          "sampled_comments": 10,
+          "non_neutral_comments": 9,
+          "support_comments": 0,
+          "oppose_comments": 9,
+          "neutral_comments": 1,
+          "dominant_raw_stance": "oppose",
+          "dominant_position_text": "Most sampled top-level comments push back against the main claims made by the posts in this topic.",
+          "agreement_rate": 1.0,
+          "disagreement_rate": 0.0,
+          "user_groups": {
+            "aligned_users": 9,
+            "opposing_users": 0,
+            "unresolved_users": 0,
+            "aligned_authors": [
+              "ASEdouard",
+              "ASuarezMascareno",
+              "Adlehyde",
+              "Think_Fault_7525",
+              "_TotallyNotEvil_",
+              "bombayblue",
+              "dallasdude",
+              "evilkasper",
+              "fuseboy"
+            ],
+            "opposing_authors": []
+          },
+          "aligned_side": {
+            "summary": "Key arguments on this side focus on youtube, enemy, looking enemy, looking.",
+            "top_terms": [
+              "youtube",
+              "enemy",
+              "looking enemy",
+              "looking",
+              "sure",
+              "horrible"
+            ],
+            "representative_comments": [
+              "\"YouTube is hellbent on making sure no one ever uses the TV app ever again.\"",
+              "I watched a video without ad blocking the other day and it was horrible. Every 5 minutes there were 2 ads. It was horrible.\u00a0",
+              "They play ads between the set up and the punch line of jokes. FFS. It's awful.\n\nAt least TV used to have a natural flow. Now YouTube decides it's a good idea to play a 9-minute long ad mid-joke that you can skip after 4 seconds. But if you don't the ad will play for NINE MINUTES. \n\n\n\n"
+            ]
+          },
+          "opposing_side": {
+            "summary": "No high-confidence comments were assigned to this side.",
+            "top_terms": [],
+            "representative_comments": []
+          }
+        },
+        "deberta_small_nli": {
+          "sampled_comments": 10,
+          "non_neutral_comments": 7,
+          "support_comments": 0,
+          "oppose_comments": 7,
+          "neutral_comments": 3,
+          "dominant_raw_stance": "oppose",
+          "dominant_position_text": "Most sampled top-level comments push back against the main claims made by the posts in this topic.",
+          "agreement_rate": 1.0,
+          "disagreement_rate": 0.0,
+          "user_groups": {
+            "aligned_users": 7,
+            "opposing_users": 0,
+            "unresolved_users": 0,
+            "aligned_authors": [
+              "ASEdouard",
+              "Adlehyde",
+              "Think_Fault_7525",
+              "ZebraSandwich4Lyf",
+              "_TotallyNotEvil_",
+              "bombayblue",
+              "fuseboy"
+            ],
+            "opposing_authors": []
+          },
+          "aligned_side": {
+            "summary": "Key arguments on this side focus on looking enemy, looking, enemy, sure.",
+            "top_terms": [
+              "looking enemy",
+              "looking",
+              "enemy",
+              "sure",
+              "ve",
+              "sure possible"
+            ],
+            "representative_comments": [
+              "Autocrats needs to purge every rival authority. Academics, scientists, community organizers, they all risk contradicting the big man.",
+              "Is this *really* surprising? I mean look at who owns it..",
+              "\"YouTube is hellbent on making sure no one ever uses the TV app ever again.\""
+            ]
+          },
+          "opposing_side": {
+            "summary": "No high-confidence comments were assigned to this side.",
+            "top_terms": [],
+            "representative_comments": []
+          }
+        }
+      },
+      "method_overlap": {
+        "sampled_comments": 10,
+        "both_non_neutral": 6,
+        "stance_agreement_rate": 1.0,
+        "aligned_comments": 6,
+        "disagreed_comments": 0
+      }
+    }
+  ]
+}

@@ -1,0 +1,1435 @@
+{
+  "dataset": {
+    "db_path": "data/reddit_technology_recent.db",
+    "total_post_count": 15000,
+    "analyzed_post_count": 14806,
+    "filtered_post_count": 194,
+    "coverage_pct": 98.71,
+    "total_stored_comments": 1136195,
+    "text_source": "post titles",
+    "n_topics": 12,
+    "top_keywords": 10
+  },
+  "methods": {
+    "nmf": [
+      {
+        "method": "nmf",
+        "topic_id": 0,
+        "label": "AI / Work and Society",
+        "keywords": [
+          "AI",
+          "Human",
+          "Generated",
+          "AI Generated",
+          "Job",
+          "AI Agent",
+          "Agent",
+          "Future",
+          "Bubble",
+          "AI Bubble"
+        ],
+        "post_count": 3006,
+        "share_pct": 20.04,
+        "stored_comment_count": 198736,
+        "stored_comment_share_pct": 17.49,
+        "avg_score": 693.77,
+        "avg_stored_comments": 66.11,
+        "top_domains": [
+          "youtube.com",
+          "theguardian.com",
+          "techcrunch.com"
+        ],
+        "representative_titles": [
+          "Adobe Animate is shutting down on March 1st as company focuses on AI.",
+          "Marriage over, \u20ac100,000 down the drain: the AI users whose lives were wrecked by delusion",
+          "Kathleen Kennedy Just Told an AI Conference She\u2019s Not So Sure About AI"
+        ]
+      },
+      {
+        "method": "nmf",
+        "topic_id": 8,
+        "label": "Apps / Platform Moderation",
+        "keywords": [
+          "App",
+          "Apple",
+          "Ice",
+          "TikTok",
+          "Store",
+          "Free",
+          "Phone",
+          "App Store",
+          "Iphone",
+          "Age"
+        ],
+        "post_count": 2485,
+        "share_pct": 16.57,
+        "stored_comment_count": 193769,
+        "stored_comment_share_pct": 17.05,
+        "avg_score": 1105.51,
+        "avg_stored_comments": 77.98,
+        "top_domains": [
+          "theverge.com",
+          "self.technology",
+          "youtu.be"
+        ],
+        "representative_titles": [
+          "Apple pulls ICEBlock from the App Store. AG Pam Bondi claimed the app is \u2018designed to put ICE agents at risk,\u2019 which its developer denies.",
+          "TikTok users freak out over app's 'immigration status' collection",
+          "MKBHD's Panels wallpaper app is shutting down, here's what's next"
+        ]
+      },
+      {
+        "method": "nmf",
+        "topic_id": 6,
+        "label": "China / AI Chips",
+        "keywords": [
+          "China",
+          "Power",
+          "Chip",
+          "Nvidia",
+          "Race",
+          "Robot",
+          "Humanoid",
+          "Global",
+          "Tesla",
+          "Sale"
+        ],
+        "post_count": 1463,
+        "share_pct": 9.75,
+        "stored_comment_count": 83512,
+        "stored_comment_share_pct": 7.35,
+        "avg_score": 554.04,
+        "avg_stored_comments": 57.08,
+        "top_domains": [
+          "reuters.com",
+          "tomshardware.com",
+          "nytimes.com"
+        ],
+        "representative_titles": [
+          "New China law fines influencers if they discuss \u2018serious\u2019 topics without a degree",
+          "Cars with retractable door handles will be banned in China",
+          "Palantir CEO Says a Surveillance State Is Preferable to China Winning the AI Race"
+        ]
+      },
+      {
+        "method": "nmf",
+        "topic_id": 11,
+        "label": "Billion / Nvidia",
+        "keywords": [
+          "Billion",
+          "Nvidia",
+          "Deal",
+          "Amazon",
+          "Chip",
+          "Investment",
+          "Invest",
+          "Amd",
+          "Big",
+          "Huang"
+        ],
+        "post_count": 1449,
+        "share_pct": 9.66,
+        "stored_comment_count": 99313,
+        "stored_comment_share_pct": 8.74,
+        "avg_score": 807.58,
+        "avg_stored_comments": 68.54,
+        "top_domains": [
+          "cnbc.com",
+          "reuters.com",
+          "tomshardware.com"
+        ],
+        "representative_titles": [
+          "$300 Billion Evaporated. The SaaS -Pocalypse Has Begun.",
+          "Nvidia's $100 billion OpenAI deal has seemingly vanished",
+          "Ludicrous $6 billion Counter Strike 2 skins market crashes, loses $3 billion overnight \u2014 game update destroys inventories, collapses market"
+        ]
+      },
+      {
+        "method": "nmf",
+        "topic_id": 7,
+        "label": "Microsoft / Windows",
+        "keywords": [
+          "Microsoft",
+          "Window",
+          "Copilot",
+          "Office",
+          "Pc",
+          "Time",
+          "Xbox",
+          "Major",
+          "Update",
+          "Team"
+        ],
+        "post_count": 1201,
+        "share_pct": 8.01,
+        "stored_comment_count": 151401,
+        "stored_comment_share_pct": 13.33,
+        "avg_score": 1226.33,
+        "avg_stored_comments": 126.06,
+        "top_domains": [
+          "windowscentral.com",
+          "theregister.com",
+          "tomshardware.com"
+        ],
+        "representative_titles": [
+          "Microsoft AI CEO puzzled that people are unimpressed by AI",
+          "Microsoft Office has been renamed to \u201cMicrosoft 365 Copilot app\u201d",
+          "\u2018Security Disaster\u2019\u2014500 Million Microsoft Users Say No To Windows 11"
+        ]
+      },
+      {
+        "method": "nmf",
+        "topic_id": 9,
+        "label": "Meta / Smart Glasses",
+        "keywords": [
+          "Meta",
+          "Glasses",
+          "Smart",
+          "Smart Glasses",
+          "Metaverse",
+          "Safety",
+          "Privacy",
+          "Ads",
+          "Ray",
+          "Worker"
+        ],
+        "post_count": 1078,
+        "share_pct": 7.19,
+        "stored_comment_count": 85100,
+        "stored_comment_share_pct": 7.49,
+        "avg_score": 1055.92,
+        "avg_stored_comments": 78.94,
+        "top_domains": [
+          "theverge.com",
+          "techcrunch.com",
+          "reuters.com"
+        ],
+        "representative_titles": [
+          "How Can Anyone Seriously Doubt Meta Is a Monopoly?",
+          "Meta's smart glasses are filming unwitting naked people",
+          "New Mexico just handed Meta its first courtroom defeat over child safety"
+        ]
+      },
+      {
+        "method": "nmf",
+        "topic_id": 10,
+        "label": "Anthropic / AI Safety",
+        "keywords": [
+          "Anthropic",
+          "Pentagon",
+          "Claude",
+          "Code",
+          "Source",
+          "Open",
+          "Claude Code",
+          "Military",
+          "Government",
+          "Open Source"
+        ],
+        "post_count": 946,
+        "share_pct": 6.31,
+        "stored_comment_count": 65687,
+        "stored_comment_share_pct": 5.78,
+        "avg_score": 1136.54,
+        "avg_stored_comments": 69.44,
+        "top_domains": [
+          "techcrunch.com",
+          "reuters.com",
+          "theregister.com"
+        ],
+        "representative_titles": [
+          "By bullying Anthropic, the Pentagon is violating the First Amendment. Here\u2019s why.",
+          "Pentagon sets Friday deadline for Anthropic to abandon ethics rules for AI \u2014 or else",
+          "The Pentagon\u2019s Claude Use in Iran Is a Reminder that Anthropic Never Objected to Military Use"
+        ]
+      },
+      {
+        "method": "nmf",
+        "topic_id": 3,
+        "label": "Data Centers",
+        "keywords": [
+          "Data",
+          "Center",
+          "Data Center",
+          "AI Data",
+          "Breach",
+          "Data Breach",
+          "Space",
+          "Power",
+          "Big",
+          "Personal"
+        ],
+        "post_count": 774,
+        "share_pct": 5.16,
+        "stored_comment_count": 54584,
+        "stored_comment_share_pct": 4.8,
+        "avg_score": 1103.61,
+        "avg_stored_comments": 70.52,
+        "top_domains": [
+          "techcrunch.com",
+          "reuters.com",
+          "bleepingcomputer.com"
+        ],
+        "representative_titles": [
+          "Ohio EPA weighs allowing data centers to dump wastewater into rivers",
+          "Bernie Sanders calls for a pause on new AI data centers in the US",
+          "Data centers are creating \u2018heat islands\u2019 and warming the land around them by up to 16 degrees | CNN"
+        ]
+      },
+      {
+        "method": "nmf",
+        "topic_id": 5,
+        "label": "Google / Gemini",
+        "keywords": [
+          "Google",
+          "Gemini",
+          "Android",
+          "Search",
+          "Google AI",
+          "Google Gemini",
+          "Apple",
+          "Gmail",
+          "Amazon",
+          "Quantum"
+        ],
+        "post_count": 710,
+        "share_pct": 4.73,
+        "stored_comment_count": 37678,
+        "stored_comment_share_pct": 3.32,
+        "avg_score": 595.81,
+        "avg_stored_comments": 53.07,
+        "top_domains": [
+          "techcrunch.com",
+          "theverge.com",
+          "manecogomes.com.br"
+        ],
+        "representative_titles": [
+          "'Godfather of AI' Geoffrey Hinton says Google is 'beginning to overtake' OpenAI: 'My guess is Google will win'",
+          "As AI wipes jobs, Google CEO Sundar Pichai says it\u2019s up to everyday people to adapt accordingly: \u2018We will have to work through societal disruption\u2019",
+          "Google Apologizes After AI News Alert About BAFTA Film Awards Debacle Included the N-Word"
+        ]
+      },
+      {
+        "method": "nmf",
+        "topic_id": 2,
+        "label": "Elon Musk / xAI",
+        "keywords": [
+          "Musk",
+          "Elon",
+          "Elon Musk",
+          "Tesla",
+          "Grok",
+          "xAI",
+          "Spacex",
+          "Grokipedia",
+          "Pay",
+          "Image"
+        ],
+        "post_count": 635,
+        "share_pct": 4.23,
+        "stored_comment_count": 52192,
+        "stored_comment_share_pct": 4.59,
+        "avg_score": 917.91,
+        "avg_stored_comments": 82.19,
+        "top_domains": [
+          "theverge.com",
+          "reuters.com",
+          "techcrunch.com"
+        ],
+        "representative_titles": [
+          "Elon Musk\u2019s X must be banned",
+          "Elon Musk\u2019s Worthless, Poisoned Hall of Mirrors",
+          "Elon Musk\u2019s Grokipedia contains copied Wikipedia pages"
+        ]
+      },
+      {
+        "method": "nmf",
+        "topic_id": 4,
+        "label": "OpenAI / Anthropic",
+        "keywords": [
+          "OpenAI",
+          "ChatGPT",
+          "Sora",
+          "Altman",
+          "Sam",
+          "Sam Altman",
+          "Deal",
+          "Ads",
+          "Suicide",
+          "Disney"
+        ],
+        "post_count": 582,
+        "share_pct": 3.88,
+        "stored_comment_count": 62883,
+        "stored_comment_share_pct": 5.53,
+        "avg_score": 1442.1,
+        "avg_stored_comments": 108.05,
+        "top_domains": [
+          "techcrunch.com",
+          "theverge.com",
+          "reuters.com"
+        ],
+        "representative_titles": [
+          "OpenAI Is in Trouble",
+          "\"Cancel ChatGPT\" movement goes big after OpenAI's latest move",
+          "OpenAI's house of cards seems primed to collapse"
+        ]
+      },
+      {
+        "method": "nmf",
+        "topic_id": 1,
+        "label": "Social Media Regulation",
+        "keywords": [
+          "Social",
+          "Media",
+          "Social Media",
+          "Ban",
+          "Media Ban",
+          "Australia",
+          "Children",
+          "Addiction",
+          "Kid",
+          "Trial"
+        ],
+        "post_count": 477,
+        "share_pct": 3.18,
+        "stored_comment_count": 51210,
+        "stored_comment_share_pct": 4.51,
+        "avg_score": 1235.43,
+        "avg_stored_comments": 107.36,
+        "top_domains": [
+          "theguardian.com",
+          "reuters.com",
+          "nytimes.com"
+        ],
+        "representative_titles": [
+          "AOC says people are being 'algorithmically polarized' by social media",
+          "I am a 15-year-old girl. Let me show you the vile misogyny that confronts me on social media every day",
+          "MrBeast's former manager Reed Duchscher, says the age of social-media superstars is fading: \"As social-media algorithms get better at tailoring content to individual user interests, the opportunity for stars to show up across feeds becomes much harder,\" Duchscher said."
+        ]
+      }
+    ],
+    "lda": [
+      {
+        "method": "lda",
+        "topic_id": 4,
+        "label": "AI / Work and Society",
+        "keywords": [
+          "AI",
+          "Google",
+          "Free",
+          "Future",
+          "Built",
+          "Tool",
+          "Like",
+          "Actually",
+          "Gemini",
+          "Think"
+        ],
+        "post_count": 1667,
+        "share_pct": 11.11,
+        "stored_comment_count": 72465,
+        "stored_comment_share_pct": 6.38,
+        "avg_score": 425.39,
+        "avg_stored_comments": 43.47,
+        "top_domains": [
+          "techcrunch.com",
+          "self.technology",
+          "youtube.com"
+        ],
+        "representative_titles": [
+          "Google is blocking AI searches for the president and dementia | Google appears to have blocked AI search results for questions about his mental acuity, even though it will show AI results for similar searches about other presidents.",
+          "Stanford graduates spark outrage after uncovering reason behind lack of job offers: 'A dramatic reversal from three years ago'",
+          "Many prominent Maga personalities on X are based outside US, new tool reveals"
+        ]
+      },
+      {
+        "method": "lda",
+        "topic_id": 0,
+        "label": "Microsoft / Windows",
+        "keywords": [
+          "Microsoft",
+          "AI",
+          "Window",
+          "Internet",
+          "Powered",
+          "Inside",
+          "Pc",
+          "Price",
+          "Home",
+          "Support"
+        ],
+        "post_count": 1640,
+        "share_pct": 10.93,
+        "stored_comment_count": 131990,
+        "stored_comment_share_pct": 11.62,
+        "avg_score": 684.0,
+        "avg_stored_comments": 80.48,
+        "top_domains": [
+          "tomshardware.com",
+          "youtube.com",
+          "theregister.com"
+        ],
+        "representative_titles": [
+          "Microsoft finally admits almost all major Windows 11 core features are broken",
+          "10M people watched a YouTuber shim a lock; the lock company sued him. Bad idea.",
+          "Amazon Allegedly Replaced 40% of AWS DevOps With AI Days Before Crash"
+        ]
+      },
+      {
+        "method": "lda",
+        "topic_id": 7,
+        "label": "AI / Billion",
+        "keywords": [
+          "AI",
+          "Billion",
+          "Meta",
+          "Nvidia",
+          "Age",
+          "Amazon",
+          "Memory",
+          "Worker",
+          "Chip",
+          "Smart"
+        ],
+        "post_count": 1525,
+        "share_pct": 10.17,
+        "stored_comment_count": 122818,
+        "stored_comment_share_pct": 10.81,
+        "avg_score": 1019.51,
+        "avg_stored_comments": 80.54,
+        "top_domains": [
+          "cnbc.com",
+          "reuters.com",
+          "tomshardware.com"
+        ],
+        "representative_titles": [
+          "Bill Gates Says We're in an AI Bubble Similar to the Dot-Com Bubble",
+          "Big Tech sees over $1 trillion wiped from stocks as fears of AI bubble ignite sell-off",
+          "Discord delays global age verification rollout after backlash"
+        ]
+      },
+      {
+        "method": "lda",
+        "topic_id": 6,
+        "label": "AI / Work and Society",
+        "keywords": [
+          "AI",
+          "China",
+          "Chip",
+          "Study",
+          "Model",
+          "Scientist",
+          "Power",
+          "Work",
+          "Find",
+          "Global"
+        ],
+        "post_count": 1378,
+        "share_pct": 9.19,
+        "stored_comment_count": 72957,
+        "stored_comment_share_pct": 6.42,
+        "avg_score": 548.12,
+        "avg_stored_comments": 52.94,
+        "top_domains": [
+          "reuters.com",
+          "cnbc.com",
+          "techcrunch.com"
+        ],
+        "representative_titles": [
+          "CEO of America\u2019s largest public hospital system says he\u2019s ready to replace radiologists with AI",
+          "No credible tie between Tylenol use and autism/ADHD, huge study finds",
+          "MIT study finds AI can already replace 11.7% of U.S. workforce"
+        ]
+      },
+      {
+        "method": "lda",
+        "topic_id": 1,
+        "label": "Big / Data",
+        "keywords": [
+          "Big",
+          "Data",
+          "AI",
+          "Security",
+          "Help",
+          "Safety",
+          "Tesla",
+          "Online",
+          "Privacy",
+          "Code"
+        ],
+        "post_count": 1280,
+        "share_pct": 8.53,
+        "stored_comment_count": 113297,
+        "stored_comment_share_pct": 9.97,
+        "avg_score": 1326.08,
+        "avg_stored_comments": 88.51,
+        "top_domains": [
+          "techcrunch.com",
+          "reuters.com",
+          "arstechnica.com"
+        ],
+        "representative_titles": [
+          "DOJ confirms FBI Director Kash Patel\u2019s personal email was hacked",
+          "Tesla: 2024 was bad, 2025 was worse as profit falls 46 percent",
+          "El0n Msk had more extensive ties to Epstein than previously known, emails show"
+        ]
+      },
+      {
+        "method": "lda",
+        "topic_id": 2,
+        "label": "AI / Work and Society",
+        "keywords": [
+          "AI",
+          "Anthropic",
+          "OpenAI",
+          "Ng",
+          "Human",
+          "Agent",
+          "Phone",
+          "Youtube",
+          "Mobile",
+          "Ads"
+        ],
+        "post_count": 1272,
+        "share_pct": 8.48,
+        "stored_comment_count": 112914,
+        "stored_comment_share_pct": 9.94,
+        "avg_score": 1028.01,
+        "avg_stored_comments": 88.77,
+        "top_domains": [
+          "techcrunch.com",
+          "theverge.com",
+          "youtu.be"
+        ],
+        "representative_titles": [
+          "OpenAI CEO Sam Altman just publicly admitted that AI agents are becoming a problem",
+          "It\u2019s Official: Netflix to Acquire Warner Bros. in Deal Valued at $82.7 Billion",
+          "Elizabeth Warren Calls Netflix-Warner Bros. Deal A \u201cNightmare,\u201d Warns Of \u201cHigher Subscription Prices And Fewer Choices\u201d"
+        ]
+      },
+      {
+        "method": "lda",
+        "topic_id": 11,
+        "label": "AI / Time",
+        "keywords": [
+          "AI",
+          "Time",
+          "Real",
+          "Open",
+          "Government",
+          "Source",
+          "Robot",
+          "Model",
+          "Intelligence",
+          "Researcher"
+        ],
+        "post_count": 1129,
+        "share_pct": 7.53,
+        "stored_comment_count": 74436,
+        "stored_comment_share_pct": 6.55,
+        "avg_score": 870.0,
+        "avg_stored_comments": 65.93,
+        "top_domains": [
+          "techcrunch.com",
+          "youtube.com",
+          "arstechnica.com"
+        ],
+        "representative_titles": [
+          "Firefox is adding a switch to turn AI features off (starting Feb 24)",
+          "Government workers say their out-of-office replies were forcibly changed to blame Democrats for shutdown",
+          "'Basically zero, garbage': Renowned mathematician Joel David Hamkins declares AI Models useless for solving math. Here's why"
+        ]
+      },
+      {
+        "method": "lda",
+        "topic_id": 5,
+        "label": "Data Centers",
+        "keywords": [
+          "Data",
+          "Game",
+          "AI",
+          "Center",
+          "President",
+          "Data Center",
+          "War",
+          "Iran",
+          "Energy",
+          "Xbox"
+        ],
+        "post_count": 1081,
+        "share_pct": 7.21,
+        "stored_comment_count": 98697,
+        "stored_comment_share_pct": 8.69,
+        "avg_score": 1334.27,
+        "avg_stored_comments": 91.3,
+        "top_domains": [
+          "cnbc.com",
+          "tomshardware.com",
+          "techspot.com"
+        ],
+        "representative_titles": [
+          "President Posts Bizarre AI Video of Project 2025 Architect as the Grim Reaper and Democrats as \u201cbabies\u201d | It used to be considered unusual for a U.S. president to do things like this.",
+          "At least 16 files have disappeared from the DOJ webpage for documents related to Jeffrey Epstein",
+          "DOJ Just DELETED This Document from the Epstein Files. We Saved It."
+        ]
+      },
+      {
+        "method": "lda",
+        "topic_id": 10,
+        "label": "Apps / Platform Moderation",
+        "keywords": [
+          "App",
+          "Apple",
+          "Ice",
+          "Need",
+          "Want",
+          "Don",
+          "Website",
+          "Iphone",
+          "Car",
+          "Ev"
+        ],
+        "post_count": 1074,
+        "share_pct": 7.16,
+        "stored_comment_count": 98980,
+        "stored_comment_share_pct": 8.71,
+        "avg_score": 1174.2,
+        "avg_stored_comments": 92.16,
+        "top_domains": [
+          "arstechnica.com",
+          "404media.co",
+          "techcrunch.com"
+        ],
+        "representative_titles": [
+          "Sean Duffy Threatens to Fire Air Traffic Controllers as 10% Call Out Sick During Shutdown | \"When you come to work, you get paid. If you don't come to work, you don't get paid.\"",
+          "You Can't Refuse To Be Scanned by ICE's Facial Recognition App, DHS Document Says. Photos captured by Mobile Fortify will be stored for 15 years, regardless of immigration or citizenship status, the document says.",
+          "Reddit\u2019s CEO says r/popular \u2018sucks,\u2019 and it\u2019s going away / \ufeffReddit is also limiting how many popular communities one person can moderate, and pushing more personalized feeds."
+        ]
+      },
+      {
+        "method": "lda",
+        "topic_id": 9,
+        "label": "OpenAI / Anthropic",
+        "keywords": [
+          "OpenAI",
+          "ChatGPT",
+          "Chinese",
+          "Launch",
+          "Service",
+          "Space",
+          "Market",
+          "Starlink",
+          "Health",
+          "Battery"
+        ],
+        "post_count": 1056,
+        "share_pct": 7.04,
+        "stored_comment_count": 105118,
+        "stored_comment_share_pct": 9.25,
+        "avg_score": 1216.45,
+        "avg_stored_comments": 99.54,
+        "top_domains": [
+          "techcrunch.com",
+          "arstechnica.com",
+          "reuters.com"
+        ],
+        "representative_titles": [
+          "Federal Agencies Use Official Websites to Blame Democrats for Shutdown",
+          "Epic Games Layoffs Included Terminally Ill Father, Whose Family Has Now Lost His Life Insurance",
+          "After 60,000 Miles of Charging to 100% Every Night, a Ford F-150 Lightning Owner Says His Battery Shows \u201cNot One Single Percentage Point\u201d of Degradation"
+        ]
+      },
+      {
+        "method": "lda",
+        "topic_id": 8,
+        "label": "Social Media Regulation",
+        "keywords": [
+          "Social",
+          "Media",
+          "Social Media",
+          "AI",
+          "Ban",
+          "Digital",
+          "Generated",
+          "AI Generated",
+          "Content",
+          "Getting"
+        ],
+        "post_count": 992,
+        "share_pct": 6.61,
+        "stored_comment_count": 99077,
+        "stored_comment_share_pct": 8.72,
+        "avg_score": 1184.21,
+        "avg_stored_comments": 99.88,
+        "top_domains": [
+          "theguardian.com",
+          "reuters.com",
+          "youtube.com"
+        ],
+        "representative_titles": [
+          "Millions of children and teens lose access to accounts as Australia\u2019s world-first social media ban begins",
+          "DHS suspends Bovino's access to social media after posts defending his unverified claims about Alex Pretti",
+          "AOC says people are being 'algorithmically polarized' by social media"
+        ]
+      },
+      {
+        "method": "lda",
+        "topic_id": 3,
+        "label": "Elon Musk / xAI",
+        "keywords": [
+          "Musk",
+          "Elon",
+          "Elon Musk",
+          "Grok",
+          "Pay",
+          "Image",
+          "Whatsapp",
+          "Os",
+          "Court",
+          "xAI"
+        ],
+        "post_count": 712,
+        "share_pct": 4.75,
+        "stored_comment_count": 33316,
+        "stored_comment_share_pct": 2.93,
+        "avg_score": 698.67,
+        "avg_stored_comments": 46.79,
+        "top_domains": [
+          "manecogomes.com.br",
+          "theverge.com",
+          "theguardian.com"
+        ],
+        "representative_titles": [
+          "Tesla says shareholders approve CEO's $1 trillion pay plan with over 75% voting in favor",
+          "Elon Musk\u2019s Grokipedia contains copied Wikipedia pages",
+          "$1 billion Supreme Court music piracy case could affect internet users"
+        ]
+      }
+    ]
+  },
+  "consensus": [
+    {
+      "consensus_id": 1,
+      "label": "AI / Work and Society",
+      "nmf_topic_id": 0,
+      "lda_topic_id": 2,
+      "nmf_share_pct": 20.04,
+      "lda_share_pct": 8.48,
+      "avg_share_pct": 14.26,
+      "agreement_post_count": 372,
+      "agreement_share_pct": 2.48,
+      "agreement_comment_count": 32394,
+      "agreement_comment_share_pct": 2.85,
+      "agreement_avg_score": 911.6,
+      "keyword_overlap": 0.176,
+      "post_overlap": 0.292,
+      "combined_score": 0.223,
+      "overlap_keywords": [
+        "Agent",
+        "AI",
+        "Human"
+      ],
+      "nmf_keywords": [
+        "AI",
+        "Human",
+        "Generated",
+        "AI Generated",
+        "Job",
+        "AI Agent",
+        "Agent",
+        "Future",
+        "Bubble",
+        "AI Bubble"
+      ],
+      "lda_keywords": [
+        "AI",
+        "Anthropic",
+        "OpenAI",
+        "Ng",
+        "Human",
+        "Agent",
+        "Phone",
+        "Youtube",
+        "Mobile",
+        "Ads"
+      ],
+      "top_domains": [
+        "techcrunch.com",
+        "theverge.com",
+        "theguardian.com"
+      ],
+      "representative_titles": [
+        "Bill Gates warns AI will take over most jobs and leave humans working just two days a week",
+        "Burger King will use AI to check if employees say \u2018please\u2019 and \u2018thank you\u2019 | AI chatbot \u2018Patty\u2019 is going to live inside employees\u2019 headsets.",
+        "That Video of Happy Crying Venezuelans After Maduro\u2019s Kidnapping? It\u2019s AI Slop"
+      ]
+    },
+    {
+      "consensus_id": 2,
+      "label": "Apps / Platform Moderation",
+      "nmf_topic_id": 8,
+      "lda_topic_id": 10,
+      "nmf_share_pct": 16.57,
+      "lda_share_pct": 7.16,
+      "avg_share_pct": 11.87,
+      "agreement_post_count": 613,
+      "agreement_share_pct": 4.09,
+      "agreement_comment_count": 54497,
+      "agreement_comment_share_pct": 4.8,
+      "agreement_avg_score": 1283.27,
+      "keyword_overlap": 0.25,
+      "post_overlap": 0.571,
+      "combined_score": 0.378,
+      "overlap_keywords": [
+        "App",
+        "Apple",
+        "Ice",
+        "Iphone"
+      ],
+      "nmf_keywords": [
+        "App",
+        "Apple",
+        "Ice",
+        "TikTok",
+        "Store",
+        "Free",
+        "Phone",
+        "App Store",
+        "Iphone",
+        "Age"
+      ],
+      "lda_keywords": [
+        "App",
+        "Apple",
+        "Ice",
+        "Need",
+        "Want",
+        "Don",
+        "Website",
+        "Iphone",
+        "Car",
+        "Ev"
+      ],
+      "top_domains": [
+        "404media.co",
+        "theverge.com",
+        "techcrunch.com"
+      ],
+      "representative_titles": [
+        "Air Traffic Controllers Start Resigning as Shutdown Bites | Unpaid air traffic controllers are quitting their jobs altogether as the longest government shutdown in U.S. history continues.",
+        "Sean Duffy Threatens to Fire Air Traffic Controllers as 10% Call Out Sick During Shutdown | \"When you come to work, you get paid. If you don't come to work, you don't get paid.\"",
+        "TikTok uninstalls surge 150% after app\u2019s US takeover"
+      ]
+    },
+    {
+      "consensus_id": 3,
+      "label": "Amazon / Billion",
+      "nmf_topic_id": 11,
+      "lda_topic_id": 7,
+      "nmf_share_pct": 9.66,
+      "lda_share_pct": 10.17,
+      "avg_share_pct": 9.91,
+      "agreement_post_count": 457,
+      "agreement_share_pct": 3.05,
+      "agreement_comment_count": 29163,
+      "agreement_comment_share_pct": 2.57,
+      "agreement_avg_score": 810.37,
+      "keyword_overlap": 0.25,
+      "post_overlap": 0.315,
+      "combined_score": 0.276,
+      "overlap_keywords": [
+        "Amazon",
+        "Billion",
+        "Chip",
+        "Nvidia"
+      ],
+      "nmf_keywords": [
+        "Billion",
+        "Nvidia",
+        "Deal",
+        "Amazon",
+        "Chip",
+        "Investment",
+        "Invest",
+        "Amd",
+        "Big",
+        "Huang"
+      ],
+      "lda_keywords": [
+        "AI",
+        "Billion",
+        "Meta",
+        "Nvidia",
+        "Age",
+        "Amazon",
+        "Memory",
+        "Worker",
+        "Chip",
+        "Smart"
+      ],
+      "top_domains": [
+        "cnbc.com",
+        "reuters.com",
+        "tomshardware.com"
+      ],
+      "representative_titles": [
+        "The U.S. spent $30 billion to ditch textbooks for laptops and tablets: The result is the first generation less cognitively capable than their parents",
+        "Valve makes almost $50 million per employee, raking in more cash per person than Google, Amazon, or Microsoft \u2014 gaming giant's 350 employees on track to generate $17 billion this year",
+        "Reddit CEO Steve Huffman becomes a billionaire after a highly profitable quarter"
+      ]
+    },
+    {
+      "consensus_id": 4,
+      "label": "AI / Work and Society",
+      "nmf_topic_id": 6,
+      "lda_topic_id": 6,
+      "nmf_share_pct": 9.75,
+      "lda_share_pct": 9.19,
+      "avg_share_pct": 9.47,
+      "agreement_post_count": 407,
+      "agreement_share_pct": 2.71,
+      "agreement_comment_count": 20591,
+      "agreement_comment_share_pct": 1.81,
+      "agreement_avg_score": 555.59,
+      "keyword_overlap": 0.25,
+      "post_overlap": 0.295,
+      "combined_score": 0.268,
+      "overlap_keywords": [
+        "China",
+        "Chip",
+        "Global",
+        "Power"
+      ],
+      "nmf_keywords": [
+        "China",
+        "Power",
+        "Chip",
+        "Nvidia",
+        "Race",
+        "Robot",
+        "Humanoid",
+        "Global",
+        "Tesla",
+        "Sale"
+      ],
+      "lda_keywords": [
+        "AI",
+        "China",
+        "Chip",
+        "Study",
+        "Model",
+        "Scientist",
+        "Power",
+        "Work",
+        "Find",
+        "Global"
+      ],
+      "top_domains": [
+        "reuters.com",
+        "tomshardware.com",
+        "interestingengineering.com"
+      ],
+      "representative_titles": [
+        "Palantir CEO Says a Surveillance State Is Preferable to China Winning the AI Race",
+        "America\u2019s landlords settle class action claim that they used rent-setting algorithms to gouge consumers nationwide -- Twenty-six firms, including the country\u2019s largest landlord, Greystar, propose to collectively pay more than $141 million",
+        "New China law fines influencers if they discuss \u2018serious\u2019 topics without a degree"
+      ]
+    },
+    {
+      "consensus_id": 5,
+      "label": "Microsoft / Windows",
+      "nmf_topic_id": 7,
+      "lda_topic_id": 0,
+      "nmf_share_pct": 8.01,
+      "lda_share_pct": 10.93,
+      "avg_share_pct": 9.47,
+      "agreement_post_count": 411,
+      "agreement_share_pct": 2.74,
+      "agreement_comment_count": 63127,
+      "agreement_comment_share_pct": 5.56,
+      "agreement_avg_score": 1044.19,
+      "keyword_overlap": 0.176,
+      "post_overlap": 0.342,
+      "combined_score": 0.243,
+      "overlap_keywords": [
+        "Microsoft",
+        "Pc",
+        "Window"
+      ],
+      "nmf_keywords": [
+        "Microsoft",
+        "Window",
+        "Copilot",
+        "Office",
+        "Pc",
+        "Time",
+        "Xbox",
+        "Major",
+        "Update",
+        "Team"
+      ],
+      "lda_keywords": [
+        "Microsoft",
+        "AI",
+        "Window",
+        "Internet",
+        "Powered",
+        "Inside",
+        "Pc",
+        "Price",
+        "Home",
+        "Support"
+      ],
+      "top_domains": [
+        "windowscentral.com",
+        "tomshardware.com",
+        "bleepingcomputer.com"
+      ],
+      "representative_titles": [
+        "Microsoft finally admits almost all major Windows 11 core features are broken",
+        "Windows 12 Reportedly Set for Release This Year as a Fully Modular, Subscription-Based, AI-Focused OS",
+        "\u2018Security Disaster\u2019\u2014500 Million Microsoft Users Say No To Windows 11"
+      ]
+    },
+    {
+      "consensus_id": 6,
+      "label": "AI / Work and Society",
+      "nmf_topic_id": 5,
+      "lda_topic_id": 4,
+      "nmf_share_pct": 4.73,
+      "lda_share_pct": 11.11,
+      "avg_share_pct": 7.92,
+      "agreement_post_count": 315,
+      "agreement_share_pct": 2.1,
+      "agreement_comment_count": 12491,
+      "agreement_comment_share_pct": 1.1,
+      "agreement_avg_score": 377.16,
+      "keyword_overlap": 0.111,
+      "post_overlap": 0.444,
+      "combined_score": 0.244,
+      "overlap_keywords": [
+        "Gemini",
+        "Google"
+      ],
+      "nmf_keywords": [
+        "Google",
+        "Gemini",
+        "Android",
+        "Search",
+        "Google AI",
+        "Google Gemini",
+        "Apple",
+        "Gmail",
+        "Amazon",
+        "Quantum"
+      ],
+      "lda_keywords": [
+        "AI",
+        "Google",
+        "Free",
+        "Future",
+        "Built",
+        "Tool",
+        "Like",
+        "Actually",
+        "Gemini",
+        "Think"
+      ],
+      "top_domains": [
+        "techcrunch.com",
+        "theverge.com",
+        "arstechnica.com"
+      ],
+      "representative_titles": [
+        "Google is blocking AI searches for the president and dementia | Google appears to have blocked AI search results for questions about his mental acuity, even though it will show AI results for similar searches about other presidents.",
+        "Google Is Banning APKs, ROMs, and Emulators: The End of Android Freedom?",
+        "Google\u2019s Sundar Pichai says the job of CEO is one of the \u2018easier things\u2019 AI could soon replace"
+      ]
+    },
+    {
+      "consensus_id": 7,
+      "label": "Anthropic / AI Safety",
+      "nmf_topic_id": 10,
+      "lda_topic_id": 11,
+      "nmf_share_pct": 6.31,
+      "lda_share_pct": 7.53,
+      "avg_share_pct": 6.92,
+      "agreement_post_count": 125,
+      "agreement_share_pct": 0.83,
+      "agreement_comment_count": 5692,
+      "agreement_comment_share_pct": 0.5,
+      "agreement_avg_score": 716.83,
+      "keyword_overlap": 0.176,
+      "post_overlap": 0.132,
+      "combined_score": 0.159,
+      "overlap_keywords": [
+        "Government",
+        "Open",
+        "Source"
+      ],
+      "nmf_keywords": [
+        "Anthropic",
+        "Pentagon",
+        "Claude",
+        "Code",
+        "Source",
+        "Open",
+        "Claude Code",
+        "Military",
+        "Government",
+        "Open Source"
+      ],
+      "lda_keywords": [
+        "AI",
+        "Time",
+        "Real",
+        "Open",
+        "Government",
+        "Source",
+        "Robot",
+        "Model",
+        "Intelligence",
+        "Researcher"
+      ],
+      "top_domains": [
+        "techcrunch.com",
+        "self.technology",
+        "reuters.com"
+      ],
+      "representative_titles": [
+        "Nintendo suing U.S. government over tariffs",
+        "Time Exclusive: Anthropic Drops Flagship Safety Pledge",
+        "Ryan Gosling Tells Hollywood It\u2019s Not Moviegoers\u2019 Job to Keep Theaters Open: \u2018It\u2019s Our Job to Make Things\u2019 That Are \u2018Worth\u2019 Viewers Coming Out"
+      ]
+    },
+    {
+      "consensus_id": 8,
+      "label": "Data Centers",
+      "nmf_topic_id": 3,
+      "lda_topic_id": 5,
+      "nmf_share_pct": 5.16,
+      "lda_share_pct": 7.21,
+      "avg_share_pct": 6.19,
+      "agreement_post_count": 304,
+      "agreement_share_pct": 2.03,
+      "agreement_comment_count": 24907,
+      "agreement_comment_share_pct": 2.19,
+      "agreement_avg_score": 1363.31,
+      "keyword_overlap": 0.176,
+      "post_overlap": 0.393,
+      "combined_score": 0.263,
+      "overlap_keywords": [
+        "Center",
+        "Data",
+        "Data Center"
+      ],
+      "nmf_keywords": [
+        "Data",
+        "Center",
+        "Data Center",
+        "AI Data",
+        "Breach",
+        "Data Breach",
+        "Space",
+        "Power",
+        "Big",
+        "Personal"
+      ],
+      "lda_keywords": [
+        "Data",
+        "Game",
+        "AI",
+        "Center",
+        "President",
+        "Data Center",
+        "War",
+        "Iran",
+        "Energy",
+        "Xbox"
+      ],
+      "top_domains": [
+        "tomshardware.com",
+        "cnbc.com",
+        "techspot.com"
+      ],
+      "representative_titles": [
+        "IBM CEO says there is 'no way' spending trillions on AI data centers will pay off at today's infrastructure costs",
+        "Bernie Sanders calls for a pause on new AI data centers in the US",
+        "Iranian missile blitz takes down AWS data centers in Bahrain and Dubai \u2014 Amazon reportedly declares \u201chard down\u201d status for multiple zones"
+      ]
+    },
+    {
+      "consensus_id": 9,
+      "label": "OpenAI / Anthropic",
+      "nmf_topic_id": 4,
+      "lda_topic_id": 9,
+      "nmf_share_pct": 3.88,
+      "lda_share_pct": 7.04,
+      "avg_share_pct": 5.46,
+      "agreement_post_count": 192,
+      "agreement_share_pct": 1.28,
+      "agreement_comment_count": 26206,
+      "agreement_comment_share_pct": 2.31,
+      "agreement_avg_score": 1735.47,
+      "keyword_overlap": 0.111,
+      "post_overlap": 0.33,
+      "combined_score": 0.199,
+      "overlap_keywords": [
+        "ChatGPT",
+        "OpenAI"
+      ],
+      "nmf_keywords": [
+        "OpenAI",
+        "ChatGPT",
+        "Sora",
+        "Altman",
+        "Sam",
+        "Sam Altman",
+        "Deal",
+        "Ads",
+        "Suicide",
+        "Disney"
+      ],
+      "lda_keywords": [
+        "OpenAI",
+        "ChatGPT",
+        "Chinese",
+        "Launch",
+        "Service",
+        "Space",
+        "Market",
+        "Starlink",
+        "Health",
+        "Battery"
+      ],
+      "top_domains": [
+        "techcrunch.com",
+        "reuters.com",
+        "theverge.com"
+      ],
+      "representative_titles": [
+        "\"Cancel ChatGPT\" movement goes big after OpenAI's latest move",
+        "1.5 Million Users Leave ChatGPT",
+        "ChatGPT uninstalls surged by 295% after DoD deal"
+      ]
+    },
+    {
+      "consensus_id": 10,
+      "label": "Social Media Regulation",
+      "nmf_topic_id": 1,
+      "lda_topic_id": 8,
+      "nmf_share_pct": 3.18,
+      "lda_share_pct": 6.61,
+      "avg_share_pct": 4.9,
+      "agreement_post_count": 352,
+      "agreement_share_pct": 2.35,
+      "agreement_comment_count": 41251,
+      "agreement_comment_share_pct": 3.63,
+      "agreement_avg_score": 1236.16,
+      "keyword_overlap": 0.25,
+      "post_overlap": 0.738,
+      "combined_score": 0.445,
+      "overlap_keywords": [
+        "Ban",
+        "Media",
+        "Social",
+        "Social Media"
+      ],
+      "nmf_keywords": [
+        "Social",
+        "Media",
+        "Social Media",
+        "Ban",
+        "Media Ban",
+        "Australia",
+        "Children",
+        "Addiction",
+        "Kid",
+        "Trial"
+      ],
+      "lda_keywords": [
+        "Social",
+        "Media",
+        "Social Media",
+        "AI",
+        "Ban",
+        "Digital",
+        "Generated",
+        "AI Generated",
+        "Content",
+        "Getting"
+      ],
+      "top_domains": [
+        "theguardian.com",
+        "reuters.com",
+        "bbc.com"
+      ],
+      "representative_titles": [
+        "AOC says people are being 'algorithmically polarized' by social media",
+        "I am a 15-year-old girl. Let me show you the vile misogyny that confronts me on social media every day",
+        "DHS suspends Bovino's access to social media after posts defending his unverified claims about Alex Pretti"
+      ]
+    },
+    {
+      "consensus_id": 11,
+      "label": "Elon Musk / xAI",
+      "nmf_topic_id": 2,
+      "lda_topic_id": 3,
+      "nmf_share_pct": 4.23,
+      "lda_share_pct": 4.75,
+      "avg_share_pct": 4.49,
+      "agreement_post_count": 368,
+      "agreement_share_pct": 2.45,
+      "agreement_comment_count": 14468,
+      "agreement_comment_share_pct": 1.27,
+      "agreement_avg_score": 426.59,
+      "keyword_overlap": 0.538,
+      "post_overlap": 0.58,
+      "combined_score": 0.555,
+      "overlap_keywords": [
+        "Elon",
+        "Elon Musk",
+        "Grok",
+        "Image",
+        "Musk",
+        "Pay",
+        "xAI"
+      ],
+      "nmf_keywords": [
+        "Musk",
+        "Elon",
+        "Elon Musk",
+        "Tesla",
+        "Grok",
+        "xAI",
+        "Spacex",
+        "Grokipedia",
+        "Pay",
+        "Image"
+      ],
+      "lda_keywords": [
+        "Musk",
+        "Elon",
+        "Elon Musk",
+        "Grok",
+        "Pay",
+        "Image",
+        "Whatsapp",
+        "Os",
+        "Court",
+        "xAI"
+      ],
+      "top_domains": [
+        "theverge.com",
+        "techcrunch.com",
+        "cnbc.com"
+      ],
+      "representative_titles": [
+        "Teacher quits after pupil, 8, 'made threesome deepfake vid of her and colleagues'",
+        "Global outrage as X\u2019s Grok morphs photos of women, children into explicit content",
+        "Grok floods X with sexualized images of women and children: Grok generated an estimated 3 million sexualized images, including 23,000 of children in 11 days"
+      ]
+    }
+  ]
+}
