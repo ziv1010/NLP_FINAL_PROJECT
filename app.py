@@ -1,4 +1,5 @@
 from pathlib import Path
+import json
 import sys
 
 
@@ -10,18 +11,24 @@ if str(SRC_PATH) not in sys.path:
 import pandas as pd
 import streamlit as st
 
-from reddit_worldnews_trump.stance import load_stance_report
 from reddit_worldnews_trump.stats import load_stats
-from reddit_worldnews_trump.temporal import load_temporal_report
-from reddit_worldnews_trump.topics import load_topic_report
 
 
 DB_PATH = Path("data/reddit_technology_recent.db")
+TOPIC_REPORT_PATH = Path("data/topic_report.json")
+TEMPORAL_REPORT_PATH = Path("data/temporal_report.json")
+STANCE_REPORT_PATH = Path("data/stance_report.json")
+
+
+def load_json_report(path: Path) -> dict[str, object] | None:
+    if not path.exists():
+        return None
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 def main() -> None:
     st.set_page_config(page_title="Technology Subreddit Overview", layout="wide")
-    st.title("NLP Project Part 1: Points 1.1 and 1.2")
+    st.title("NLP Project Part 1: Points 1.1 to 1.4")
     st.caption(
         "Dataset overview for r/technology across October 2025 to April 2026, "
         "including actual stored comment text for the collected posts and two-method topic discovery."
@@ -94,7 +101,7 @@ def main() -> None:
 
     st.divider()
     st.header("Point 1.2: Key Topics")
-    topic_report = load_topic_report()
+    topic_report = load_json_report(TOPIC_REPORT_PATH)
     if topic_report is None:
         st.info("Run `scripts/analyze_topics.py` to generate the point 1.2 topic report.")
         return
@@ -234,7 +241,7 @@ def main() -> None:
 
     st.divider()
     st.header("Point 1.3: Trending vs Persistent Topics")
-    temporal_report = load_temporal_report()
+    temporal_report = load_json_report(TEMPORAL_REPORT_PATH)
     if temporal_report is None:
         st.info("Run `scripts/analyze_temporal_topics.py` to generate the point 1.3 report.")
         return
@@ -332,7 +339,7 @@ def main() -> None:
 
     st.divider()
     st.header("Point 1.4: Agreement And Disagreement")
-    stance_report = load_stance_report()
+    stance_report = load_json_report(STANCE_REPORT_PATH)
     if stance_report is None:
         st.info("Run `scripts/analyze_stance.py` to generate the point 1.4 report.")
         return
