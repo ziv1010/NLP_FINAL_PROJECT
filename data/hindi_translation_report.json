@@ -1,0 +1,923 @@
+{
+  "created_at": "2026-04-28T21:30:00.974720+00:00",
+  "task": "English-to-Hindi translation",
+  "chosen_language": "Hindi (Devanagari)",
+  "metrics": [
+    "chrF",
+    "multilingual BERTScore F1",
+    "manual fluency",
+    "manual adequacy"
+  ],
+  "summary": [
+    {
+      "model_key": "groq:llama-3.1-8b-instant",
+      "provider": "groq",
+      "model": "llama-3.1-8b-instant",
+      "examples": 20,
+      "chrf": 49.974,
+      "bertscore_f1": 0.8459,
+      "manual_fluency_avg": 3.1,
+      "manual_adequacy_avg": 3.5,
+      "manual_reviewed": 10
+    },
+    {
+      "model_key": "groq:openai/gpt-oss-20b",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "examples": 20,
+      "chrf": 53.086,
+      "bertscore_f1": 0.8641,
+      "manual_fluency_avg": 3.5,
+      "manual_adequacy_avg": 3.8,
+      "manual_reviewed": 10
+    }
+  ],
+  "tag_summary": [
+    {
+      "model_key": "groq:llama-3.1-8b-instant",
+      "tag": "code_mixed_hinglish",
+      "examples": 1,
+      "chrf": 44.562,
+      "bertscore_f1": 0.8639
+    },
+    {
+      "model_key": "groq:llama-3.1-8b-instant",
+      "tag": "named_entities",
+      "examples": 11,
+      "chrf": 52.799,
+      "bertscore_f1": 0.8656
+    },
+    {
+      "model_key": "groq:llama-3.1-8b-instant",
+      "tag": "political_terms",
+      "examples": 9,
+      "chrf": 55.706,
+      "bertscore_f1": 0.8686
+    },
+    {
+      "model_key": "groq:llama-3.1-8b-instant",
+      "tag": "privacy_and_safety",
+      "examples": 6,
+      "chrf": 54.397,
+      "bertscore_f1": 0.8597
+    },
+    {
+      "model_key": "groq:llama-3.1-8b-instant",
+      "tag": "reddit_slang",
+      "examples": 1,
+      "chrf": 42.524,
+      "bertscore_f1": 0.8387
+    },
+    {
+      "model_key": "groq:llama-3.1-8b-instant",
+      "tag": "sarcasm",
+      "examples": 5,
+      "chrf": 37.468,
+      "bertscore_f1": 0.7911
+    },
+    {
+      "model_key": "groq:llama-3.1-8b-instant",
+      "tag": "slang",
+      "examples": 1,
+      "chrf": 26.646,
+      "bertscore_f1": 0.7182
+    },
+    {
+      "model_key": "groq:llama-3.1-8b-instant",
+      "tag": "technology_terms",
+      "examples": 13,
+      "chrf": 46.985,
+      "bertscore_f1": 0.8343
+    },
+    {
+      "model_key": "groq:llama-3.1-8b-instant",
+      "tag": "worker_rights",
+      "examples": 1,
+      "chrf": 72.288,
+      "bertscore_f1": 0.8977
+    },
+    {
+      "model_key": "groq:openai/gpt-oss-20b",
+      "tag": "code_mixed_hinglish",
+      "examples": 1,
+      "chrf": 65.764,
+      "bertscore_f1": 0.9014
+    },
+    {
+      "model_key": "groq:openai/gpt-oss-20b",
+      "tag": "named_entities",
+      "examples": 11,
+      "chrf": 54.976,
+      "bertscore_f1": 0.8748
+    },
+    {
+      "model_key": "groq:openai/gpt-oss-20b",
+      "tag": "political_terms",
+      "examples": 9,
+      "chrf": 54.977,
+      "bertscore_f1": 0.8859
+    },
+    {
+      "model_key": "groq:openai/gpt-oss-20b",
+      "tag": "privacy_and_safety",
+      "examples": 6,
+      "chrf": 58.256,
+      "bertscore_f1": 0.8739
+    },
+    {
+      "model_key": "groq:openai/gpt-oss-20b",
+      "tag": "reddit_slang",
+      "examples": 1,
+      "chrf": 53.569,
+      "bertscore_f1": 0.8662
+    },
+    {
+      "model_key": "groq:openai/gpt-oss-20b",
+      "tag": "sarcasm",
+      "examples": 5,
+      "chrf": 43.761,
+      "bertscore_f1": 0.8182
+    },
+    {
+      "model_key": "groq:openai/gpt-oss-20b",
+      "tag": "slang",
+      "examples": 1,
+      "chrf": 34.205,
+      "bertscore_f1": 0.768
+    },
+    {
+      "model_key": "groq:openai/gpt-oss-20b",
+      "tag": "technology_terms",
+      "examples": 13,
+      "chrf": 51.53,
+      "bertscore_f1": 0.8588
+    },
+    {
+      "model_key": "groq:openai/gpt-oss-20b",
+      "tag": "worker_rights",
+      "examples": 1,
+      "chrf": 59.185,
+      "bertscore_f1": 0.8448
+    }
+  ],
+  "qualitative_analysis": "Evaluated models: groq:llama-3.1-8b-instant, groq:openai/gpt-oss-20b. The test set stresses Hindi translation of technology Reddit text, including edge cases tagged as code_mixed_hinglish, named_entities, political_terms, privacy_and_safety, reddit_slang, sarcasm, slang, technology_terms, worker_rights. chrF captures character-level overlap with the Hindi references, while multilingual BERTScore gives a semantic similarity check. Manual fluency and adequacy scores should be read as qualitative judgments on a 1-5 scale for selected examples. Output completeness check: no empty outputs.",
+  "records": [
+    {
+      "item_id": "hi01",
+      "category": "post_title",
+      "provider": "groq",
+      "model": "llama-3.1-8b-instant",
+      "model_key": "groq:llama-3.1-8b-instant",
+      "source_text": "Windows 12 is reportedly set to be fully modular, subscription-based, and AI-focused.",
+      "reference_translation": "रिपोर्टों के अनुसार Windows 12 पूरी तरह मॉड्यूलर, सदस्यता-आधारित और एआई-केंद्रित होने वाला है।",
+      "translation": "विंडोज़ 12 को पूरी तरह से मॉड्यूलर, सब्सक्रिप्शन-आधारित और एआई-आधारित होने की रिपोर्ट है।",
+      "tags": [
+        "named_entities",
+        "technology_terms"
+      ],
+      "chrf": 45.65412552311427,
+      "manual_fluency": 4.0,
+      "manual_adequacy": 4.0,
+      "bertscore_f1": 0.8406599760055542
+    },
+    {
+      "item_id": "hi02",
+      "category": "comment",
+      "provider": "groq",
+      "model": "llama-3.1-8b-instant",
+      "model_key": "groq:llama-3.1-8b-instant",
+      "source_text": "Man, that's a lot of things I don't want at all packed into one operating system.",
+      "reference_translation": "यार, एक ही ऑपरेटिंग सिस्टम में इतनी सारी ऐसी चीज़ें ठूंस दी गई हैं जो मुझे बिल्कुल नहीं चाहिए।",
+      "translation": "अरे, यह एक ऑपरेटिंग सिस्टम में इतनी सारी चीजें हैं जिन्हें मैं किसी भी तरह से नहीं चाहता।",
+      "tags": [
+        "sarcasm",
+        "technology_terms"
+      ],
+      "chrf": 46.64864427077312,
+      "manual_fluency": 4.0,
+      "manual_adequacy": 4.0,
+      "bertscore_f1": 0.833131730556488
+    },
+    {
+      "item_id": "hi03",
+      "category": "post_title",
+      "provider": "groq",
+      "model": "llama-3.1-8b-instant",
+      "model_key": "groq:llama-3.1-8b-instant",
+      "source_text": "The 'Cancel ChatGPT' movement grew after OpenAI signed a deal with the US military.",
+      "reference_translation": "OpenAI द्वारा अमेरिकी सेना के साथ समझौता करने के बाद 'Cancel ChatGPT' आंदोलन बढ़ गया।",
+      "translation": "\"Cancel ChatGPT\" आंदोलन ने ओपनएआई के अमेरिकी सेना के साथ समझौते के बाद बढ़ गया।",
+      "tags": [
+        "named_entities",
+        "political_terms",
+        "technology_terms"
+      ],
+      "chrf": 60.61461718262448,
+      "manual_fluency": 3.0,
+      "manual_adequacy": 4.0,
+      "bertscore_f1": 0.8953261971473694
+    },
+    {
+      "item_id": "hi04",
+      "category": "comment",
+      "provider": "groq",
+      "model": "llama-3.1-8b-instant",
+      "model_key": "groq:llama-3.1-8b-instant",
+      "source_text": "Everybody should remember that this is why the free press is important.",
+      "reference_translation": "हर किसी को याद रखना चाहिए कि इसी वजह से स्वतंत्र प्रेस महत्वपूर्ण है।",
+      "translation": "सबको याद रखना चाहिए कि यही कारण है कि स्वतंत्र मीडिया महत्वपूर्ण है।",
+      "tags": [
+        "political_terms"
+      ],
+      "chrf": 58.48891600787641,
+      "manual_fluency": null,
+      "manual_adequacy": null,
+      "bertscore_f1": 0.8604153990745544
+    },
+    {
+      "item_id": "hi05",
+      "category": "post_title",
+      "provider": "groq",
+      "model": "llama-3.1-8b-instant",
+      "model_key": "groq:llama-3.1-8b-instant",
+      "source_text": "Bill Gates warns AI will take over most jobs and leave humans working just two days a week.",
+      "reference_translation": "Bill Gates ने चेतावनी दी कि एआई अधिकांश नौकरियां संभाल लेगा और इंसानों को सप्ताह में सिर्फ दो दिन काम करना पड़ेगा।",
+      "translation": "बिल गेट्स ने चेतावनी दी है कि AI अधिकांश नौकरियों को ले लेगा और मानव 2 दिनों के लिए काम करेंगे।",
+      "tags": [
+        "named_entities",
+        "technology_terms"
+      ],
+      "chrf": 36.319972036207766,
+      "manual_fluency": 3.0,
+      "manual_adequacy": 3.0,
+      "bertscore_f1": 0.8424900770187378
+    },
+    {
+      "item_id": "hi06",
+      "category": "comment",
+      "provider": "groq",
+      "model": "llama-3.1-8b-instant",
+      "model_key": "groq:llama-3.1-8b-instant",
+      "source_text": "The people in charge won't pay employees a full-time salary for two days of work.",
+      "reference_translation": "सत्ता में बैठे लोग दो दिन के काम के लिए कर्मचारियों को पूर्णकालिक वेतन नहीं देंगे।",
+      "translation": "कंपनी के अधिकारी दो दिन के काम के लिए कर्मचारियों को पूर्णकालिक वेतन नहीं देते हैं।",
+      "tags": [
+        "worker_rights"
+      ],
+      "chrf": 72.28800251752244,
+      "manual_fluency": null,
+      "manual_adequacy": null,
+      "bertscore_f1": 0.8976989984512329
+    },
+    {
+      "item_id": "hi07",
+      "category": "post_title",
+      "provider": "groq",
+      "model": "llama-3.1-8b-instant",
+      "model_key": "groq:llama-3.1-8b-instant",
+      "source_text": "AOC says people are being algorithmically polarized by social media.",
+      "reference_translation": "AOC का कहना है कि सोशल मीडिया लोगों को एल्गोरिदम के जरिए ध्रुवीकृत कर रहा है।",
+      "translation": "एओसी कहती हैं कि लोगों को सोशल मीडिया द्वारा एल्गोरिथमिक रूप से विभाजित किया जा रहा है।",
+      "tags": [
+        "named_entities",
+        "technology_terms",
+        "political_terms"
+      ],
+      "chrf": 39.68046254196407,
+      "manual_fluency": null,
+      "manual_adequacy": null,
+      "bertscore_f1": 0.8455075025558472
+    },
+    {
+      "item_id": "hi08",
+      "category": "comment",
+      "provider": "groq",
+      "model": "llama-3.1-8b-instant",
+      "model_key": "groq:llama-3.1-8b-instant",
+      "source_text": "The algorithm doesn't care what side you're on, just that you're angry enough to stay.",
+      "reference_translation": "एल्गोरिदम को फर्क नहीं पड़ता कि आप किस पक्ष में हैं; बस इतना मायने रखता है कि आप रुकने लायक गुस्से में हों।",
+      "translation": "अल्गोरिदम को किसी भी पक्ष की चिंता नहीं है, बस तुम परेशान होने के लिए पर्याप्त हो कि तुम वहां रहो।",
+      "tags": [
+        "technology_terms",
+        "sarcasm"
+      ],
+      "chrf": 25.044781283895944,
+      "manual_fluency": 2.0,
+      "manual_adequacy": 3.0,
+      "bertscore_f1": 0.7465643286705017
+    },
+    {
+      "item_id": "hi09",
+      "category": "post_title",
+      "provider": "groq",
+      "model": "llama-3.1-8b-instant",
+      "model_key": "groq:llama-3.1-8b-instant",
+      "source_text": "Bernie Sanders calls for a pause on new AI data centers in the US.",
+      "reference_translation": "Bernie Sanders ने अमेरिका में नए एआई डेटा सेंटरों पर रोक लगाने की मांग की।",
+      "translation": "बर्नी सैंडर्स ने अमेरिका में नए AI डेटा सेंटर्स पर रोक लगाने की मांग की।",
+      "tags": [
+        "named_entities",
+        "technology_terms",
+        "political_terms"
+      ],
+      "chrf": 60.48531451294063,
+      "manual_fluency": null,
+      "manual_adequacy": null,
+      "bertscore_f1": 0.8983113169670105
+    },
+    {
+      "item_id": "hi10",
+      "category": "comment",
+      "provider": "groq",
+      "model": "llama-3.1-8b-instant",
+      "model_key": "groq:llama-3.1-8b-instant",
+      "source_text": "Shoehorning AI slop into every crevice of our attention is not a useful application.",
+      "reference_translation": "हमारे ध्यान की हर दरार में एआई स्लॉप ठूंसना कोई उपयोगी अनुप्रयोग नहीं है।",
+      "translation": "अभिव्यक्ति की यह विधि उपयोगी नहीं है कि हमारी ध्यान के हर छोटे-मोटे कोने में AI का अपशिष्ट डालें।",
+      "tags": [
+        "technology_terms",
+        "slang",
+        "sarcasm"
+      ],
+      "chrf": 26.646350043527363,
+      "manual_fluency": 2.0,
+      "manual_adequacy": 2.0,
+      "bertscore_f1": 0.7182050943374634
+    },
+    {
+      "item_id": "hi11",
+      "category": "post_title",
+      "provider": "groq",
+      "model": "llama-3.1-8b-instant",
+      "model_key": "groq:llama-3.1-8b-instant",
+      "source_text": "Meta's facial-recognition smart glasses plan will put women at risk.",
+      "reference_translation": "Meta की चेहरे की पहचान वाली स्मार्ट ग्लास योजना महिलाओं को जोखिम में डाल देगी।",
+      "translation": "मेटा की फेसियल रिकॉग्निशन स्मार्ट ग्लासेज़ योजना महिलाओं को खतरे में डालेगी।",
+      "tags": [
+        "named_entities",
+        "privacy_and_safety",
+        "technology_terms"
+      ],
+      "chrf": 46.31238565833053,
+      "manual_fluency": null,
+      "manual_adequacy": null,
+      "bertscore_f1": 0.8427093029022217
+    },
+    {
+      "item_id": "hi12",
+      "category": "comment",
+      "provider": "groq",
+      "model": "llama-3.1-8b-instant",
+      "model_key": "groq:llama-3.1-8b-instant",
+      "source_text": "Camera glasses. Stop calling them smart glasses.",
+      "reference_translation": "ये कैमरा ग्लास हैं। इन्हें स्मार्ट ग्लास कहना बंद कीजिए।",
+      "translation": "कैमरा ग्लासेज़। स्मार्ट ग्लासेज़ कहें मत।",
+      "tags": [
+        "privacy_and_safety",
+        "technology_terms",
+        "sarcasm"
+      ],
+      "chrf": 44.43595677700836,
+      "manual_fluency": 3.0,
+      "manual_adequacy": 4.0,
+      "bertscore_f1": 0.7939386367797852
+    },
+    {
+      "item_id": "hi13",
+      "category": "post_title",
+      "provider": "groq",
+      "model": "llama-3.1-8b-instant",
+      "model_key": "groq:llama-3.1-8b-instant",
+      "source_text": "Across the US, people are dismantling and destroying Flock surveillance cameras.",
+      "reference_translation": "अमेरिका भर में लोग Flock निगरानी कैमरों को खोल रहे हैं और नष्ट कर रहे हैं।",
+      "translation": "अमेरिका भर में लोग Flock सुरक्षा कैमरे तोड़ रहे हैं और नष्ट कर रहे हैं।",
+      "tags": [
+        "named_entities",
+        "privacy_and_safety",
+        "political_terms"
+      ],
+      "chrf": 68.07711160315665,
+      "manual_fluency": null,
+      "manual_adequacy": null,
+      "bertscore_f1": 0.9315273761749268
+    },
+    {
+      "item_id": "hi14",
+      "category": "comment",
+      "provider": "groq",
+      "model": "llama-3.1-8b-instant",
+      "model_key": "groq:llama-3.1-8b-instant",
+      "source_text": "People never meaningfully voted for these surveillance cameras, yet they are forced to pay for them.",
+      "reference_translation": "लोगों ने इन निगरानी कैमरों के लिए सचमुच कभी वोट नहीं दिया, फिर भी उन्हें इनके लिए भुगतान करने पर मजबूर किया जाता है।",
+      "translation": "लोगों ने कभी भी इन सurveilance कैमरों के लिए वास्तविक रूप से वोट नहीं दिया, फिर भी उन्हें उन्हें खरीदने के लिए मजबूर किया जाता है।",
+      "tags": [
+        "privacy_and_safety",
+        "political_terms"
+      ],
+      "chrf": 57.337956901454966,
+      "manual_fluency": 2.0,
+      "manual_adequacy": 3.0,
+      "bertscore_f1": 0.8696494102478027
+    },
+    {
+      "item_id": "hi15",
+      "category": "post_title",
+      "provider": "groq",
+      "model": "llama-3.1-8b-instant",
+      "model_key": "groq:llama-3.1-8b-instant",
+      "source_text": "Top MAGA influencers were accidentally unmasked as foreign actors.",
+      "reference_translation": "शीर्ष MAGA प्रभावशाली लोग गलती से विदेशी ऑपरेटरों के रूप में उजागर हो गए।",
+      "translation": "मैगा प्रभाविताओं के शीर्ष नेताओं को गलती से विदेशी कार्यकर्ताओं के रूप में उजागर किया गया।",
+      "tags": [
+        "named_entities",
+        "political_terms"
+      ],
+      "chrf": 46.730056357085594,
+      "manual_fluency": null,
+      "manual_adequacy": null,
+      "bertscore_f1": 0.8611125946044922
+    },
+    {
+      "item_id": "hi16",
+      "category": "comment",
+      "provider": "groq",
+      "model": "llama-3.1-8b-instant",
+      "model_key": "groq:llama-3.1-8b-instant",
+      "source_text": "Their followers won't care because the accounts align with their belief system.",
+      "reference_translation": "उनके अनुयायी परवाह नहीं करेंगे, क्योंकि वे खाते उनकी विश्वास प्रणाली से मेल खाते हैं।",
+      "translation": "उनके अनुयायियों को यह चिंता नहीं होगी क्योंकि अकाउंट उनके विश्वास प्रणाली के अनुसार हैं।",
+      "tags": [
+        "political_terms"
+      ],
+      "chrf": 43.240503661295214,
+      "manual_fluency": null,
+      "manual_adequacy": null,
+      "bertscore_f1": 0.8120669722557068
+    },
+    {
+      "item_id": "hi17",
+      "category": "post_title",
+      "provider": "groq",
+      "model": "llama-3.1-8b-instant",
+      "model_key": "groq:llama-3.1-8b-instant",
+      "source_text": "Global outrage grew as X's Grok morphed photos of women and children into explicit content.",
+      "reference_translation": "X के Grok द्वारा महिलाओं और बच्चों की तस्वीरों को अश्लील सामग्री में बदलने पर वैश्विक आक्रोश बढ़ा।",
+      "translation": "विश्वभर में आक्रोश बढ़ता गया जब X का ग्रोक महिलाओं और बच्चों की तस्वीरों को अश्लील सामग्री में बदल दिया।",
+      "tags": [
+        "named_entities",
+        "privacy_and_safety",
+        "technology_terms"
+      ],
+      "chrf": 67.69208739129286,
+      "manual_fluency": null,
+      "manual_adequacy": null,
+      "bertscore_f1": 0.8819063305854797
+    },
+    {
+      "item_id": "hi18",
+      "category": "post_title",
+      "provider": "groq",
+      "model": "llama-3.1-8b-instant",
+      "model_key": "groq:llama-3.1-8b-instant",
+      "source_text": "AIs from OpenAI, Anthropic, and Google recommended nuclear strikes in war-game simulations.",
+      "reference_translation": "OpenAI, Anthropic और Google के एआई ने युद्ध-खेल सिमुलेशन में परमाणु हमलों की सिफारिश की।",
+      "translation": "AI से ओपनएआई (OpenAI), एंथ्रोपिक (Anthropic), और गूगल (Google) के निर्देशित युद्ध-खेल सिमुलेशन में परमाणु हमले की सिफारिश की।",
+      "tags": [
+        "named_entities",
+        "technology_terms",
+        "political_terms"
+      ],
+      "chrf": 66.70301650992651,
+      "manual_fluency": null,
+      "manual_adequacy": null,
+      "bertscore_f1": 0.8436002731323242
+    },
+    {
+      "item_id": "hi19",
+      "category": "code_mixed",
+      "provider": "groq",
+      "model": "llama-3.1-8b-instant",
+      "model_key": "groq:llama-3.1-8b-instant",
+      "source_text": "This Windows update is total jugaad: AI everywhere, control nowhere.",
+      "reference_translation": "यह Windows अपडेट पूरा जुगाड़ है: हर जगह एआई है, लेकिन नियंत्रण कहीं नहीं है।",
+      "translation": "ये विंडोज़ अपडेट पूरी तरह से जुगाड़ है: AI हर जगह, नियंत्रण कहीं भी नहीं.",
+      "tags": [
+        "code_mixed_hinglish",
+        "technology_terms",
+        "sarcasm"
+      ],
+      "chrf": 44.56193529865301,
+      "manual_fluency": 4.0,
+      "manual_adequacy": 4.0,
+      "bertscore_f1": 0.8639035224914551
+    },
+    {
+      "item_id": "hi20",
+      "category": "reddit_slang",
+      "provider": "groq",
+      "model": "llama-3.1-8b-instant",
+      "model_key": "groq:llama-3.1-8b-instant",
+      "source_text": "NTA for cancelling ChatGPT; privacy matters more than hype.",
+      "reference_translation": "ChatGPT रद्द करने के लिए NTA; निजता प्रचार से ज़्यादा मायने रखती है।",
+      "translation": "NTA है ChatGPT को रद्द करने के लिए; गोपनीयता हाइप से ज्यादा महत्वपूर्ण है।",
+      "tags": [
+        "reddit_slang",
+        "named_entities",
+        "privacy_and_safety"
+      ],
+      "chrf": 42.52367951398716,
+      "manual_fluency": 4.0,
+      "manual_adequacy": 4.0,
+      "bertscore_f1": 0.8387202620506287
+    },
+    {
+      "item_id": "hi01",
+      "category": "post_title",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "model_key": "groq:openai/gpt-oss-20b",
+      "source_text": "Windows 12 is reportedly set to be fully modular, subscription-based, and AI-focused.",
+      "reference_translation": "रिपोर्टों के अनुसार Windows 12 पूरी तरह मॉड्यूलर, सदस्यता-आधारित और एआई-केंद्रित होने वाला है।",
+      "translation": "ऐसा कहा जा रहा है कि Windows 12 पूरी तरह से मॉड्यूलर, सब्सक्रिप्शन‑आधारित, और AI‑केंद्रित होगा।",
+      "tags": [
+        "named_entities",
+        "technology_terms"
+      ],
+      "chrf": 46.70787632844436,
+      "manual_fluency": 5.0,
+      "manual_adequacy": 5.0,
+      "bertscore_f1": 0.8114628195762634
+    },
+    {
+      "item_id": "hi02",
+      "category": "comment",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "model_key": "groq:openai/gpt-oss-20b",
+      "source_text": "Man, that's a lot of things I don't want at all packed into one operating system.",
+      "reference_translation": "यार, एक ही ऑपरेटिंग सिस्टम में इतनी सारी ऐसी चीज़ें ठूंस दी गई हैं जो मुझे बिल्कुल नहीं चाहिए।",
+      "translation": "भाई, ये तो बहुत सारी चीज़ें हैं जिन्हें मैं बिल्कुल भी नहीं चाहता, सब एक ऑपरेटिंग सिस्टम में पैक हो गई हैं।",
+      "tags": [
+        "sarcasm",
+        "technology_terms"
+      ],
+      "chrf": 47.0502535021179,
+      "manual_fluency": 5.0,
+      "manual_adequacy": 5.0,
+      "bertscore_f1": 0.8237398862838745
+    },
+    {
+      "item_id": "hi04",
+      "category": "comment",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "model_key": "groq:openai/gpt-oss-20b",
+      "source_text": "Everybody should remember that this is why the free press is important.",
+      "reference_translation": "हर किसी को याद रखना चाहिए कि इसी वजह से स्वतंत्र प्रेस महत्वपूर्ण है।",
+      "translation": "सबको याद रखना चाहिए कि यही वजह है कि फ्री प्रेस ज़रूरी है।",
+      "tags": [
+        "political_terms"
+      ],
+      "chrf": 40.241732803134425,
+      "manual_fluency": null,
+      "manual_adequacy": null,
+      "bertscore_f1": 0.8578628897666931
+    },
+    {
+      "item_id": "hi05",
+      "category": "post_title",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "model_key": "groq:openai/gpt-oss-20b",
+      "source_text": "Bill Gates warns AI will take over most jobs and leave humans working just two days a week.",
+      "reference_translation": "Bill Gates ने चेतावनी दी कि एआई अधिकांश नौकरियां संभाल लेगा और इंसानों को सप्ताह में सिर्फ दो दिन काम करना पड़ेगा।",
+      "translation": "Bill Gates चेतावनी देते हैं कि AI अधिकांश नौकरियों पर कब्जा कर लेगा और मनुष्यों को सिर्फ दो दिन प्रति सप्ताह काम करने के लिए छोड़ देगा।",
+      "tags": [
+        "named_entities",
+        "technology_terms"
+      ],
+      "chrf": 50.343968784700365,
+      "manual_fluency": 4.0,
+      "manual_adequacy": 5.0,
+      "bertscore_f1": 0.8664005398750305
+    },
+    {
+      "item_id": "hi06",
+      "category": "comment",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "model_key": "groq:openai/gpt-oss-20b",
+      "source_text": "The people in charge won't pay employees a full-time salary for two days of work.",
+      "reference_translation": "सत्ता में बैठे लोग दो दिन के काम के लिए कर्मचारियों को पूर्णकालिक वेतन नहीं देंगे।",
+      "translation": "जिम्मेदार लोग दो दिन के काम के लिए कर्मचारियों को फुल‑टाइम सैलरी नहीं देंगे।",
+      "tags": [
+        "worker_rights"
+      ],
+      "chrf": 59.18492379871866,
+      "manual_fluency": null,
+      "manual_adequacy": null,
+      "bertscore_f1": 0.8448218107223511
+    },
+    {
+      "item_id": "hi07",
+      "category": "post_title",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "model_key": "groq:openai/gpt-oss-20b",
+      "source_text": "AOC says people are being algorithmically polarized by social media.",
+      "reference_translation": "AOC का कहना है कि सोशल मीडिया लोगों को एल्गोरिदम के जरिए ध्रुवीकृत कर रहा है।",
+      "translation": "एओसी कहती हैं कि लोग सोशल मीडिया द्वारा एल्गोरिदमिक रूप से ध्रुवीकृत हो रहे हैं।",
+      "tags": [
+        "named_entities",
+        "technology_terms",
+        "political_terms"
+      ],
+      "chrf": 42.853769360990476,
+      "manual_fluency": null,
+      "manual_adequacy": null,
+      "bertscore_f1": 0.8738665580749512
+    },
+    {
+      "item_id": "hi08",
+      "category": "comment",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "model_key": "groq:openai/gpt-oss-20b",
+      "source_text": "The algorithm doesn't care what side you're on, just that you're angry enough to stay.",
+      "reference_translation": "एल्गोरिदम को फर्क नहीं पड़ता कि आप किस पक्ष में हैं; बस इतना मायने रखता है कि आप रुकने लायक गुस्से में हों।",
+      "translation": "एल्गोरिदम को परवाह नहीं कि तुम किस तरफ हो, बस इतना कि तुम गुस्सा हो और बने रहो।",
+      "tags": [
+        "technology_terms",
+        "sarcasm"
+      ],
+      "chrf": 28.704398108848622,
+      "manual_fluency": 4.0,
+      "manual_adequacy": 5.0,
+      "bertscore_f1": 0.7993061542510986
+    },
+    {
+      "item_id": "hi09",
+      "category": "post_title",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "model_key": "groq:openai/gpt-oss-20b",
+      "source_text": "Bernie Sanders calls for a pause on new AI data centers in the US.",
+      "reference_translation": "Bernie Sanders ने अमेरिका में नए एआई डेटा सेंटरों पर रोक लगाने की मांग की।",
+      "translation": "बर्नी सैंडर्स ने यूएस में नए AI डेटा सेंटर पर रोक लगाने का आह्वान किया।",
+      "tags": [
+        "named_entities",
+        "technology_terms",
+        "political_terms"
+      ],
+      "chrf": 34.45057153981074,
+      "manual_fluency": null,
+      "manual_adequacy": null,
+      "bertscore_f1": 0.849722683429718
+    },
+    {
+      "item_id": "hi11",
+      "category": "post_title",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "model_key": "groq:openai/gpt-oss-20b",
+      "source_text": "Meta's facial-recognition smart glasses plan will put women at risk.",
+      "reference_translation": "Meta की चेहरे की पहचान वाली स्मार्ट ग्लास योजना महिलाओं को जोखिम में डाल देगी।",
+      "translation": "Meta की चेहरे पहचान वाली स्मार्ट चश्मे की योजना महिलाओं को जोखिम में डाल देगी।",
+      "tags": [
+        "named_entities",
+        "privacy_and_safety",
+        "technology_terms"
+      ],
+      "chrf": 81.8974703164924,
+      "manual_fluency": null,
+      "manual_adequacy": null,
+      "bertscore_f1": 0.9465333223342896
+    },
+    {
+      "item_id": "hi12",
+      "category": "comment",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "model_key": "groq:openai/gpt-oss-20b",
+      "source_text": "Camera glasses. Stop calling them smart glasses.",
+      "reference_translation": "ये कैमरा ग्लास हैं। इन्हें स्मार्ट ग्लास कहना बंद कीजिए।",
+      "translation": "कैमरा चश्मा। उन्हें स्मार्ट ग्लासेस मत कहो।",
+      "tags": [
+        "privacy_and_safety",
+        "technology_terms",
+        "sarcasm"
+      ],
+      "chrf": 43.08338723532448,
+      "manual_fluency": 4.0,
+      "manual_adequacy": 5.0,
+      "bertscore_f1": 0.798610270023346
+    },
+    {
+      "item_id": "hi13",
+      "category": "post_title",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "model_key": "groq:openai/gpt-oss-20b",
+      "source_text": "Across the US, people are dismantling and destroying Flock surveillance cameras.",
+      "reference_translation": "अमेरिका भर में लोग Flock निगरानी कैमरों को खोल रहे हैं और नष्ट कर रहे हैं।",
+      "translation": "यूएस के हर कोने में लोग Flock सर्विलांस कैमरे तोड़-फोड़ कर रहे हैं और नष्ट कर रहे हैं।",
+      "tags": [
+        "named_entities",
+        "privacy_and_safety",
+        "political_terms"
+      ],
+      "chrf": 52.90420214470261,
+      "manual_fluency": null,
+      "manual_adequacy": null,
+      "bertscore_f1": 0.8511359095573425
+    },
+    {
+      "item_id": "hi14",
+      "category": "comment",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "model_key": "groq:openai/gpt-oss-20b",
+      "source_text": "People never meaningfully voted for these surveillance cameras, yet they are forced to pay for them.",
+      "reference_translation": "लोगों ने इन निगरानी कैमरों के लिए सचमुच कभी वोट नहीं दिया, फिर भी उन्हें इनके लिए भुगतान करने पर मजबूर किया जाता है।",
+      "translation": "लोगों ने इन सर्विलांस कैमरों के लिए कभी सच में वोट नहीं किया, फिर भी उन्हें इनके लिए पैसे देने पर मजबूर किया जा रहा है।",
+      "tags": [
+        "privacy_and_safety",
+        "political_terms"
+      ],
+      "chrf": 61.665721919769936,
+      "manual_fluency": 5.0,
+      "manual_adequacy": 5.0,
+      "bertscore_f1": 0.898465096950531
+    },
+    {
+      "item_id": "hi15",
+      "category": "post_title",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "model_key": "groq:openai/gpt-oss-20b",
+      "source_text": "Top MAGA influencers were accidentally unmasked as foreign actors.",
+      "reference_translation": "शीर्ष MAGA प्रभावशाली लोग गलती से विदेशी ऑपरेटरों के रूप में उजागर हो गए।",
+      "translation": "शीर्ष MAGA इन्फ्लुएंसर अनजाने में विदेशी अभिनेता के रूप में उजागर हो गए।",
+      "tags": [
+        "named_entities",
+        "political_terms"
+      ],
+      "chrf": 47.177508497258415,
+      "manual_fluency": null,
+      "manual_adequacy": null,
+      "bertscore_f1": 0.8321235179901123
+    },
+    {
+      "item_id": "hi16",
+      "category": "comment",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "model_key": "groq:openai/gpt-oss-20b",
+      "source_text": "Their followers won't care because the accounts align with their belief system.",
+      "reference_translation": "उनके अनुयायी परवाह नहीं करेंगे, क्योंकि वे खाते उनकी विश्वास प्रणाली से मेल खाते हैं।",
+      "translation": "उनके अनुयायी परवाह नहीं करेंगे क्योंकि खाते उनके विश्वास प्रणाली के साथ मेल खाते हैं।",
+      "tags": [
+        "political_terms"
+      ],
+      "chrf": 77.08312166739834,
+      "manual_fluency": null,
+      "manual_adequacy": null,
+      "bertscore_f1": 0.9663355946540833
+    },
+    {
+      "item_id": "hi18",
+      "category": "post_title",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "model_key": "groq:openai/gpt-oss-20b",
+      "source_text": "AIs from OpenAI, Anthropic, and Google recommended nuclear strikes in war-game simulations.",
+      "reference_translation": "OpenAI, Anthropic और Google के एआई ने युद्ध-खेल सिमुलेशन में परमाणु हमलों की सिफारिश की।",
+      "translation": "OpenAI, Anthropic, और Google के एआई ने युद्ध-खेल सिमुलेशन में परमाणु हमलों की सिफारिश की।",
+      "tags": [
+        "named_entities",
+        "technology_terms",
+        "political_terms"
+      ],
+      "chrf": 96.17538229703773,
+      "manual_fluency": null,
+      "manual_adequacy": null,
+      "bertscore_f1": 0.9929207563400269
+    },
+    {
+      "item_id": "hi19",
+      "category": "code_mixed",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "model_key": "groq:openai/gpt-oss-20b",
+      "source_text": "This Windows update is total jugaad: AI everywhere, control nowhere.",
+      "reference_translation": "यह Windows अपडेट पूरा जुगाड़ है: हर जगह एआई है, लेकिन नियंत्रण कहीं नहीं है।",
+      "translation": "यह Windows अपडेट पूरी तरह का जुगाड़ है: AI हर जगह, नियंत्रण कहीं नहीं।",
+      "tags": [
+        "code_mixed_hinglish",
+        "technology_terms",
+        "sarcasm"
+      ],
+      "chrf": 65.76426146205199,
+      "manual_fluency": null,
+      "manual_adequacy": null,
+      "bertscore_f1": 0.9014063477516174
+    },
+    {
+      "item_id": "hi20",
+      "category": "reddit_slang",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "model_key": "groq:openai/gpt-oss-20b",
+      "source_text": "NTA for cancelling ChatGPT; privacy matters more than hype.",
+      "reference_translation": "ChatGPT रद्द करने के लिए NTA; निजता प्रचार से ज़्यादा मायने रखती है।",
+      "translation": "ChatGPT को रद्द करने के लिए NTA; गोपनीयता हाइप से ज़्यादा महत्वपूर्ण है।",
+      "tags": [
+        "reddit_slang",
+        "named_entities",
+        "privacy_and_safety"
+      ],
+      "chrf": 53.56882547078231,
+      "manual_fluency": 5.0,
+      "manual_adequacy": 5.0,
+      "bertscore_f1": 0.8661700487136841
+    },
+    {
+      "item_id": "hi03",
+      "category": "post_title",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "model_key": "groq:openai/gpt-oss-20b",
+      "source_text": "The 'Cancel ChatGPT' movement grew after OpenAI signed a deal with the US military.",
+      "reference_translation": "OpenAI द्वारा अमेरिकी सेना के साथ समझौता करने के बाद 'Cancel ChatGPT' आंदोलन बढ़ गया।",
+      "translation": "'Cancel ChatGPT' आंदोलन तब बढ़ा जब OpenAI ने US सैन्य के साथ एक डील साइन की।",
+      "tags": [
+        "named_entities",
+        "political_terms",
+        "technology_terms"
+      ],
+      "chrf": 42.245426583015025,
+      "manual_fluency": 1.0,
+      "manual_adequacy": 1.0,
+      "bertscore_f1": 0.850497841835022
+    },
+    {
+      "item_id": "hi10",
+      "category": "comment",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "model_key": "groq:openai/gpt-oss-20b",
+      "source_text": "Shoehorning AI slop into every crevice of our attention is not a useful application.",
+      "reference_translation": "हमारे ध्यान की हर दरार में एआई स्लॉप ठूंसना कोई उपयोगी अनुप्रयोग नहीं है।",
+      "translation": "AI का गंदा सामान हमारी ध्यान की हर कोने में धकेलना उपयोगी नहीं है।",
+      "tags": [
+        "technology_terms",
+        "slang",
+        "sarcasm"
+      ],
+      "chrf": 34.20477751592325,
+      "manual_fluency": 1.0,
+      "manual_adequacy": 1.0,
+      "bertscore_f1": 0.768004834651947
+    },
+    {
+      "item_id": "hi17",
+      "category": "post_title",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "model_key": "groq:openai/gpt-oss-20b",
+      "source_text": "Global outrage grew as X's Grok morphed photos of women and children into explicit content.",
+      "reference_translation": "X के Grok द्वारा महिलाओं और बच्चों की तस्वीरों को अश्लील सामग्री में बदलने पर वैश्विक आक्रोश बढ़ा।",
+      "translation": "वैश्विक गुस्सा बढ़ गया जब X's Grok ने महिलाओं और बच्चों की तस्वीरों को स्पष्ट सामग्री में बदल दिया।",
+      "tags": [
+        "named_entities",
+        "privacy_and_safety",
+        "technology_terms"
+      ],
+      "chrf": 56.4145821042612,
+      "manual_fluency": 1.0,
+      "manual_adequacy": 1.0,
+      "bertscore_f1": 0.8823630213737488
+    }
+  ],
+  "eval_set": {
+    "path": "data/hindi_translation_eval_set.json",
+    "example_count": 20,
+    "target_language": "Hindi (Devanagari)",
+    "task_format": "Translation",
+    "edge_cases": [
+      "named_entities",
+      "reddit_slang",
+      "code_mixed_hinglish",
+      "technology_terms",
+      "privacy_and_safety",
+      "political_terms",
+      "sarcasm"
+    ]
+  },
+  "models_requested": [
+    "groq:llama-3.1-8b-instant",
+    "groq:openai/gpt-oss-20b"
+  ],
+  "skipped": [],
+  "answers_path": "data/hindi_translation_answers.jsonl"
+}

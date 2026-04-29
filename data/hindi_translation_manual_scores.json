@@ -1,0 +1,29 @@
+{
+  "instructions": "Manual scores are on a 1-5 scale. Fluency measures grammatical, natural Hindi. Adequacy measures preservation of source meaning, named entities, Reddit slang, and safety/privacy nuance. Score at least 5-10 outputs per model.",
+  "scores": {
+    "groq:llama-3.1-8b-instant": {
+      "hi01": {"fluency": 4, "adequacy": 4},
+      "hi02": {"fluency": 4, "adequacy": 4},
+      "hi03": {"fluency": 3, "adequacy": 4},
+      "hi05": {"fluency": 3, "adequacy": 3},
+      "hi08": {"fluency": 2, "adequacy": 3},
+      "hi10": {"fluency": 2, "adequacy": 2},
+      "hi12": {"fluency": 3, "adequacy": 4},
+      "hi14": {"fluency": 2, "adequacy": 3},
+      "hi19": {"fluency": 4, "adequacy": 4},
+      "hi20": {"fluency": 4, "adequacy": 4}
+    },
+    "groq:openai/gpt-oss-20b": {
+      "hi01": {"fluency": 5, "adequacy": 5},
+      "hi02": {"fluency": 5, "adequacy": 5},
+      "hi03": {"fluency": 1, "adequacy": 1},
+      "hi05": {"fluency": 4, "adequacy": 5},
+      "hi08": {"fluency": 4, "adequacy": 5},
+      "hi10": {"fluency": 1, "adequacy": 1},
+      "hi12": {"fluency": 4, "adequacy": 5},
+      "hi14": {"fluency": 5, "adequacy": 5},
+      "hi17": {"fluency": 1, "adequacy": 1},
+      "hi20": {"fluency": 5, "adequacy": 5}
+    }
+  }
+}

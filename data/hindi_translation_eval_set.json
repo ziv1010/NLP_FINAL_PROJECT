@@ -1,0 +1,159 @@
+{
+  "name": "Part 2 Section 2 Hindi translation evaluation set",
+  "target_language": "Hindi (Devanagari)",
+  "task_format": "Translation",
+  "source": "Reddit r/technology posts, comments, and short corpus-derived summaries",
+  "reference_method": "Human-written Hindi references by the project author, preserving named entities and Reddit-specific slang where appropriate.",
+  "example_count": 20,
+  "edge_cases": [
+    "named_entities",
+    "reddit_slang",
+    "code_mixed_hinglish",
+    "technology_terms",
+    "privacy_and_safety",
+    "political_terms",
+    "sarcasm"
+  ],
+  "items": [
+    {
+      "id": "hi01",
+      "category": "post_title",
+      "source_text": "Windows 12 is reportedly set to be fully modular, subscription-based, and AI-focused.",
+      "reference_translation": "रिपोर्टों के अनुसार Windows 12 पूरी तरह मॉड्यूलर, सदस्यता-आधारित और एआई-केंद्रित होने वाला है।",
+      "tags": ["named_entities", "technology_terms"]
+    },
+    {
+      "id": "hi02",
+      "category": "comment",
+      "source_text": "Man, that's a lot of things I don't want at all packed into one operating system.",
+      "reference_translation": "यार, एक ही ऑपरेटिंग सिस्टम में इतनी सारी ऐसी चीज़ें ठूंस दी गई हैं जो मुझे बिल्कुल नहीं चाहिए।",
+      "tags": ["sarcasm", "technology_terms"]
+    },
+    {
+      "id": "hi03",
+      "category": "post_title",
+      "source_text": "The 'Cancel ChatGPT' movement grew after OpenAI signed a deal with the US military.",
+      "reference_translation": "OpenAI द्वारा अमेरिकी सेना के साथ समझौता करने के बाद 'Cancel ChatGPT' आंदोलन बढ़ गया।",
+      "tags": ["named_entities", "political_terms", "technology_terms"]
+    },
+    {
+      "id": "hi04",
+      "category": "comment",
+      "source_text": "Everybody should remember that this is why the free press is important.",
+      "reference_translation": "हर किसी को याद रखना चाहिए कि इसी वजह से स्वतंत्र प्रेस महत्वपूर्ण है।",
+      "tags": ["political_terms"]
+    },
+    {
+      "id": "hi05",
+      "category": "post_title",
+      "source_text": "Bill Gates warns AI will take over most jobs and leave humans working just two days a week.",
+      "reference_translation": "Bill Gates ने चेतावनी दी कि एआई अधिकांश नौकरियां संभाल लेगा और इंसानों को सप्ताह में सिर्फ दो दिन काम करना पड़ेगा।",
+      "tags": ["named_entities", "technology_terms"]
+    },
+    {
+      "id": "hi06",
+      "category": "comment",
+      "source_text": "The people in charge won't pay employees a full-time salary for two days of work.",
+      "reference_translation": "सत्ता में बैठे लोग दो दिन के काम के लिए कर्मचारियों को पूर्णकालिक वेतन नहीं देंगे।",
+      "tags": ["worker_rights"]
+    },
+    {
+      "id": "hi07",
+      "category": "post_title",
+      "source_text": "AOC says people are being algorithmically polarized by social media.",
+      "reference_translation": "AOC का कहना है कि सोशल मीडिया लोगों को एल्गोरिदम के जरिए ध्रुवीकृत कर रहा है।",
+      "tags": ["named_entities", "technology_terms", "political_terms"]
+    },
+    {
+      "id": "hi08",
+      "category": "comment",
+      "source_text": "The algorithm doesn't care what side you're on, just that you're angry enough to stay.",
+      "reference_translation": "एल्गोरिदम को फर्क नहीं पड़ता कि आप किस पक्ष में हैं; बस इतना मायने रखता है कि आप रुकने लायक गुस्से में हों।",
+      "tags": ["technology_terms", "sarcasm"]
+    },
+    {
+      "id": "hi09",
+      "category": "post_title",
+      "source_text": "Bernie Sanders calls for a pause on new AI data centers in the US.",
+      "reference_translation": "Bernie Sanders ने अमेरिका में नए एआई डेटा सेंटरों पर रोक लगाने की मांग की।",
+      "tags": ["named_entities", "technology_terms", "political_terms"]
+    },
+    {
+      "id": "hi10",
+      "category": "comment",
+      "source_text": "Shoehorning AI slop into every crevice of our attention is not a useful application.",
+      "reference_translation": "हमारे ध्यान की हर दरार में एआई स्लॉप ठूंसना कोई उपयोगी अनुप्रयोग नहीं है।",
+      "tags": ["technology_terms", "slang", "sarcasm"]
+    },
+    {
+      "id": "hi11",
+      "category": "post_title",
+      "source_text": "Meta's facial-recognition smart glasses plan will put women at risk.",
+      "reference_translation": "Meta की चेहरे की पहचान वाली स्मार्ट ग्लास योजना महिलाओं को जोखिम में डाल देगी।",
+      "tags": ["named_entities", "privacy_and_safety", "technology_terms"]
+    },
+    {
+      "id": "hi12",
+      "category": "comment",
+      "source_text": "Camera glasses. Stop calling them smart glasses.",
+      "reference_translation": "ये कैमरा ग्लास हैं। इन्हें स्मार्ट ग्लास कहना बंद कीजिए।",
+      "tags": ["privacy_and_safety", "technology_terms", "sarcasm"]
+    },
+    {
+      "id": "hi13",
+      "category": "post_title",
+      "source_text": "Across the US, people are dismantling and destroying Flock surveillance cameras.",
+      "reference_translation": "अमेरिका भर में लोग Flock निगरानी कैमरों को खोल रहे हैं और नष्ट कर रहे हैं।",
+      "tags": ["named_entities", "privacy_and_safety", "political_terms"]
+    },
+    {
+      "id": "hi14",
+      "category": "comment",
+      "source_text": "People never meaningfully voted for these surveillance cameras, yet they are forced to pay for them.",
+      "reference_translation": "लोगों ने इन निगरानी कैमरों के लिए सचमुच कभी वोट नहीं दिया, फिर भी उन्हें इनके लिए भुगतान करने पर मजबूर किया जाता है।",
+      "tags": ["privacy_and_safety", "political_terms"]
+    },
+    {
+      "id": "hi15",
+      "category": "post_title",
+      "source_text": "Top MAGA influencers were accidentally unmasked as foreign actors.",
+      "reference_translation": "शीर्ष MAGA प्रभावशाली लोग गलती से विदेशी ऑपरेटरों के रूप में उजागर हो गए।",
+      "tags": ["named_entities", "political_terms"]
+    },
+    {
+      "id": "hi16",
+      "category": "comment",
+      "source_text": "Their followers won't care because the accounts align with their belief system.",
+      "reference_translation": "उनके अनुयायी परवाह नहीं करेंगे, क्योंकि वे खाते उनकी विश्वास प्रणाली से मेल खाते हैं।",
+      "tags": ["political_terms"]
+    },
+    {
+      "id": "hi17",
+      "category": "post_title",
+      "source_text": "Global outrage grew as X's Grok morphed photos of women and children into explicit content.",
+      "reference_translation": "X के Grok द्वारा महिलाओं और बच्चों की तस्वीरों को अश्लील सामग्री में बदलने पर वैश्विक आक्रोश बढ़ा।",
+      "tags": ["named_entities", "privacy_and_safety", "technology_terms"]
+    },
+    {
+      "id": "hi18",
+      "category": "post_title",
+      "source_text": "AIs from OpenAI, Anthropic, and Google recommended nuclear strikes in war-game simulations.",
+      "reference_translation": "OpenAI, Anthropic और Google के एआई ने युद्ध-खेल सिमुलेशन में परमाणु हमलों की सिफारिश की।",
+      "tags": ["named_entities", "technology_terms", "political_terms"]
+    },
+    {
+      "id": "hi19",
+      "category": "code_mixed",
+      "source_text": "This Windows update is total jugaad: AI everywhere, control nowhere.",
+      "reference_translation": "यह Windows अपडेट पूरा जुगाड़ है: हर जगह एआई है, लेकिन नियंत्रण कहीं नहीं है।",
+      "tags": ["code_mixed_hinglish", "technology_terms", "sarcasm"]
+    },
+    {
+      "id": "hi20",
+      "category": "reddit_slang",
+      "source_text": "NTA for cancelling ChatGPT; privacy matters more than hype.",
+      "reference_translation": "ChatGPT रद्द करने के लिए NTA; निजता प्रचार से ज़्यादा मायने रखती है।",
+      "tags": ["reddit_slang", "named_entities", "privacy_and_safety"]
+    }
+  ]
+}

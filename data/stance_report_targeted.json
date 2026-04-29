@@ -1,0 +1,187 @@
+{
+  "model": "MoritzLaurer/DeBERTa-v3-base-mnli-fever-anli",
+  "mode": "full_corpus",
+  "topics_requested": null,
+  "topics": [
+    {
+      "topic_id": 0,
+      "label": "AI / Work and Society",
+      "hypotheses": {
+        "support": "The author expresses optimism that AI will benefit workers, jobs, or society.",
+        "oppose": "The author expresses concern that AI will harm workers, jobs, or society.",
+        "neutral": "fallback: top < 0.35 or margin < 0.05"
+      },
+      "total_comments": 146979,
+      "support_comments": 4965,
+      "oppose_comments": 40239,
+      "neutral_comments": 101775,
+      "support_pct": 3.4,
+      "oppose_pct": 27.4,
+      "neutral_pct": 69.2,
+      "dominant_stance": "mostly_neutral",
+      "disagreement_rate": 0.11
+    },
+    {
+      "topic_id": 1,
+      "label": "Social Media Regulation",
+      "hypotheses": {
+        "support": "The author argues that social media platforms should face stronger regulation, restrictions, bans, or accountability.",
+        "oppose": "The author argues against stronger regulation, restrictions, bans, or government control of social media platforms.",
+        "neutral": "fallback: top < 0.35 or margin < 0.05"
+      },
+      "total_comments": 33130,
+      "support_comments": 1892,
+      "oppose_comments": 9396,
+      "neutral_comments": 21842,
+      "support_pct": 5.7,
+      "oppose_pct": 28.4,
+      "neutral_pct": 65.9,
+      "dominant_stance": "mostly_neutral",
+      "disagreement_rate": 0.168
+    },
+    {
+      "topic_id": 2,
+      "label": "Elon Musk / xAI",
+      "hypotheses": {
+        "support": "The author expresses admiration, approval, or support for Elon Musk or his companies.",
+        "oppose": "The author expresses criticism, distrust, frustration, or contempt toward Elon Musk or his companies.",
+        "neutral": "fallback: top < 0.35 or margin < 0.05"
+      },
+      "total_comments": 35408,
+      "support_comments": 7312,
+      "oppose_comments": 7612,
+      "neutral_comments": 20484,
+      "support_pct": 20.7,
+      "oppose_pct": 21.5,
+      "neutral_pct": 57.9,
+      "dominant_stance": "oppose",
+      "disagreement_rate": 0.49
+    },
+    {
+      "topic_id": 3,
+      "label": "Data Centers",
+      "hypotheses": {
+        "support": "The author expresses support or approval for building more data centers and AI infrastructure.",
+        "oppose": "The author expresses concern, criticism, or opposition toward data center expansion.",
+        "neutral": "fallback: top < 0.35 or margin < 0.05"
+      },
+      "total_comments": 40685,
+      "support_comments": 259,
+      "oppose_comments": 25877,
+      "neutral_comments": 14549,
+      "support_pct": 0.6,
+      "oppose_pct": 63.6,
+      "neutral_pct": 35.8,
+      "dominant_stance": "oppose",
+      "disagreement_rate": 0.01
+    },
+    {
+      "topic_id": 4,
+      "label": "OpenAI / Anthropic",
+      "hypotheses": {
+        "support": "The author expresses trust, approval, or optimism toward OpenAI or Anthropic.",
+        "oppose": "The author expresses distrust, skepticism, criticism, or concern toward OpenAI or Anthropic.",
+        "neutral": "fallback: top < 0.35 or margin < 0.05"
+      },
+      "total_comments": 68660,
+      "support_comments": 5173,
+      "oppose_comments": 37954,
+      "neutral_comments": 25533,
+      "support_pct": 7.5,
+      "oppose_pct": 55.3,
+      "neutral_pct": 37.2,
+      "dominant_stance": "oppose",
+      "disagreement_rate": 0.12
+    },
+    {
+      "topic_id": 5,
+      "label": "Google / Gemini",
+      "hypotheses": {
+        "support": "The author expresses approval, satisfaction, or optimism about Google or Gemini AI.",
+        "oppose": "The author expresses criticism, frustration, or skepticism toward Google or Gemini AI.",
+        "neutral": "fallback: top < 0.35 or margin < 0.05"
+      },
+      "total_comments": 27231,
+      "support_comments": 3619,
+      "oppose_comments": 15480,
+      "neutral_comments": 8132,
+      "support_pct": 13.3,
+      "oppose_pct": 56.8,
+      "neutral_pct": 29.9,
+      "dominant_stance": "oppose",
+      "disagreement_rate": 0.189
+    },
+    {
+      "topic_id": 6,
+      "label": "China / AI Chips",
+      "hypotheses": {
+        "support": "The author supports US restrictions on AI chip exports to China or sees them as necessary.",
+        "oppose": "The author criticizes or questions US restrictions on AI chip exports to China.",
+        "neutral": "fallback: top < 0.35 or margin < 0.05"
+      },
+      "total_comments": 84353,
+      "support_comments": 3302,
+      "oppose_comments": 5463,
+      "neutral_comments": 75588,
+      "support_pct": 3.9,
+      "oppose_pct": 6.5,
+      "neutral_pct": 89.6,
+      "dominant_stance": "mostly_neutral",
+      "disagreement_rate": 0.377
+    },
+    {
+      "topic_id": 7,
+      "label": "Microsoft / Windows",
+      "hypotheses": {
+        "support": "The author expresses approval or satisfaction with Microsoft or Windows.",
+        "oppose": "The author expresses frustration, distrust, criticism, or dissatisfaction with Microsoft or Windows.",
+        "neutral": "fallback: top < 0.35 or margin < 0.05"
+      },
+      "total_comments": 114521,
+      "support_comments": 13651,
+      "oppose_comments": 64661,
+      "neutral_comments": 36209,
+      "support_pct": 11.9,
+      "oppose_pct": 56.5,
+      "neutral_pct": 31.6,
+      "dominant_stance": "oppose",
+      "disagreement_rate": 0.174
+    },
+    {
+      "topic_id": 8,
+      "label": "Apps / Platform Moderation",
+      "hypotheses": {
+        "support": "The author supports platform moderation, app store enforcement, or removing harmful content.",
+        "oppose": "The author criticizes platform moderation, app store enforcement, censorship, or platform control.",
+        "neutral": "fallback: top < 0.35 or margin < 0.05"
+      },
+      "total_comments": 158611,
+      "support_comments": 57764,
+      "oppose_comments": 56426,
+      "neutral_comments": 44421,
+      "support_pct": 36.4,
+      "oppose_pct": 35.6,
+      "neutral_pct": 28.0,
+      "dominant_stance": "support",
+      "disagreement_rate": 0.494
+    },
+    {
+      "topic_id": 9,
+      "label": "Meta / Smart Glasses",
+      "hypotheses": {
+        "support": "The author expresses excitement, approval, or optimism about Meta's smart glasses, AR products, or wearable AI.",
+        "oppose": "The author expresses skepticism, criticism, privacy concern, or distrust toward Meta's smart glasses, AR products, or wearable AI.",
+        "neutral": "fallback: top < 0.35 or margin < 0.05"
+      },
+      "total_comments": 70122,
+      "support_comments": 287,
+      "oppose_comments": 36317,
+      "neutral_comments": 33518,
+      "support_pct": 0.4,
+      "oppose_pct": 51.8,
+      "neutral_pct": 47.8,
+      "dominant_stance": "oppose",
+      "disagreement_rate": 0.008
+    }
+  ]
+}
