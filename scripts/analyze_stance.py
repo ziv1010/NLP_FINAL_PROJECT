@@ -35,19 +35,19 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--posts-per-topic",
         type=int,
-        default=4,
+        default=25,
         help="Max high-engagement posts to sample per topic. Use 0 for no limit.",
     )
     parser.add_argument(
         "--comments-per-post",
         type=int,
-        default=4,
+        default=12,
         help="Max top-level comments to sample per post. Use 0 for no limit.",
     )
     parser.add_argument(
         "--comments-per-topic-cap",
         type=int,
-        default=10,
+        default=250,
         help="Max sampled comments per topic after ranking. Use 0 for no limit.",
     )
     parser.add_argument(
@@ -65,8 +65,18 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--batch-size",
         type=int,
-        default=64,
-        help="Transformer batch size for the stance models.",
+        default=128,
+        help="Per-GPU transformer batch size. With multi-GPU DataParallel the effective batch is multiplied by the GPU count.",
+    )
+    parser.add_argument(
+        "--full-corpus",
+        action="store_true",
+        help="Score every quality-filtered comment that is tied to one of the major topics, not just a sample.",
+    )
+    parser.add_argument(
+        "--include-nested",
+        action="store_true",
+        help="Include nested comments, not only top-level ones. Only meaningful with --full-corpus.",
     )
     return parser
 
@@ -80,6 +90,8 @@ def main() -> int:
         min_comment_body_chars=args.min_comment_body_chars,
         min_comment_score=args.min_comment_score,
         batch_size=args.batch_size,
+        full_corpus=args.full_corpus,
+        top_level_only=not args.include_nested,
     )
     report = analyze_stance(args.db, config=config)
     save_stance_report(report, args.output)

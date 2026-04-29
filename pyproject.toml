@@ -3,18 +3,24 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "reddit-worldnews-trump-overview"
-version = "0.1.0"
-description = "Point 1.1 pipeline for the NLP project using a geopolitics subreddit with Trump relevance flags."
+name = "nlp-project-part-1"
+version = "0.2.0"
+description = "NLP Project Part 1: r/technology six-month corpus with topic, temporal, and stance analysis."
 requires-python = ">=3.11"
 dependencies = [
+  "plotly>=6.0",
   "requests>=2.32.3",
-  "scikit-learn>=1.8.0",
-  "sentence-transformers>=5.3.0",
-  "sentencepiece>=0.2.1",
-  "streamlit>=1.44.0",
-  "torch>=2.11.0",
-  "transformers>=5.5.0",
+  "scikit-learn>=1.5",
+  "sentence-transformers>=3.0",
+  "sentencepiece>=0.2.0",
+  "streamlit>=1.40",
+  "torch>=2.4",
+  "transformers>=4.45",
+  "accelerate>=1.0",
+  "faiss-cpu>=1.13.0",
+  "rouge-score>=0.1.2",
+  "bert-score>=0.3.13",
+  "sacrebleu>=2.6.0",
 ]
 
 [tool.setuptools.packages.find]

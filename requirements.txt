@@ -5,3 +5,7 @@ sentencepiece>=0.2.1
 streamlit>=1.44.0
 torch>=2.11.0
 transformers>=5.5.0
+faiss-cpu>=1.13.0
+rouge-score>=0.1.2
+bert-score>=0.3.13
+sacrebleu>=2.6.0

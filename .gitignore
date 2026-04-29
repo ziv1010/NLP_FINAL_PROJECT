@@ -8,3 +8,5 @@ __pycache__/
 *.pyd
 *.egg-info/
 data/*.db
+data/faiss_rag_index/
+data/rag_answers.jsonl

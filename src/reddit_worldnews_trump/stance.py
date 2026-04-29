@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import json
+import os
+os.environ.setdefault("PYTORCH_JIT", "0")
+
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -8,6 +11,9 @@ from typing import Any
 import numpy as np
 import pandas as pd
 import torch
+
+torch._C._jit_set_profiling_executor(False)
+torch._C._jit_set_profiling_mode(False)
 from sentence_transformers import SentenceTransformer
 from sentence_transformers.util import cos_sim
 from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS, TfidfVectorizer
@@ -35,11 +41,12 @@ METHOD_SPECS = {
         ),
     },
 }
-SAMPLE_POSTS_PER_TOPIC = 4
-SAMPLE_COMMENTS_PER_POST = 4
-SAMPLE_COMMENTS_PER_TOPIC = 10
+SAMPLE_POSTS_PER_TOPIC = 25
+SAMPLE_COMMENTS_PER_POST = 12
+SAMPLE_COMMENTS_PER_TOPIC = 250
 MIN_COMMENT_BODY_CHARS = 40
 MIN_COMMENT_SCORE = 1
+SUMMARY_SAMPLE_LIMIT = 5000
 
 SUMMARY_STOP_WORDS = ENGLISH_STOP_WORDS.union(
     {
@@ -75,13 +82,16 @@ class StanceSamplingConfig:
     min_comment_body_chars: int = MIN_COMMENT_BODY_CHARS
     min_comment_score: int = MIN_COMMENT_SCORE
     batch_size: int = 64
+    full_corpus: bool = False
+    top_level_only: bool = True
 
     def as_dict(self) -> dict[str, Any]:
         return {
-            "posts_per_topic": self.posts_per_topic,
-            "comments_per_post": self.comments_per_post,
-            "comments_per_topic_cap": self.comments_per_topic_cap,
-            "top_level_only": True,
+            "mode": "full_corpus" if self.full_corpus else "sampled",
+            "posts_per_topic": None if self.full_corpus else self.posts_per_topic,
+            "comments_per_post": None if self.full_corpus else self.comments_per_post,
+            "comments_per_topic_cap": None if self.full_corpus else self.comments_per_topic_cap,
+            "top_level_only": self.top_level_only,
             "min_comment_body_chars": self.min_comment_body_chars,
             "min_comment_score": self.min_comment_score,
             "batch_size": self.batch_size,
@@ -97,19 +107,47 @@ def _optional_limit(value: int | None) -> int | None:
 
 
 class NLIStanceMethod:
-    def __init__(self, method_key: str, model_name: str, *, batch_size: int = 64) -> None:
+    def __init__(
+        self,
+        method_key: str,
+        model_name: str,
+        *,
+        batch_size: int = 64,
+        device: str | None = None,
+        max_length: int = 256,
+    ) -> None:
         self.method_key = method_key
         self.model_name = model_name
-        self.batch_size = batch_size
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.model = AutoModelForSequenceClassification.from_pretrained(model_name)
         self.model.eval()
-        self.device = torch.device("cpu")
-        self.model.to(self.device)
+        if device is not None:
+            self.device = torch.device(device)
+        elif torch.cuda.is_available():
+            self.device = torch.device("cuda")
+        else:
+            self.device = torch.device("cpu")
+        dtype = torch.float16 if self.device.type == "cuda" else torch.float32
+        self.model.to(self.device, dtype=dtype)
+        self.dtype = dtype
+        self.max_length = max_length
 
+        gpu_count = torch.cuda.device_count() if self.device.type == "cuda" else 1
+        if gpu_count > 1:
+            self.model = torch.nn.DataParallel(
+                self.model, device_ids=list(range(gpu_count))
+            )
+            self.batch_size = batch_size * gpu_count
+        else:
+            self.batch_size = batch_size
+        self.gpu_count = gpu_count
+
+        config_module = (
+            self.model.module.config if isinstance(self.model, torch.nn.DataParallel) else self.model.config
+        )
         id2label = {
             int(index): str(label).lower()
-            for index, label in self.model.config.id2label.items()
+            for index, label in config_module.id2label.items()
         }
         self.label_to_index = {label: index for index, label in id2label.items()}
 
@@ -117,12 +155,16 @@ class NLIStanceMethod:
         self,
         premises: list[str],
         hypothesis: str,
+        *,
+        progress_label: str | None = None,
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         entailments: list[np.ndarray] = []
         neutrals: list[np.ndarray] = []
         contradictions: list[np.ndarray] = []
 
-        for start in range(0, len(premises), self.batch_size):
+        total = len(premises)
+        last_report_pct = -1
+        for start in range(0, total, self.batch_size):
             batch_premises = premises[start:start + self.batch_size]
             batch_hypotheses = [hypothesis] * len(batch_premises)
             encoded = self.tokenizer(
@@ -130,7 +172,7 @@ class NLIStanceMethod:
                 batch_hypotheses,
                 padding=True,
                 truncation=True,
-                max_length=256,
+                max_length=self.max_length,
                 return_tensors="pt",
             )
             encoded = {
@@ -139,10 +181,19 @@ class NLIStanceMethod:
             }
             with torch.no_grad():
                 logits = self.model(**encoded).logits
-                probabilities = torch.softmax(logits, dim=-1).cpu().numpy()
+                probabilities = torch.softmax(logits.float(), dim=-1).cpu().numpy()
             entailments.append(probabilities[:, self.label_to_index["entailment"]])
             neutrals.append(probabilities[:, self.label_to_index["neutral"]])
             contradictions.append(probabilities[:, self.label_to_index["contradiction"]])
+
+            if progress_label and total > 0:
+                pct = int(((start + len(batch_premises)) / total) * 100)
+                if pct >= last_report_pct + 5:
+                    print(
+                        f"[{progress_label}] {start + len(batch_premises):,}/{total:,} ({pct}%)",
+                        flush=True,
+                    )
+                    last_report_pct = pct
 
         return (
             np.concatenate(entailments),
@@ -162,10 +213,12 @@ class NLIStanceMethod:
         agree_entail, agree_neutral, agree_contra = self._entailment_triplet(
             premises,
             "The author agrees with the post.",
+            progress_label=f"{self.method_key} agree-pass",
         )
         disagree_entail, disagree_neutral, disagree_contra = self._entailment_triplet(
             premises,
             "The author disagrees with the post.",
+            progress_label=f"{self.method_key} disagree-pass",
         )
 
         support_scores = (0.7 * agree_entail) + (0.3 * disagree_contra)
@@ -241,6 +294,8 @@ def sample_topic_comments(
 ) -> CommentSample:
     config = config or StanceSamplingConfig()
     post_frame, topic_metadata = _topic_post_inventory(db_path)
+    if config.full_corpus:
+        return _full_corpus_comments(db_path, post_frame, topic_metadata, config)
     connection = get_connection(db_path)
     try:
         sampled_rows: list[pd.DataFrame] = []
@@ -259,7 +314,8 @@ def sample_topic_comments(
 
             topic_comment_frames: list[pd.DataFrame] = []
             for post in topic_posts.itertuples(index=False):
-                query = """
+                top_level_clause = "AND parent_id = link_id" if config.top_level_only else ""
+                query = f"""
                     SELECT
                         comment_id,
                         post_id,
@@ -271,7 +327,7 @@ def sample_topic_comments(
                         link_id
                     FROM comments
                     WHERE post_id = ?
-                      AND parent_id = link_id
+                      {top_level_clause}
                       AND score >= ?
                       AND LENGTH(TRIM(body)) >= ?
                       AND author IS NOT NULL
@@ -343,6 +399,88 @@ def sample_topic_comments(
     return CommentSample(sample_frame, topic_metadata)
 
 
+def _full_corpus_comments(
+    db_path: Path,
+    post_frame: pd.DataFrame,
+    topic_metadata: list[dict[str, object]],
+    config: StanceSamplingConfig,
+) -> CommentSample:
+    post_id_to_topic = {}
+    for topic in topic_metadata:
+        for post_id in topic["post_ids"]:
+            post_id_to_topic[str(post_id)] = (
+                int(topic["topic_id"]),
+                str(topic["topic_label"]),
+            )
+
+    titles = (
+        post_frame.set_index("post_id")["title"].astype(str).to_dict()
+    )
+    post_scores = (
+        post_frame.set_index("post_id")["score"].fillna(0).astype(int).to_dict()
+    )
+    post_stored = (
+        post_frame.set_index("post_id")["stored_comment_count"].fillna(0).astype(int).to_dict()
+    )
+
+    connection = get_connection(db_path)
+    try:
+        top_level_clause = "AND parent_id = link_id" if config.top_level_only else ""
+        query = f"""
+            SELECT
+                comment_id,
+                post_id,
+                author,
+                body,
+                created_utc,
+                score,
+                parent_id,
+                link_id
+            FROM comments
+            WHERE score >= ?
+              {top_level_clause}
+              AND LENGTH(TRIM(body)) >= ?
+              AND author IS NOT NULL
+              AND author NOT IN ('[deleted]', 'AutoModerator')
+              AND body NOT LIKE '[removed]%'
+              AND body NOT LIKE '[deleted]%'
+        """
+        comment_frame = pd.read_sql_query(
+            query,
+            connection,
+            params=[config.min_comment_score, config.min_comment_body_chars],
+        )
+    finally:
+        connection.close()
+
+    if comment_frame.empty:
+        return CommentSample(comment_frame, topic_metadata)
+
+    comment_frame = comment_frame[
+        comment_frame["post_id"].astype(str).isin(post_id_to_topic.keys())
+    ].copy()
+    if comment_frame.empty:
+        return CommentSample(comment_frame, topic_metadata)
+
+    comment_frame["topic_id"] = comment_frame["post_id"].map(
+        lambda pid: post_id_to_topic[str(pid)][0]
+    )
+    comment_frame["topic_label"] = comment_frame["post_id"].map(
+        lambda pid: post_id_to_topic[str(pid)][1]
+    )
+    comment_frame["post_title"] = comment_frame["post_id"].map(titles).fillna("")
+    comment_frame["post_score"] = comment_frame["post_id"].map(post_scores).fillna(0).astype(int)
+    comment_frame["post_stored_comments"] = (
+        comment_frame["post_id"].map(post_stored).fillna(0).astype(int)
+    )
+    print(
+        f"[stance] full-corpus mode: {len(comment_frame):,} comments tied to topics, "
+        f"top_level_only={config.top_level_only}",
+        flush=True,
+    )
+    return CommentSample(comment_frame, topic_metadata)
+
+
 def _top_terms(texts: list[str], limit: int = 6) -> list[str]:
     filtered_texts = [text for text in texts if text.strip()]
     if not filtered_texts:
@@ -406,6 +544,8 @@ def _representative_comments(
 def _summarize_side(
     embedder: SentenceTransformer,
     comments: list[str],
+    *,
+    embedding_sample_limit: int = SUMMARY_SAMPLE_LIMIT,
 ) -> dict[str, object]:
     if not comments:
         return {
@@ -415,9 +555,15 @@ def _summarize_side(
         }
 
     top_terms = _top_terms(comments, limit=6)
+    if len(comments) > embedding_sample_limit:
+        rng = np.random.default_rng(42)
+        sample_indices = rng.choice(len(comments), size=embedding_sample_limit, replace=False)
+        embedding_pool = [comments[int(i)] for i in sample_indices]
+    else:
+        embedding_pool = comments
     representative_comments = _representative_comments(
         embedder,
-        comments,
+        embedding_pool,
         limit=3,
     )
     if top_terms:
@@ -512,15 +658,15 @@ def _topic_method_summary(
     user_groups = _user_group_counts(topic_comments, dominant_raw_stance)
     if dominant_raw_stance == "support":
         dominant_position_text = (
-            "Most sampled top-level comments support the main claims made by the posts in this topic."
+            "Most classified comments back the main claims made by the posts in this topic."
         )
     elif dominant_raw_stance == "oppose":
         dominant_position_text = (
-            "Most sampled top-level comments push back against the main claims made by the posts in this topic."
+            "Most classified comments push back against the main claims made by the posts in this topic."
         )
     else:
         dominant_position_text = (
-            "No clear dominant side emerged in the sampled top-level comments for this topic."
+            "No clear dominant side emerged in the classified comments for this topic."
         )
 
     return {
@@ -602,7 +748,8 @@ def analyze_stance(
             "topics": [],
         }
 
-    embedder = SentenceTransformer(SUMMARY_EMBEDDER_NAME)
+    embedder_device = "cuda" if torch.cuda.is_available() else "cpu"
+    embedder = SentenceTransformer(SUMMARY_EMBEDDER_NAME, device=embedder_device)
     method_outputs: dict[str, pd.DataFrame] = {}
     for method_key, spec in METHOD_SPECS.items():
         classifier = NLIStanceMethod(
@@ -611,6 +758,9 @@ def analyze_stance(
             batch_size=config.batch_size,
         )
         method_outputs[method_key] = classifier.classify(sample_frame)
+        del classifier
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
 
     topics_payload: list[dict[str, object]] = []
     topic_lookup = {
