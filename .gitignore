@@ -3,10 +3,16 @@ __pycache__/
 .pytest_cache/
 .streamlit/
 .DS_Store
+.codex_pdf_env/
+logs/
 *.pyc
 *.pyo
 *.pyd
 *.egg-info/
+REPORT/*.aux
+REPORT/*.log
+REPORT/*.out
+REPORT/*.toc
 data/*.db
 data/faiss_rag_index/
 data/rag_answers.jsonl
