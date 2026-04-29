@@ -38,9 +38,11 @@ Built for an academic NLP course (Project Parts 1 and 2). All deliverables, gene
 
 ```
 FINAL_NLP/
-├── app.py                       # Streamlit dashboard (entry point)
+├── app.py                       # Full local Streamlit dashboard (DB + live RAG)
+├── streamlit_app.py             # Lightweight Streamlit Cloud dashboard
 ├── pyproject.toml               # Package metadata
-├── requirements.txt             # Pip dependencies
+├── requirements.txt             # Lightweight hosted Streamlit dependencies
+├── requirements-full.txt        # Full local research dependencies
 ├── run_rag_eval.sh              # Convenience script for RAG eval
 │
 ├── src/reddit_worldnews_trump/  # Library code (see src README)
@@ -93,6 +95,15 @@ micromamba run -n nlp_final_gpu pip install \
 
 micromamba run -n nlp_final_gpu pip install -e .
 ```
+
+For a normal pip-only local setup of the full research stack, use:
+
+```bash
+pip install -r requirements-full.txt
+pip install -e .
+```
+
+For Streamlit Cloud, use the lightweight `requirements.txt` and the hosted entry point `streamlit_app.py`.
 
 All pipeline scripts assume `nlp_final_gpu` is active or are invoked through `micromamba run -n nlp_final_gpu …`.
 
@@ -190,9 +201,21 @@ Rendered directly in the Streamlit dashboard. See [IMPLEMENTATION_BY_QUESTION.md
 
 ## Streamlit Dashboard
 
+### Full local dashboard
+
 ```bash
 PYTORCH_JIT=0 micromamba run -n nlp_final_gpu streamlit run app.py
 ```
+
+This mode uses the local SQLite database, FAISS index, optional API keys, and full research dependencies.
+
+### Hosted Streamlit Cloud dashboard
+
+```bash
+streamlit run streamlit_app.py
+```
+
+This mode is designed for easy hosting. It reads only small committed JSON reports, `data/streamlit_export/overview_stats.json`, and figures from `REPORT/figures/`. It intentionally does not load the 464 MB SQLite database, the large FAISS index files, local model servers, or GPU-heavy analysis pipelines.
 
 | Section | Content |
 | ------- | ------- |
@@ -206,6 +229,16 @@ PYTORCH_JIT=0 micromamba run -n nlp_final_gpu streamlit run app.py
 | 2.3 Bias Detection | Corpus, stance-model, RAG probe analysis |
 | 2.4 Ethics Note | Consent, re-identification, Right to be Forgotten |
 | Design Choices | Justification of student-defined design decisions |
+
+### Streamlit Cloud deployment
+
+When creating the Streamlit Cloud app, point it to:
+
+```text
+streamlit_app.py
+```
+
+The hosted app will show the full analysis and precomputed examples. Live RAG remains available locally through `app.py` when `data/reddit_technology_recent.db`, `data/faiss_rag_index/index.faiss`, `data/faiss_rag_index/chunks.jsonl`, and any needed API keys are present.
 
 ---
 
@@ -222,6 +255,7 @@ PYTORCH_JIT=0 micromamba run -n nlp_final_gpu streamlit run app.py
 | `data/rag_report_local.{json,md}` | 2.1 final five-provider comparison |
 | `data/hindi_translation_eval_set.json` | 2.2 reference set |
 | `data/hindi_translation_report.{json,md}` | 2.2 final report |
+| `data/streamlit_export/overview_stats.json` | Small hosted-dashboard corpus-stat export |
 | `REPORT/report.pdf` | Compiled final write-up |
 
 A folder-level breakdown lives in [data/README.md](data/README.md).

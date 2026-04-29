@@ -1,0 +1,108 @@
+{
+  "latest_run": {
+    "source": "arctic_shift",
+    "subreddit": "technology",
+    "start_date": "2025-10-01",
+    "end_date": "2026-04-07",
+    "target_posts": 15000,
+    "raw_posts_scanned": 15000,
+    "raw_comments_scanned": 1136195,
+    "posts_inserted": 15000,
+    "comments_inserted": 1136195,
+    "started_at": "2026-04-06T14:09:42.463176+00:00",
+    "completed_at": "2026-04-06T14:26:58.779593+00:00"
+  },
+  "overview": {
+    "total_posts": 15000,
+    "unique_authors": 4879,
+    "reported_comments": 1062335,
+    "stored_comments": 1136195,
+    "unique_comment_authors": 250341,
+    "average_score": 919.2842666666667,
+    "average_num_comments": 70.82233333333333,
+    "min_created_utc": "2025-10-01",
+    "max_created_utc": "2026-04-06",
+    "span_days": 187
+  },
+  "monthly_posts": [
+    {
+      "month": "2025-10",
+      "posts": 2474,
+      "authors": 955,
+      "reported_comments": 187813
+    },
+    {
+      "month": "2025-11",
+      "posts": 2394,
+      "authors": 1087,
+      "reported_comments": 157742
+    },
+    {
+      "month": "2025-12",
+      "posts": 2473,
+      "authors": 933,
+      "reported_comments": 187172
+    },
+    {
+      "month": "2026-01",
+      "posts": 2473,
+      "authors": 898,
+      "reported_comments": 179233
+    },
+    {
+      "month": "2026-02",
+      "posts": 2234,
+      "authors": 960,
+      "reported_comments": 142640
+    },
+    {
+      "month": "2026-03",
+      "posts": 2473,
+      "authors": 973,
+      "reported_comments": 184596
+    },
+    {
+      "month": "2026-04",
+      "posts": 479,
+      "authors": 262,
+      "reported_comments": 23139
+    }
+  ],
+  "monthly_comments": [
+    {
+      "month": "2025-10",
+      "comments": 197438,
+      "comment_authors": 78012
+    },
+    {
+      "month": "2025-11",
+      "comments": 169875,
+      "comment_authors": 65191
+    },
+    {
+      "month": "2025-12",
+      "comments": 200147,
+      "comment_authors": 70114
+    },
+    {
+      "month": "2026-01",
+      "comments": 191717,
+      "comment_authors": 69991
+    },
+    {
+      "month": "2026-02",
+      "comments": 152993,
+      "comment_authors": 61934
+    },
+    {
+      "month": "2026-03",
+      "comments": 194032,
+      "comment_authors": 72773
+    },
+    {
+      "month": "2026-04",
+      "comments": 29993,
+      "comment_authors": 16303
+    }
+  ]
+}
