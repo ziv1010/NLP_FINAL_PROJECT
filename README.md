@@ -1,228 +1,245 @@
-# NLP Project — r/technology
+# NLP Final Project — r/technology Corpus Analysis
 
-Implements Part 1 points 1.1 → 1.4 over a six-month archive of r/technology, plus Part 2 Sections 1 → 4.
+End-to-end NLP pipeline over a six-month archive of **r/technology**, covering data ingestion, topic modeling, temporal analysis, stance detection, retrieval-augmented generation (RAG), Indian-language translation, and bias / ethics reflection — all surfaced through an interactive Streamlit dashboard.
+
+Built for an academic NLP course (Project Parts 1 and 2). All deliverables, generated artefacts, and a compiled final report are included.
+
+---
+
+## Table of Contents
+
+1. [Highlights](#highlights)
+2. [Repository Layout](#repository-layout)
+3. [Dataset](#dataset)
+4. [Environment Setup](#environment-setup)
+5. [Pipeline](#pipeline)
+6. [Streamlit Dashboard](#streamlit-dashboard)
+7. [Reports & Artefacts](#reports--artefacts)
+8. [Documentation](#documentation)
+
+---
+
+## Highlights
+
+| Stage | What it does | Output |
+| ----- | ------------ | ------ |
+| **1.1 Ingestion & Stats** | Pulls 15,000 posts + 1.13M comments via the Arctic-Shift archive API, stores in SQLite | `reddit_technology_recent.db` |
+| **1.2 Topic Modeling** | NMF + LDA over post titles with a consensus layer and human-readable labels | `topic_report.json` |
+| **1.3 Temporal Labels** | Classifies each topic as trending / persistent using momentum and entropy methods | `temporal_report.json` |
+| **1.4 Stance Analysis** | Multi-GPU NLI scoring of 779,700 quality-filtered comments across 10 topics with two NLI models | `stance_report.json` |
+| **2.1 RAG QA** | FAISS index over post + comment chunks, evaluated across five LLMs with ROUGE-L, BERTScore, and manual faithfulness | `rag_report_local.json` |
+| **2.2 Hindi Translation** | English-to-Hindi translation eval with chrF, multilingual BERTScore, and manual fluency/adequacy on 20 examples | `hindi_translation_report.json` |
+| **2.3 Bias Detection** | Corpus, stance-model, and RAG-probe bias analysis | Dashboard section |
+| **2.4 Ethics Note** | Reflective note on consent, re-identification, and Right to be Forgotten | Dashboard section |
+
+---
+
+## Repository Layout
+
+```
+FINAL_NLP/
+├── app.py                       # Streamlit dashboard (entry point)
+├── pyproject.toml               # Package metadata
+├── requirements.txt             # Pip dependencies
+├── run_rag_eval.sh              # Convenience script for RAG eval
+│
+├── src/reddit_worldnews_trump/  # Library code (see src README)
+├── scripts/                     # CLI entry points (see scripts README)
+├── data/                        # Generated artefacts (see data README)
+├── REPORT/                      # LaTeX report + figures (see REPORT README)
+│
+├── README.md                    # This file
+├── IMPLEMENTATION_BY_QUESTION.md  # Assignment-to-code mapping
+├── NLP_proj_1.pdf               # Assignment brief: Part 1
+└── NLP_proj_2.pdf               # Assignment brief: Part 2
+```
+
+Each subfolder contains its own `README.md` with details on the files inside.
+
+---
 
 ## Dataset
 
-- **Subreddit:** r/technology
-- **Time range:** 2025-10-01 → 2026-04-07 (UTC)
-- **Stored:** 15,000 posts and ~1.13M comments
-- **Backend:** Arctic-Shift archive API (PRAW caps listings at ~1k items, so it cannot meet the 15K-post / 6-month spec)
-- **Storage:** local SQLite at `data/reddit_technology_recent.db`
+| Property | Value |
+| -------- | ----- |
+| Subreddit | `r/technology` |
+| Time range | 2025-10-01 to 2026-04-07 (UTC) |
+| Posts collected | 15,000 |
+| Comments stored | 1,136,195 |
+| Unique post authors | 4,879 |
+| Unique comment authors | 250,341 |
+| Coverage | 187 days |
+| Source API | [Arctic-Shift](https://arctic-shift.photon-reddit.com/) archive |
+| Storage | SQLite at `data/reddit_technology_recent.db` |
 
-## Environment
+The PRAW listing API caps results at ~1,000 items, so it cannot satisfy the assignment's 15,000-post / six-month requirement. Arctic-Shift is used because it serves the full historical archive.
 
-GPU-aware micromamba env (multi-GPU stance analysis is the heavy step):
+---
+
+## Environment Setup
+
+A GPU-aware [micromamba](https://mamba.readthedocs.io/) environment is recommended — multi-GPU stance analysis is the heavy step.
 
 ```bash
 micromamba create -n nlp_final_gpu -c conda-forge python=3.11 pip -y
+
 micromamba run -n nlp_final_gpu pip install \
   torch --index-url https://download.pytorch.org/whl/cu121
+
 micromamba run -n nlp_final_gpu pip install \
   streamlit pandas scikit-learn transformers sentence-transformers \
   sentencepiece accelerate plotly altair requests numpy \
   faiss-cpu rouge-score bert-score sacrebleu
+
 micromamba run -n nlp_final_gpu pip install -e .
 ```
 
-All pipeline scripts assume `nlp_final_gpu` is active or are invoked through
-`micromamba run -n nlp_final_gpu …`.
+All pipeline scripts assume `nlp_final_gpu` is active or are invoked through `micromamba run -n nlp_final_gpu …`.
+
+> **Note:** `PYTORCH_JIT=0` is required when running stance / Streamlit on a host with CUDA-13 drivers but a CUDA-12.1 PyTorch build, otherwise DeBERTa fails to JIT-compile its relative-position kernel.
+
+### Optional API keys
+
+| Provider | Variable | Used by |
+| -------- | -------- | ------- |
+| Groq | `GROQ_API_KEY`, `GROQ_MODEL` | RAG, Hindi translation |
+| Together AI | `TOGETHER_API_KEY`, `TOGETHER_MODEL` | RAG |
+| Google AI Studio | `GEMINI_API_KEY` (or `GOOGLE_API_KEY`), `GEMINI_MODEL` | RAG |
+
+---
 
 ## Pipeline
 
-### 1. Ingest data (1.1)
+### 1.1 — Ingest data
 
 ```bash
 micromamba run -n nlp_final_gpu python scripts/ingest_technology.py --reset-db
 ```
 
-Walks the time window month by month (split between asc/desc sweeps to avoid
-peak-day bias) and stores both posts and actual comment text into SQLite.
+Walks the time window month-by-month (split between asc/desc sweeps to avoid peak-day bias) and stores both posts and full comment text into SQLite.
 
-### 2. Aggregate stats (1.1)
+### 1.1 — Aggregate stats
 
 ```bash
 micromamba run -n nlp_final_gpu python scripts/print_stats.py
 ```
 
-### 3. Topic analysis (1.2)
+### 1.2 — Topic modeling
 
 ```bash
 micromamba run -n nlp_final_gpu python scripts/analyze_topics.py
 ```
 
-Two methods over post titles:
-- `NMF` on TF-IDF features
-- `LDA` on count features
+Runs NMF (TF-IDF) and LDA (counts), then pairs them with a 60% keyword Jaccard / 40% post-overlap consensus score and rule-based labelling.
 
-Output `data/topic_report.json` includes per-method tables, a consensus layer
-(NMF↔LDA pairing), labels, top keywords, share of posts, and representative
-titles.
-
-### 4. Trending vs persistent (1.3)
+### 1.3 — Trending vs persistent
 
 ```bash
 micromamba run -n nlp_final_gpu python scripts/analyze_temporal_topics.py
 ```
 
 Two methods over the 10-topic NMF inventory:
-- `momentum` — weighted month-over-month slope + recent-lift check
-- `persistence` — month coverage, normalised entropy, share CV
 
-Output `data/temporal_report.json` includes per-topic monthly trajectories and
-a combined label (e.g. `persistent and rising`, `episodic and cooling`).
+- **Momentum** — weighted month-over-month slope + recent-lift check
+- **Persistence** — month coverage, normalised entropy, share CV
 
-### 5. Stance analysis (1.4) — full-corpus, multi-GPU
+### 1.4 — Stance analysis (full corpus, multi-GPU)
 
 ```bash
 PYTORCH_JIT=0 micromamba run -n nlp_final_gpu \
   python scripts/analyze_stance.py --full-corpus --include-nested --batch-size 96
 ```
 
-Scores **every** quality-filtered comment tied to a major topic (~780K
-comments) with two NLI models in parallel:
+Scores every quality-filtered comment with two NLI models in parallel:
+
 - `MoritzLaurer/DeBERTa-v3-base-mnli-fever-anli`
 - `cross-encoder/nli-deberta-v3-small`
 
-Multi-GPU is automatic via `torch.nn.DataParallel` — the per-GPU batch size is
-multiplied by the number of visible GPUs. For a smaller, ranked-sample run
-(faster, useful for iteration), drop the two flags:
+Multi-GPU is automatic via `torch.nn.DataParallel`. Drop the flags for a smaller ranked-sample run.
+
+### 2.1 — RAG conversation system
 
 ```bash
-PYTORCH_JIT=0 micromamba run -n nlp_final_gpu python scripts/analyze_stance.py
-```
-
-Output `data/stance_report.json` per topic: support / oppose / neutral counts
-under both methods, dominant position, user grouping by stance alignment, top
-TF-IDF terms per side, embedding-centroid representative comments, and
-cross-method agreement.
-
-`PYTORCH_JIT=0` is required because the cluster has CUDA-13 drivers but
-PyTorch is built against CUDA 12.1 — DeBERTa otherwise tries to JIT-compile
-its relative-position kernel against the missing toolkit.
-
-### 6. RAG conversation system (Part 2 Section 1)
-
-Build the FAISS vector store over post chunks and high-signal comment chunks:
-
-```bash
+# Build FAISS index
 micromamba run -n nlp_final_gpu python scripts/build_rag_index.py
-```
 
-Ask a retrieval-only question:
-
-```bash
+# Single-question retrieval
 micromamba run -n nlp_final_gpu python scripts/ask_rag.py \
   "What did users think about Windows 12 being subscription-based and AI-focused?"
+
+# Five-provider evaluation
+bash run_rag_eval.sh
 ```
 
-Ask through an LLM endpoint after setting an API key:
+The final dashboard uses `data/rag_report_local.json` — a five-provider comparison (Groq Scout, Groq Large, local Llama, local Mistral, local Qwen) with manual faithfulness reviewed for all 75 provider-question rows.
 
-```bash
-export GROQ_API_KEY=...
-export TOGETHER_API_KEY=...
-micromamba run -n nlp_final_gpu python scripts/ask_rag.py --provider groq \
-  "What were users worried about with AI data centers?"
-```
-
-Evaluate the 15-question ground-truth set across endpoints:
-
-```bash
-micromamba run -n nlp_final_gpu python scripts/evaluate_rag.py --providers groq,together
-```
-
-The evaluator writes `data/rag_answers.jsonl`, `data/rag_report.json`, and
-`data/rag_report.md`. Add binary faithfulness flags to
-`data/rag_manual_faithfulness.json` after manually reading the answers, then
-rerun the evaluator to fill the faithfulness column.
-
-The final dashboard uses `data/rag_report_local.json`, a five-provider comparison
-over Groq Scout, Groq Large, local Llama, local Mistral, and local Qwen, with
-manual faithfulness reviewed for all 75 provider-question rows.
-
-Endpoint environment variables:
-- Groq: `GROQ_API_KEY`, optional `GROQ_MODEL`
-- Together AI: `TOGETHER_API_KEY`, optional `TOGETHER_MODEL`
-- Google AI Studio: `GEMINI_API_KEY` or `GOOGLE_API_KEY`, optional `GEMINI_MODEL`
-
-### 7. Hindi translation task (Part 2 Section 2)
-
-Chosen language: **Hindi**.
-
-The task translates 20 Reddit posts, comments, and corpus-derived summaries into
-Hindi in Devanagari. The set deliberately includes named entities, code-mixed
-Hinglish, Reddit slang (`NTA`), technology terms, sarcasm, and privacy/safety
-cases.
-
-```bash
-micromamba run -n nlp_final_gpu python scripts/evaluate_hindi_translation.py \
-  --models groq:llama-3.1-8b-instant
-```
-
-To compare multiple models, provide a comma-separated list:
+### 2.2 — Hindi translation
 
 ```bash
 micromamba run -n nlp_final_gpu python scripts/evaluate_hindi_translation.py \
   --models groq:llama-3.1-8b-instant,groq:openai/gpt-oss-20b --reuse-answers
 ```
 
-The evaluator writes `data/hindi_translation_answers.jsonl`,
-`data/hindi_translation_report.json`, and `data/hindi_translation_report.md`.
-Manual fluency and adequacy scores are loaded from
-`data/hindi_translation_manual_scores.json`.
+Translates 20 English Reddit examples to Hindi (Devanagari) covering named entities, code-mixed Hinglish, Reddit slang, technology terms, sarcasm, and privacy/safety cases. Scored with chrF, multilingual BERTScore, and manual fluency / adequacy.
 
-The active Hindi report compares two Groq-hosted models. A previous Mistral run
-is preserved in `data/hindi_translation_answers_with_mistral.jsonl`, but is not
-included in the final Hindi table because it has not been manually scored.
+### 2.3 / 2.4 — Bias and ethics notes
 
-### 8. Bias detection note (Part 2 Section 3)
+Rendered directly in the Streamlit dashboard. See [IMPLEMENTATION_BY_QUESTION.md](IMPLEMENTATION_BY_QUESTION.md) for the assignment-by-assignment write-up.
 
-The Streamlit dashboard includes a standalone **2.3 Bias Detection** page with:
-- corpus-level bias analysis for r/technology demographics and topic salience
-- stance-model bias analysis using the two NLI models and cross-model agreement
-- RAG probe analysis for privacy refusals and opinion-amplification patterns
+---
 
-### 9. Ethics note (Part 2 Section 4)
-
-The Streamlit dashboard includes a standalone **2.4 Ethics Note** page covering:
-- public Reddit data vs meaningful consent
-- re-identification risk from usernames, writing style, and self-disclosure
-- Right to be Forgotten limitations for SQLite + FAISS snapshots
-- deletion propagation gaps and production compliance requirements
-
-## Dashboard
+## Streamlit Dashboard
 
 ```bash
 PYTORCH_JIT=0 micromamba run -n nlp_final_gpu streamlit run app.py
 ```
 
-Sidebar navigation gives one section per spec point:
-- **Project Overview** — one-screen executive summary of all four stages
-- **1.1 Aggregate Properties** — KPI cards, monthly post / comment / author charts
-- **1.2 Key Topics** — consensus topics, per-method tables, deep-dive per topic
-- **1.3 Trending vs Persistent** — share-over-time chart, per-topic trajectories, method-matrix
-- **1.4 Stance & Disagreement** — per-topic stance distribution, donut + side summaries, cross-method agreement
-- **2.1 RAG Conversation** — FAISS retrieval, endpoint status, live QA, and RAG evaluation
-- **2.2 Hindi Translation** — Indian-language translation metrics, examples, and edge-case breakdown
-- **2.3 Bias Detection** — corpus bias, stance-model bias, and RAG probe analysis
-- **2.4 Ethics Note** — privacy, re-identification, deletion, and Right to be Forgotten reflection
-- **Design Choices** — written justification of the choices left to the student
+| Section | Content |
+| ------- | ------- |
+| Project Overview | One-screen executive summary |
+| 1.1 Aggregate Properties | KPI cards, monthly post / comment / author charts |
+| 1.2 Key Topics | Consensus topics, per-method tables, deep-dive per topic |
+| 1.3 Trending vs Persistent | Share-over-time, trajectories, method matrix |
+| 1.4 Stance & Disagreement | Per-topic stance, donut, side summaries, model agreement |
+| 2.1 RAG Conversation | FAISS retrieval, endpoint status, live QA, evaluation |
+| 2.2 Hindi Translation | Metrics, examples, edge-case breakdown |
+| 2.3 Bias Detection | Corpus, stance-model, RAG probe analysis |
+| 2.4 Ethics Note | Consent, re-identification, Right to be Forgotten |
+| Design Choices | Justification of student-defined design decisions |
 
-## Reports written to `data/`
+---
+
+## Reports & Artefacts
 
 | File | Stage |
 | ---- | ----- |
-| `reddit_technology_recent.db` | 1.1 — raw data |
-| `topic_report.json` | 1.2 |
-| `temporal_report.json` | 1.3 |
-| `stance_report.json` | 1.4 |
-| `faiss_rag_index/` | Part 2 Section 1 vector store |
-| `rag_eval_set.json` | Part 2 Section 1 ground-truth QA set |
-| `rag_answers.jsonl` | Part 2 Section 1 generated answers |
-| `rag_report.json` | Part 2 Section 1 ROUGE-L / BERTScore / faithfulness report |
-| `rag_report_local.json` | Part 2 Section 1 final five-provider comparison used by Streamlit |
-| `rag_report.md` | Part 2 Section 1 report table and qualitative analysis |
-| `hindi_translation_eval_set.json` | Part 2 Section 2 Hindi reference set |
-| `hindi_translation_answers.jsonl` | Part 2 Section 2 generated translations |
-| `hindi_translation_report.json` | Part 2 Section 2 chrF / BERTScore / manual-score report |
-| `hindi_translation_report.md` | Part 2 Section 2 report table and edge-case analysis |
+| `data/reddit_technology_recent.db` | 1.1 — raw corpus |
+| `data/topic_report.json` | 1.2 |
+| `data/temporal_report.json` | 1.3 |
+| `data/stance_report.json` | 1.4 |
+| `data/faiss_rag_index/` | 2.1 vector store |
+| `data/rag_eval_set.json` | 2.1 ground-truth set |
+| `data/rag_report_local.{json,md}` | 2.1 final five-provider comparison |
+| `data/hindi_translation_eval_set.json` | 2.2 reference set |
+| `data/hindi_translation_report.{json,md}` | 2.2 final report |
+| `REPORT/report.pdf` | Compiled final write-up |
+
+A folder-level breakdown lives in [data/README.md](data/README.md).
+
+---
+
+## Documentation
+
+- [IMPLEMENTATION_BY_QUESTION.md](IMPLEMENTATION_BY_QUESTION.md) — exhaustive assignment-to-code map
+- [REPORT/report.pdf](REPORT/report.pdf) — final written report
+- [REPORT/slide.tex](REPORT/slide.tex) — presentation deck source
+- [src/reddit_worldnews_trump/README.md](src/reddit_worldnews_trump/README.md) — library API
+- [scripts/README.md](scripts/README.md) — CLI entry points
+- [data/README.md](data/README.md) — generated artefacts
+- [REPORT/README.md](REPORT/README.md) — building the LaTeX report
+
+---
+
+## License & Acknowledgements
+
+Course project — academic use. Data sourced from the public [Arctic-Shift](https://arctic-shift.photon-reddit.com/) archive of Reddit; treated under the ethical considerations described in section **2.4 Ethics Note** of the dashboard.
