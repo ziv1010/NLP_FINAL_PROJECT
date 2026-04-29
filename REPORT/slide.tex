@@ -1,0 +1,351 @@
+\documentclass[10pt,aspectratio=169]{beamer}
+
+\usetheme{metropolis}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{xcolor}
+
+\title{NLP Project: \texttt{r/technology} end-to-end pipeline}
+\subtitle{Methods and metrics, step by step}
+\author{Ziv Baretto \\ \footnotesize\texttt{barrettoziv@gmail.com}}
+\institute{Ashoka University -- CS-4420-1}
+\date{April 2026}
+
+\begin{document}
+
+\maketitle
+
+% -------------------------------------------------------------
+\begin{frame}{What this talk covers}
+For each step of the pipeline:
+\begin{itemize}
+  \item \textbf{Methods used} — what algorithm / model / API.
+  \item \textbf{Why those metrics} — what each one measures and what it tells us.
+  \item \textbf{How the metric works} — one line of intuition.
+\end{itemize}
+Live demo of the dashboard right after.
+\end{frame}
+
+% =============================================================
+\section{Part 1.0 -- Data collection}
+% =============================================================
+
+\begin{frame}{Step 1 — Data collection}
+\textbf{Methods}
+\begin{itemize}
+  \item \textbf{Arctic-Shift} archive API (\texttt{/api/posts/search}) — date-bounded; PRAW's \texttt{hot}/\texttt{top}/\texttt{new} cannot return 15k historical posts.
+  \item Per-month sweep, \emph{ascending and descending} by \texttt{created\_utc}, then unioned — kills peak-day bias.
+  \item Comments fetched via \texttt{ThreadPoolExecutor} pool.
+  \item Storage: SQLite (\texttt{posts}, \texttt{comments}, \texttt{ingestion\_runs}).
+\end{itemize}
+
+\medskip
+\textbf{What's measured}
+\begin{itemize}
+  \item Coverage (days), corpus size (posts/comments), unique authors, ingestion-run audit log.
+  \item No model metric here — it's a data-quality check (no missing months, no duplicates, every row traceable to a sweep).
+\end{itemize}
+\end{frame}
+
+% =============================================================
+\section{Part 1.1 -- Aggregate properties}
+% =============================================================
+
+\begin{frame}{Step 2 — Aggregate stats (Part 1.1)}
+\textbf{Methods}
+\begin{itemize}
+  \item Single SQLite query computing 12 aggregate quantities + 4 monthly time series.
+  \item Cross-checked: \emph{stored} comments (1.14M) vs \emph{reported} comments per post (1.06M) — gap reveals where the API truncated long threads.
+\end{itemize}
+
+\medskip
+\textbf{Metrics and what they tell us}
+\begin{itemize}
+  \item \emph{Posts / comments / authors} — corpus scale.
+  \item \emph{Avg.\ post score, avg.\ comments per post} — engagement baseline (used later as a sanity prior for stance).
+  \item \emph{Earliest / latest dates, coverage days} — confirms the 6-month window.
+  \item \emph{Top-score and most-commented posts} — surfaces the viral threads that any topic / stance step will be sensitive to.
+\end{itemize}
+\end{frame}
+
+% =============================================================
+\section{Part 1.2 -- Topic modelling}
+% =============================================================
+
+\begin{frame}{Step 3 — Topics (Part 1.2): two models in parallel}
+\textbf{Methods}
+\begin{itemize}
+  \item \textbf{NMF} on \textbf{TF-IDF} features — non-negative factorisation of the term matrix; tends to give sharp, interpretable topics.
+  \item \textbf{LDA} on \textbf{count} features — probabilistic generative model; tends to spread mass more smoothly across topics.
+  \item Both at $k{=}10$, also run at $k{=}8$ and $k{=}12$ for stability.
+  \item Cleaning: subreddit-specific stoplist; titles only (Reddit titles carry the topical signal; bodies are link posts or repeats).
+\end{itemize}
+
+\medskip
+\textbf{Why two models:} they have different inductive biases. A topic both surface is more trustworthy than one only one of them sees.
+\end{frame}
+
+\begin{frame}{Step 3 — Topic metrics}
+\textbf{Per topic}
+\begin{itemize}
+  \item \emph{Top-10 keywords} — readable label.
+  \item \emph{Posts assigned, share \%} — topic size.
+  \item \emph{Avg.\ post score, avg.\ comments} — engagement of the topic (lets us spot small-but-loud topics).
+\end{itemize}
+
+\medskip
+\textbf{Consensus score (NMF $\leftrightarrow$ LDA pairing)}
+\[
+\text{combined} \;=\; 0.6\cdot\underbrace{\text{Jaccard}_{\text{kw}}}_{\substack{\text{keyword}\\ \text{overlap}}} \;+\; 0.4\cdot\underbrace{\text{post-overlap}}_{\substack{\text{same posts}\\ \text{assigned}}}
+\]
+\begin{itemize}
+  \item \textbf{Jaccard} = $|A\cap B|/|A\cup B|$ on top-keyword sets.
+  \item \textbf{Post-overlap} = fraction of posts assigned to the same topic by both models.
+  \item Higher combined score $\Rightarrow$ stronger inter-model agreement on that topic.
+\end{itemize}
+\end{frame}
+
+% =============================================================
+\section{Part 1.3 -- Trending vs persistent}
+% =============================================================
+
+\begin{frame}{Step 4 — Temporal labels (Part 1.3)}
+Two complementary scoring methods, then combined into one of six labels.
+
+\medskip
+\textbf{(a) Momentum method — is the topic \emph{moving}?}
+\begin{itemize}
+  \item \emph{Slope}: weighted month-over-month change in the topic's monthly share.
+  \item \emph{Lift}: recent two-month share minus the rest of the window.
+  \item Threshold both $\Rightarrow$ \texttt{trending} / \texttt{waning} / \texttt{flat}.
+\end{itemize}
+
+\medskip
+\textbf{(b) Persistence method — is the topic \emph{always there}?}
+\begin{itemize}
+  \item \emph{Coverage}: fraction of months the topic is active.
+  \item \emph{Normalised entropy} of monthly shares — high $\Rightarrow$ evenly distributed.
+  \item \emph{Coefficient of variation} = $\sigma/\mu$ of monthly share — low $\Rightarrow$ stable.
+  \item Thresholds: coverage $\geq 0.85$, entropy $\geq 0.95$, CV $\leq 0.13$ $\Rightarrow$ \texttt{persistent}, else \texttt{intermittent}.
+\end{itemize}
+
+\medskip
+\textbf{Why both:} momentum and persistence are independent axes — \emph{Data Centers} is rising \emph{and} stable; one flag would lose half the story.
+\end{frame}
+
+% =============================================================
+\section{Part 1.4 -- Stance \& disagreement}
+% =============================================================
+
+\begin{frame}{Step 5 — Stance pipeline (Part 1.4)}
+\textbf{Method: post-hypothesis NLI}
+\begin{itemize}
+  \item For each comment, premise = \emph{parent post}, two hypotheses:
+        ``the author agrees with the post'' / ``the author disagrees with the post.''
+  \item NLI model returns \emph{entailment / contradiction / neutral}; softmax over the two hypotheses' entailment scores $\Rightarrow$ \{\texttt{support}, \texttt{oppose}, \texttt{neutral}\}.
+\end{itemize}
+
+\medskip
+\textbf{Two NLI models in parallel}
+\begin{itemize}
+  \item \texttt{MoritzLaurer/DeBERTa-v3-base-mnli-fever-anli} (strong base).
+  \item \texttt{cross-encoder/nli-deberta-v3-small} (smaller, more decisive).
+\end{itemize}
+
+\medskip
+\textbf{Quality filter:} comments $\geq$ 40 chars, score $\geq$ 1, non-deleted author, not \texttt{AutoModerator}. Full corpus run = \textbf{779{,}700} comments scored on a single GPU pass.
+\end{frame}
+
+\begin{frame}{Step 5 — Stance metrics}
+\textbf{Per-topic numbers}
+\begin{itemize}
+  \item \emph{Support / oppose / neutral counts} — raw distribution.
+  \item \emph{Disagreement rate} = $\dfrac{\text{minority side}}{\text{non-neutral}}$ — model-agnostic measure of polarisation.
+  \item \emph{Cross-method agreement} = fraction of comments where both NLI models put the comment on the same side, conditioned on both being non-neutral.
+\end{itemize}
+
+\medskip
+\textbf{User grouping per topic}
+\begin{itemize}
+  \item \emph{Aligned} (majority stance matches topic's dominant raw stance), \emph{opposing}, \emph{unresolved} (tied).
+\end{itemize}
+
+\medskip
+\textbf{Side summaries}
+\begin{itemize}
+  \item Top-6 \textbf{TF-IDF} terms for each side.
+  \item Three \emph{representative} comments — closest to the side's embedding centroid (cosine).
+\end{itemize}
+\end{frame}
+
+% =============================================================
+\section{Part 2.1 -- RAG}
+% =============================================================
+
+\begin{frame}{Step 6 — RAG pipeline (Part 2.1)}
+\textbf{Index}
+\begin{itemize}
+  \item Embeddings: \texttt{sentence-transformers/all-MiniLM-L6-v2} (L2-normalised).
+  \item Store: \textbf{FAISS \texttt{IndexFlatIP}} — exact inner-product search; well-matched to 91k chunks.
+  \item Chunks: 1 per post (title+body); comments only if score $\geq 1$ and $\geq 80$ chars; long comments split into overlapping word windows.
+  \item \textbf{8 synthetic ``corpus-fact'' chunks} — pre-computed answers about the corpus itself (size, top topics, trending list).
+\end{itemize}
+
+\medskip
+\textbf{Retrieval policy}
+\begin{itemize}
+  \item Embed query $\to$ top-$k$ inner-product search.
+  \item Re-rank: per-post chunk cap (one viral thread can't dominate); small additive boost on factual queries to corpus-fact chunks.
+\end{itemize}
+
+\medskip
+\textbf{Generation:} same prompt across \textbf{5 LLM endpoints} — 2 Groq APIs (\texttt{llama-3.3-70b}, \texttt{llama-4-scout-17b}) + 3 local via vLLM (\texttt{Llama-3.1-8B}, \texttt{Mistral-Nemo}, \texttt{Qwen2.5-7B}). Prompt forces citation as \texttt{[S1]} and explicit ``insufficient evidence'' refusal.
+\end{frame}
+
+\begin{frame}{Step 6 — RAG metrics}
+15 hand-written reference questions: 6 factual, 7 opinion-summary, 2 adversarial.
+
+\medskip
+\textbf{ROUGE-L}
+\begin{itemize}
+  \item Longest common subsequence between generated and reference answer, F1 form.
+  \item Tells us: \emph{lexical} overlap. Punishes paraphrase $\Rightarrow$ scores cluster narrowly on free-form RAG output.
+\end{itemize}
+
+\textbf{BERTScore F1}
+\begin{itemize}
+  \item Token-level cosine similarity in a transformer embedding space, then F1.
+  \item Tells us: \emph{semantic} overlap — handles paraphrase that ROUGE misses.
+\end{itemize}
+
+\textbf{Manual faithfulness flag (per question, per provider)}
+\begin{itemize}
+  \item Binary: does the answer follow from the retrieved context, with no hallucinated facts?
+  \item Tells us what automated metrics can't: did the model make things up. The discriminating metric.
+\end{itemize}
+
+\medskip
+\textbf{Why three:} ROUGE for n-gram ground truth, BERTScore for semantics, manual flag for grounding. Disagreements between them are themselves informative.
+\end{frame}
+
+% =============================================================
+\section{Part 2.2 -- Hindi translation}
+% =============================================================
+
+\begin{frame}{Step 7 — Hindi translation (Part 2.2)}
+\textbf{Method}
+\begin{itemize}
+  \item English $\to$ Hindi (Devanagari) on \textbf{20 corpus-sourced items}, tagged with edge cases: \texttt{named\_entities}, \texttt{technology\_terms}, \texttt{political\_terms}, \texttt{sarcasm}, \texttt{reddit\_slang}, \texttt{code\_mixed\_hinglish}, \texttt{slang}, \texttt{worker\_rights}, \texttt{privacy\_and\_safety}.
+  \item Two endpoints: \texttt{groq:llama-3.1-8b-instant} vs \texttt{groq:openai/gpt-oss-20b}.
+  \item Prompt: translate naturally; preserve product/person names in Latin script; preserve Reddit abbreviations; preserve sarcasm/tone.
+\end{itemize}
+
+\medskip
+\textbf{Why corpus-sourced:} edge cases are organic (Windows 12, ``Cancel ChatGPT''), and directly comparable to the RAG eval.
+\end{frame}
+
+\begin{frame}{Step 7 — Translation metrics}
+\textbf{chrF} (character n-gram F-score)
+\begin{itemize}
+  \item F-measure over character n-grams between hypothesis and reference.
+  \item Tells us: surface fidelity at sub-word level — well-suited to morphologically rich Hindi where word-level BLEU is brittle.
+\end{itemize}
+
+\textbf{Multilingual BERTScore F1}
+\begin{itemize}
+  \item Token cosine in a \emph{multilingual} encoder $\Rightarrow$ valid for Hindi.
+  \item Tells us: semantic similarity even when word order / surface form differs.
+\end{itemize}
+
+\textbf{Manual fluency / 5}
+\begin{itemize}
+  \item Reads like natural Hindi? Grammar? Naturalness?
+\end{itemize}
+
+\textbf{Manual adequacy / 5}
+\begin{itemize}
+  \item Does the meaning of the source survive — entities, sarcasm, technical terms?
+\end{itemize}
+
+\medskip
+\textbf{Per-tag chrF breakdown:} same metric sliced by edge-case tag $\Rightarrow$ tells us \emph{where} a model breaks (slang vs entities vs sarcasm), not just whether.
+\end{frame}
+
+% =============================================================
+\section{Part 2.3 -- Bias detection}
+% =============================================================
+
+\begin{frame}{Step 8 — Bias probes (Part 2.3)}
+Three probe families, each with its own evidence:
+
+\medskip
+\textbf{(A) Corpus / data bias}
+\begin{itemize}
+  \item Method: language and domain audit on stored posts.
+  \item Metric: \% English titles, top link domains, viral-thread share per topic.
+\end{itemize}
+
+\textbf{(B) Stance-model bias}
+\begin{itemize}
+  \item Method: run \emph{both} NLI models on the full corpus.
+  \item Metric: cross-method agreement per topic (already computed in Step 5) — diagnoses how much of the ``oppose'' verdict is one model's framing artefact vs.\ a real signal.
+\end{itemize}
+
+\textbf{(C) RAG-amplification bias}
+\begin{itemize}
+  \item Method: per-question, per-provider faithfulness heatmap on opinion-summary questions (q07--q13) and adversarial questions (q14, q15).
+  \item Metric: binary faithfulness — separates \emph{critical-amplification} (one-sided summary of a contested thread) from \emph{adversarial-refusal} (correct refusal of harmful queries).
+\end{itemize}
+\end{frame}
+
+% =============================================================
+\section{Part 2.4 -- Ethics}
+% =============================================================
+
+\begin{frame}{Step 9 — Ethics scorecard (Part 2.4)}
+\footnotesize
+\begin{tabularx}{\linewidth}{l c X}
+\toprule
+\textbf{Concern} & \textbf{Now?} & \textbf{What production would need} \\
+\midrule
+Deletion propagation       & $\times$    & Re-check Reddit; tombstone DB \emph{and} FAISS chunks; invalidate cached LLM answers. \\
+Re-identification mitig.   & partial     & Username hashing + stylometry-aware redaction; aggregation thresholds. \\
+Consent                    & $\times$    & ToS allows research; per-user consent infeasible at scale. \\
+Data minimisation          & partial     & Only public fields; no IP / device fingerprints. \\
+Audit trail                & \checkmark  & \texttt{ingestion\_runs} table records every sweep. \\
+GDPR Art.\,17 erasure      & $\times$    & Needs the deletion-propagation pipeline above. \\
+\bottomrule
+\end{tabularx}
+
+\medskip
+\normalsize
+\textbf{What the scorecard tells us:} every red row maps to a concrete change required to ship this safely $\Rightarrow$ actionable, not a generic disclaimer. Defensible as a research snapshot; not as a public production deployment.
+\end{frame}
+
+% =============================================================
+\section{Wrap-up}
+% =============================================================
+
+\begin{frame}{Methodology, in one slide}
+\textbf{Recurring pattern:} pair complementary methods, then measure their agreement.
+
+\medskip
+\begin{itemize}
+  \item \textbf{Topics:} NMF + LDA $\Rightarrow$ consensus score (Jaccard + post-overlap).
+  \item \textbf{Temporal:} momentum + persistence $\Rightarrow$ 6-way combined label.
+  \item \textbf{Stance:} two NLI models $\Rightarrow$ cross-method agreement.
+  \item \textbf{RAG:} ROUGE-L (lexical) + BERTScore (semantic) + manual faithfulness (grounding).
+  \item \textbf{Translation:} chrF (surface) + mBERTScore (semantic) + manual fluency/adequacy.
+  \item \textbf{Bias:} three independent probes — corpus, NLI, RAG.
+\end{itemize}
+
+\medskip
+Disagreement \emph{between} methods is itself a finding — used throughout to flag soft conclusions.
+\end{frame}
+
+\begin{frame}[standout]
+Live demo: Streamlit dashboard
+\end{frame}
+
+\end{document}
