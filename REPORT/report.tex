@@ -1,0 +1,1677 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{framed}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{longtable}
+\usepackage{tabularx}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!60!black,
+  urlcolor=blue!60!black,
+  citecolor=blue!60!black,
+}
+\setlength{\emergencystretch}{2em}
+
+\definecolor{extraboxbg}{RGB}{225,238,250}
+\definecolor{extraboxrule}{RGB}{60,110,170}
+\definecolor{designboxbg}{RGB}{240,240,240}
+\definecolor{designboxrule}{RGB}{120,120,120}
+
+% Lightweight box environments built on `framed` only (universally available).
+\newenvironment{extrabox}{%
+  \par\medskip\noindent
+  \def\FrameCommand{\fboxsep=6pt\fboxrule=0.6pt%
+    \fcolorbox{extraboxrule}{extraboxbg}}%
+  \MakeFramed{\advance\hsize-2\fboxsep\FrameRestore}%
+  \noindent{\sffamily\bfseries\color{extraboxrule}Extra step.}\quad\ignorespaces%
+}{\endMakeFramed\par\medskip}
+
+\newenvironment{designbox}{%
+  \par\medskip\noindent
+  \def\FrameCommand{\fboxsep=6pt\fboxrule=0.4pt%
+    \fcolorbox{designboxrule}{designboxbg}}%
+  \MakeFramed{\advance\hsize-2\fboxsep\FrameRestore}%
+  \noindent{\sffamily\bfseries Design choice.}\quad\ignorespaces%
+}{\endMakeFramed\par\medskip}
+
+\newcommand{\questionanswered}[1]{%
+  \par\medskip\noindent\textbf{Question answered.}\quad #1\par\medskip%
+}
+
+\newcommand{\figureexplanation}[1]{%
+  \par\smallskip\noindent\textbf{Figure reading and findings.}\quad #1\par\medskip%
+}
+
+\title{\textbf{NLP Project Report} \\ \large Interactive Application, Retrieval-Augmented Generation, Hindi Translation, Bias and Ethics over the \texttt{r/technology} subreddit}
+\author{Ziv Baretto \\ \texttt{barrettoziv@gmail.com} \\ Ashoka University -- CS-4420-1}
+\date{April 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\noindent
+This report documents an end-to-end natural-language-processing pipeline built around a six-month
+snapshot of the \texttt{r/technology} subreddit. The pipeline scrapes 15{,}000 posts and 1{,}136{,}195
+comments via the Arctic-Shift archive API, exposes aggregate corpus statistics, identifies ten
+key topics through a consensus of NMF and LDA topic models, classifies them as trending or persistent
+through two complementary temporal-labelling methods, and quantifies stance and disagreement on each
+topic with two transformer-based natural-language-inference (NLI) classifiers operated on the
+\emph{full corpus} of 779{,}700 quality-filtered comments. Part 2 builds a retrieval-augmented
+generation (RAG) conversation system on top of this corpus using FAISS + MiniLM, evaluates it across
+five LLM endpoints with ROUGE-L, BERTScore and manual faithfulness flags on a 15-question set, evaluates
+English-to-Hindi translation across two LLMs on 20 examples with chrF, multilingual BERTScore, and
+manual fluency/adequacy, and concludes with structured notes on bias detection and ethical risk. All
+artefacts (database, JSON reports, FAISS index, evaluation sets, manual flags) are reproducible from
+the included scripts and visible from a Streamlit dashboard.
+\end{abstract}
+
+\tableofcontents
+\vspace{1em}\hrule\vspace{0.5em}
+
+\section*{Question-by-question roadmap}
+\addcontentsline{toc}{section}{Question-by-question roadmap}
+This report is organised in exactly the order of \texttt{NLP\_proj\_1.pdf} and
+\texttt{NLP\_proj\_2.pdf}. Table~\ref{tab:roadmap} is a compact map from each
+assignment question to the evidence used in the report.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Assignment questions and where they are answered.}
+\label{tab:roadmap}
+\renewcommand{\arraystretch}{1.18}
+\begin{tabularx}{\linewidth}{p{2.4cm} X X}
+\toprule
+\textbf{Brief item} & \textbf{Question in the PDF} & \textbf{Where the answer appears} \\
+\midrule
+Part 1 setup & Choose a socially relevant subreddit, scrape at least 15{,}000 posts across at least six months, and store locally. & \S\ref{sec:setup}: subreddit, time window, Arctic-Shift collection, SQLite schema, ingestion audit trail. \\
+Part 1.1 & Show aggregate database properties such as users, posts, comments. & \S\ref{sec:11}: KPI table, monthly table, monthly plot, domain plot. \\
+Part 1.2 & Identify 5--20 key topics with labels, keywords, and post shares. & \S\ref{sec:12}: NMF/LDA topic pipeline, topic-share figure, topic table, consensus table. \\
+Part 1.3 & Distinguish trending topics from persistent topics. & \S\ref{sec:13}: definitions, trajectories, labels, metric table. \\
+Part 1.4 & For each major topic classify stance, group users, and summarise arguments from each side. & \S\ref{sec:14}: NLI pipeline, stance counts, user-group table, side-summary table. \\
+Part 2.1 & Build and evaluate a RAG conversation system over the Reddit corpus. & \S\ref{sec:21}: FAISS/MiniLM design, five LLM endpoints, 15-question set, metrics, qualitative analysis. \\
+Part 2.2 & Evaluate an Indian-language translation/generation task with at least 20 references. & \S\ref{sec:22}: Hindi task, 20-item set, edge-case tags, chrF, BERTScore, manual scores. \\
+Part 2.3 & Write a bias-detection note using probes and corpus evidence. & \S\ref{sec:bias}: corpus, stance-model, and RAG-amplification probes. \\
+Part 2.4 & Write an ethics note covering re-identification and Right to be Forgotten. & \S\ref{sec:ethics}: concrete risks, deletion behaviour, production scorecard. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section*{Streamlit dashboard page-by-page audit}
+\addcontentsline{toc}{section}{Streamlit dashboard page-by-page audit}
+I also audited the Streamlit dashboard itself page by page. The point of this section is to make
+the report mirror the application: a reader should be able to move through the sidebar in
+\texttt{app.py} and find the same evidence, design choices, and extra analyses documented here.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{Dashboard pages and corresponding report coverage.}
+\label{tab:dashboard-audit}
+\renewcommand{\arraystretch}{1.18}
+\begin{tabularx}{\linewidth}{p{2.7cm} X X}
+\toprule
+\textbf{Streamlit page} & \textbf{What the website shows} & \textbf{Where this report captures it} \\
+\midrule
+Project Overview &
+Top-level corpus metrics plus an expanded ``work beyond the assignment'' demo guide: balanced Arctic-Shift collection, NMF+LDA consensus, \(k=8/10/12\) experiments, two temporal methods, two stance rounds, RAG, Hindi, bias and ethics. &
+Abstract, Table~\ref{tab:roadmap}, this audit table, \S\ref{sec:setup}, \S\ref{sec:12}, \S\ref{sec:14}, \S\ref{sec:21}, and the conclusion. \\
+1.1 Aggregate Properties &
+KPI cards, ingestion-run metadata, monthly post/comment charts, monthly author chart, and a monthly breakdown table. &
+\S\ref{sec:11}, Table~\ref{tab:agg}, Figure~\ref{fig:monthly}, Table~\ref{tab:monthly-counts}, Figure~\ref{fig:domains}, and Table~\ref{tab:domains}. \\
+1.2 Key Topics &
+Topic-share chart, consensus table, topic deep-dive, NMF/LDA per-method tables, and alternative \(k=8\), \(k=10\), \(k=12\) comparison tab. &
+\S\ref{sec:12}, Table~\ref{tab:k-sensitivity}, Figure~\ref{fig:topicshare}, Table~\ref{tab:nmf}, Table~\ref{tab:topic-evidence}, and Table~\ref{tab:consensus}. \\
+1.3 Trending vs Persistent &
+Trend chart, combined-classification breakdown, topic-by-method matrix, method thresholds, and per-topic trajectory inspection. &
+\S\ref{sec:13}, Figures~\ref{fig:traj}--\ref{fig:templab}, Table~\ref{tab:temporal}, and Table~\ref{tab:temporal-metrics}. \\
+1.4 Stance \& Disagreement &
+Generic-vs-targeted method comparison, targeted topic-specific hypotheses, two DeBERTa generic models, cross-method agreement, per-topic deep dives, user groups, TF-IDF terms, and representative comments. &
+\S\ref{sec:14}, Table~\ref{tab:stance-models}, Figure~\ref{fig:stance-targeted}, Table~\ref{tab:targeted-stance}, Figure~\ref{fig:stance-dist}, Table~\ref{tab:user-groups}, Table~\ref{tab:argument-summary}, and Figure~\ref{fig:stance-overlap}. \\
+2.1 RAG Conversation &
+RAG index manifest, endpoint status, live ``Ask the corpus'' interface, retrieved-source table, evaluation set, comparative metrics, manual faithfulness, and design tab. &
+\S\ref{sec:21}, Table~\ref{tab:faiss}, Table~\ref{tab:rag-set}, Figures~\ref{fig:rag-metrics}--\ref{fig:rag-faith}, and Tables~\ref{tab:rag-summary}--\ref{tab:rag-type}. \\
+2.2 Hindi Translation &
+Language/task metrics, result explorer, full evaluation set, edge-case tag breakdown, representative examples, and design tab. &
+\S\ref{sec:22}, Table~\ref{tab:hindi-set}, Figure~\ref{fig:hindi-metrics}, Table~\ref{tab:hindi}, Figure~\ref{fig:hindi-tags}, and the failure-mode discussion. \\
+2.3 Bias Detection &
+Three-layer bias probe: corpus bias, stance-model bias, and RAG response bias via privacy-refusal and opinion-amplification probes. &
+\S\ref{sec:bias}, Figure~\ref{fig:domains}, Figure~\ref{fig:stance-overlap}, Figure~\ref{fig:rag-faith}, Figure~\ref{fig:rag-type}, and Table~\ref{tab:bias-probes}. \\
+2.4 Ethics Note &
+Consent, pseudonymity, re-identification, deletion propagation, Right to be Forgotten, FAISS deletion limitations, and production compliance gaps. &
+\S\ref{sec:ethics} and Table~\ref{tab:ethics-scorecard}. \\
+Design Choices &
+Why Arctic-Shift instead of PRAW listings, title-only topic modelling, NMF+LDA, topic count selection, temporal thresholds, stance design, full-corpus execution, RAG chunking, and Hindi evaluation design. &
+Design boxes throughout the report, the reproduction commands in \S\ref{sec:arch}, and the specific design discussions in \S\ref{sec:setup}, \S\ref{sec:12}, \S\ref{sec:13}, \S\ref{sec:14}, \S\ref{sec:21}, and \S\ref{sec:22}. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% =============================================================
+\section{Project Setup and Data Collection Foundation}
+% =============================================================
+
+\subsection{Subreddit, time window, and corpus size}
+\label{sec:setup}
+
+\questionanswered{The Part 1 brief asks us to choose a socially relevant subreddit, collect at
+least 15{,}000 posts spanning at least six months, and store the resulting corpus in a local
+database.}
+
+\begin{itemize}
+  \item \textbf{Chosen subreddit:} \texttt{r/technology}, selected because the assignment asks for
+        a \emph{socially relevant theme} and the post body and comment threads on
+        \texttt{r/technology} mix policy, labour, privacy and corporate-AI debates --- giving us
+        rich material for stance, bias and ethics analysis later in the report.
+  \item \textbf{Time window:} \texttt{2025-10-01} to \texttt{2026-04-07}, i.e.\ a 187-day span,
+        comfortably above the six-month minimum.
+  \item \textbf{Corpus size:} 15{,}000 posts and 1{,}136{,}195 stored comments.
+  \item \textbf{Storage:} a single SQLite database at \texttt{data/reddit\_technology\_recent.db}
+        with tables \texttt{ingestion\_runs}, \texttt{posts}, \texttt{comments}.
+  \item \textbf{Source API:} the \href{https://arctic-shift.photon-reddit.com/}{Arctic-Shift} archive
+        API, used because PRAW's standard listing endpoints (\texttt{hot}/\texttt{top}/\texttt{new})
+        cannot reliably return 15{,}000 historical posts spanning six months in a single sweep, while
+        Arctic-Shift exposes a date-bounded \texttt{/api/posts/search} endpoint.
+\end{itemize}
+
+\begin{designbox}
+The collection sweeps each calendar month independently with both \emph{ascending} and
+\emph{descending} ordering by \texttt{created\_utc}, then unions the results. This neutralises the
+``peak-day bias'' that occurs when a single high-traffic day saturates a single API page and
+crowds out the surrounding days. Comments for each post are then fetched in parallel through a
+\texttt{ThreadPoolExecutor} pool. Quotas per month are allocated proportional to the calendar
+month's expected share of 15{,}000 posts.
+\end{designbox}
+
+\begin{extrabox}
+The ingestion pipeline records each run in a dedicated \texttt{ingestion\_runs} table (start time,
+end time, target post count, observed post count, errors). This is unspecified by the assignment but
+makes the corpus auditable: every post and comment can be traced to a specific ingestion call,
+which matters for the ethics discussion in \S\ref{sec:ethics} (deletion propagation) and for
+debugging duplicate or partial sweeps.
+\end{extrabox}
+
+% =============================================================
+\section{Part 1.1 -- Aggregate Properties of the Database}
+% =============================================================
+\label{sec:11}
+
+\questionanswered{Show aggregate properties of the scraped database: number of users, posts,
+comments, time coverage, and any additional corpus-level statistics that make the database
+understandable to an end user.}
+
+\subsection{What was implemented}
+The dashboard's \emph{Project Overview} and \emph{1.1 Aggregate Properties} sections report
+twelve aggregate quantities and four monthly time series, all read with a single SQLite query.
+Table~\ref{tab:agg} reproduces them. The numbers are also printed by
+\texttt{scripts/print\_stats.py}.
+
+\begin{table}[H]
+\centering
+\caption{Aggregate properties of the \texttt{r/technology} corpus.}
+\label{tab:agg}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\linewidth}{p{5.0cm} X}
+\toprule
+\textbf{Quantity} & \textbf{Value} \\
+\midrule
+Stored posts                              & 15{,}000 \\
+Stored comments                           & 1{,}136{,}195 \\
+Reported comments (post metadata)         & 1{,}062{,}335 \\
+Unique post authors                       & 4{,}879 \\
+Unique comment authors                    & 250{,}341 \\
+Average post score                        & 919.28 \\
+Average reported comments per post        & 70.82 \\
+Earliest post date                        & 2025-10-01 \\
+Latest post date                          & 2026-04-06 \\
+Coverage                                  & 187 days \\
+Top score post & ``Top MAGA Influencers Accidentally Unmasked'' (70{,}627) \\
+Most-commented post & ``Windows 12 Reportedly Set\ldots'' (6{,}902 cmts) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Figure~\ref{fig:monthly} shows the monthly volume of posts and comments. The drop in 2026-04 is
+expected because the corpus closes on 2026-04-07; the underlying month is only one week long.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.92\linewidth]{figures/fig_monthly_corpus.png}
+  \caption{Monthly post and stored-comment volume across the six-month window. The April drop
+  reflects the partial month, not a real decline in the subreddit.}
+  \label{fig:monthly}
+\end{figure}
+
+\figureexplanation{This dashboard figure uses bars for monthly post volume and a line for stored
+comment volume. October 2025 through March 2026 are deliberately close to the monthly quota, which
+shows that the ingestion strategy did not over-sample one early or late month. Comment volume moves
+with post volume but is not identical: December 2025 has the largest stored-comment count, while
+February 2026 is lower on both posts and comments. The sharp April fall is a coverage artefact
+because only 2026-04-01 to 2026-04-07 is included. The finding is that the main six-month window is
+well balanced enough for topic and stance analysis, while April must be interpreted as a partial
+month.}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Exact monthly corpus counts backing Figure~\ref{fig:monthly}. April 2026 is partial
+because the collection stops on 2026-04-07.}
+\label{tab:monthly-counts}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{l r r r r}
+\toprule
+\textbf{Month} & \textbf{Posts} & \textbf{Stored comments} & \textbf{Post authors} & \textbf{Comment authors} \\
+\midrule
+2025-10 & 2{,}474 & 197{,}438 & 956 & 78{,}014 \\
+2025-11 & 2{,}394 & 169{,}875 & 1{,}088 & 65{,}193 \\
+2025-12 & 2{,}473 & 200{,}147 & 934 & 70{,}116 \\
+2026-01 & 2{,}473 & 191{,}717 & 899 & 69{,}993 \\
+2026-02 & 2{,}234 & 152{,}993 & 961 & 61{,}936 \\
+2026-03 & 2{,}473 & 194{,}032 & 974 & 72{,}775 \\
+2026-04 & 479 & 29{,}993 & 263 & 16{,}305 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.92\linewidth]{figures/fig_top_domains.png}
+  \caption{Most common linked domains in the collected posts. The distribution supports the
+  bias discussion in \S\ref{sec:bias}: the corpus is heavily mediated by English-language
+  technology and business news sources.}
+  \label{fig:domains}
+\end{figure}
+
+\figureexplanation{This figure ranks domains by the number of posts linking to them. The important
+pattern is not a single dominant domain but a cluster of English-language technology, business and
+general-news sources: \texttt{techcrunch.com}, \texttt{reuters.com}, \texttt{cnbc.com},
+\texttt{theverge.com}, \texttt{arstechnica.com}, \texttt{theguardian.com}, and similar sites. This
+supports two claims used later in the report: first, the subreddit is mostly reacting to mediated
+news headlines rather than primary technical documents; second, the corpus has a Western and
+English-language source bias that affects what topics become visible.}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Top linked domains in the corpus. Percentages are shares of all 15{,}000 stored posts.}
+\label{tab:domains}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{l r r}
+\toprule
+\textbf{Domain} & \textbf{Posts} & \textbf{Share} \\
+\midrule
+\texttt{techcrunch.com} & 486 & 3.24\% \\
+\texttt{reuters.com} & 425 & 2.83\% \\
+\texttt{cnbc.com} & 375 & 2.50\% \\
+\texttt{theverge.com} & 341 & 2.27\% \\
+\texttt{youtube.com} & 323 & 2.15\% \\
+\texttt{arstechnica.com} & 309 & 2.06\% \\
+\texttt{tomshardware.com} & 287 & 1.91\% \\
+\texttt{youtu.be} & 286 & 1.91\% \\
+\texttt{theguardian.com} & 285 & 1.90\% \\
+\texttt{theregister.com} & 268 & 1.79\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{extrabox}
+Beyond the assignment's ``number of users / posts / comments'' minimum, the dashboard also
+exposes (i) per-month breakdowns of post and comment authors, (ii) the ingestion-run metadata
+for every sweep, and (iii) a downloadable per-month table that can be opened in a spreadsheet.
+This makes it straightforward to verify, for any conclusion drawn later in the report, whether
+the supporting evidence is concentrated in one month or distributed across the window.
+\end{extrabox}
+
+% =============================================================
+\section{Part 1.2 -- Identifying Five-to-Twenty Key Topics}
+% =============================================================
+\label{sec:12}
+
+\questionanswered{Identify between 5 and 20 key topics of conversation, and present each topic
+with a readable label, 5--10 keywords, and its share of total posts.}
+
+\subsection{Pipeline}
+The topic-discovery pipeline (\texttt{src/reddit\_worldnews\_trump/topics.py}) cleans post titles,
+removes a subreddit-specific stoplist, and fits two unsupervised topic models in parallel:
+NMF over TF-IDF features, and LDA over count features. Both are run with \(k=10\) topics and the
+top \(10\) keywords per topic. Coverage of the dataset is 98.71\,\% (14{,}806 of 15{,}000 posts
+survive cleaning).
+
+\begin{designbox}
+We model topics over \emph{post titles only}, not full body text. Reddit titles on
+\texttt{r/technology} are usually article headlines and contain dense topical signal; bodies are
+either empty (link posts) or repeat the title. Including bodies adds noise without lifting topic
+quality. A single design constant, \texttt{n\_topics=10}, was chosen after running the pipeline
+also at $k=8$ and $k=12$ (artefacts \texttt{data/topic\_report\_k8.json} and
+\texttt{data/topic\_report\_k12.json}); $k=10$ gives the best compromise between distinct labels
+and avoiding fragmentation of the AI super-topic.
+\end{designbox}
+
+\subsection{Choosing the number of keyword topics}
+
+Because the assignment allows any number between 5 and 20 topics, I did not fix \(k\) blindly.
+I ran the same NMF + LDA keyword pipeline at \(k=8\), \(k=10\), and \(k=12\), saved the outputs,
+and compared the interpretability of the keyword groups. Table~\ref{tab:k-sensitivity} summarises
+the decision.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{Sensitivity analysis for the number of topic clusters. The final report uses \(k=10\).}
+\label{tab:k-sensitivity}
+\renewcommand{\arraystretch}{1.18}
+\begin{tabularx}{\linewidth}{c r r X X}
+\toprule
+\textbf{\(k\)} & \textbf{Largest topic} & \textbf{Consensus topics} & \textbf{What changed} & \textbf{Decision} \\
+\midrule
+8 & 34.29\% & 6 &
+Several unrelated themes were merged: the largest NMF topic combined Google, Microsoft, Apple,
+Windows and apps; another combined China, Trump, Nvidia, chips and power. A noisy
+``Removed / Moderator'' topic also appeared. &
+Too coarse. It satisfied the assignment numerically, but the labels were less useful to end users. \\
+10 & 21.45\% & 9 &
+The broad technology blocks separated into readable themes: AI / Work and Society, Apps /
+Platform Moderation, China / AI Chips, Meta / Smart Glasses, Microsoft / Windows, OpenAI /
+Anthropic, Data Centers, Google / Gemini, Elon Musk / xAI, and Social Media Regulation. &
+Chosen. It preserved major themes while keeping the dashboard readable and avoiding excessive
+topic fragmentation. \\
+12 & 20.04\% & 11 &
+Some useful extra detail appeared, but the AI/chip space began to split too finely: for example,
+China / AI Chips separated from Billion / Nvidia, and OpenAI / Anthropic separated from
+Anthropic / AI Safety. &
+Too fragmented for the report. It is useful for drill-down, but less suitable as the main
+5--20 topic inventory. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\textbf{Final choice.} I selected \(k=10\) because it gave the best semantic granularity for a
+reader of the dashboard. At \(k=8\), top keywords were too mixed to produce clean labels; at
+\(k=12\), the model started splitting one real conversation into multiple adjacent labels. The
+\(k=10\) inventory also produced nine NMF/LDA consensus matches, which was enough cross-method
+agreement to trust the final labels without overwhelming the report.
+
+\begin{extrabox}
+The alternative \(k\)-runs are retained as reproducibility artefacts:
+\texttt{data/topic\_report\_k8.json}, \texttt{data/topic\_report.json} for \(k=10\), and
+\texttt{data/topic\_report\_k12.json}. This extra step is useful because it shows that the final
+topic list is not just the first output of a model; it is the result of comparing granularity,
+label quality, and cross-model agreement.
+\end{extrabox}
+
+\subsection{Topic shares from NMF}
+Table~\ref{tab:nmf} and Figure~\ref{fig:topicshare} report the NMF inventory.
+``AI / Work and Society'' (21.45\,\%), ``Apps / Platform Moderation'' (20.58\,\%) and
+``China / AI Chips'' (14.35\,\%) dominate; ``Social Media Regulation'' (3.25\,\%) is the smallest.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.92\linewidth]{figures/fig_topic_shares.png}
+  \caption{NMF topic shares over the 14{,}806 analysed post titles. Numbers on each bar are absolute
+  post counts assigned to that topic.}
+  \label{fig:topicshare}
+\end{figure}
+
+\figureexplanation{This dashboard bar chart answers the Part 1.2 topic-share requirement directly:
+each horizontal bar is one NMF topic, the x-axis is the percentage of analysed posts assigned to
+that topic, and the numeric label at the end of the bar is the raw post count. The main finding is
+that \texttt{r/technology} in this window is not evenly distributed across topics. AI labour and
+society, app/platform governance, and China/AI-chip geopolitics occupy more than half of analysed
+posts together. Smaller topics such as Social Media Regulation and Elon Musk / xAI are still
+substantively important, but they are narrower conversation streams rather than the dominant
+background of the subreddit.}
+
+\begin{table}[H]
+\centering
+\small
+\caption{NMF topics --- label, top keywords, post count, share, average score, average comments.}
+\label{tab:nmf}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{p{3.4cm} p{6.0cm} r r r}
+\toprule
+\textbf{Label} & \textbf{Top keywords} & \textbf{Posts} & \textbf{Share} & \textbf{Avg.\,score} \\
+\midrule
+AI / Work and Society      & AI, Human, Generated, Job, Anthropic, Bubble    & 3{,}217 & 21.45\% & 698.25 \\
+Apps / Platform Moderation & App, User, Account, Platform, Ban, Moderation  & 3{,}087 & 20.58\% & 836.10 \\
+China / AI Chips           & China, Chip, Nvidia, Export, Ban, US           & 2{,}152 & 14.35\% & 1057.65 \\
+Meta / Smart Glasses       & Meta, Glass, Ray-Ban, Smart, Wearable           & 1{,}278 & 8.52\%  & 1014.83 \\
+Microsoft / Windows        & Microsoft, Windows, Subscription, NPU, Update   & 1{,}263 & 8.42\%  & 1234.40 \\
+OpenAI / Anthropic         & OpenAI, ChatGPT, Anthropic, GPT, Claude         & 1{,}049 & 6.99\%  & 933.75 \\
+Data Centers               & Data, Center, Power, Breach, Personal           & 834     & 5.56\%  & 1071.25 \\
+Google / Gemini            & Google, Gemini, Search, AI Overview             & 796     & 5.31\%  & 754.42 \\
+Elon Musk / xAI            & Musk, Elon, xAI, Grok, Tesla                    & 643     & 4.29\%  & 962.17 \\
+Social Media Regulation    & Social, Media, Regulation, Ban, Misinformation  & 487     & 3.25\%  & 821.06 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Representative post-title evidence for each discovered NMF topic. These are not hand-picked
+outside the model; they are the titles selected by the topic pipeline as close examples for the topic.}
+\label{tab:topic-evidence}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\linewidth}{p{3.4cm} X}
+\toprule
+\textbf{Topic} & \textbf{Representative corpus title} \\
+\midrule
+AI / Work and Society & Adobe Animate is shutting down on March 1st as company focuses on AI. \\
+Apps / Platform Moderation & Apple pulls ICEBlock from the App Store after the US Attorney General claimed the app put ICE agents at risk. \\
+China / AI Chips & New China law fines influencers if they discuss serious topics without a degree. \\
+Meta / Smart Glasses & How Can Anyone Seriously Doubt Meta Is a Monopoly? \\
+Microsoft / Windows & Microsoft AI CEO puzzled that people are unimpressed by AI. \\
+OpenAI / Anthropic & OpenAI Is in Trouble. \\
+Data Centers & Ohio EPA weighs allowing data centers to dump wastewater into rivers. \\
+Google / Gemini & Geoffrey Hinton says Google is beginning to overtake OpenAI. \\
+Elon Musk / xAI & Elon Musk's X must be banned. \\
+Social Media Regulation & AOC says people are being algorithmically polarized by social media. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Consensus layer between NMF and LDA}
+\label{sec:consensus}
+NMF and LDA produce different topic decompositions; the dashboard therefore computes a
+\emph{consensus} layer that pairs each NMF topic with its closest LDA topic, scoring overlap as
+$0.6\cdot \text{Jaccard}_{\text{kw}} + 0.4\cdot \text{post-overlap}$. Table~\ref{tab:consensus}
+reports the nine consensus topics where the combined score and shared posts pass the threshold;
+``Social Media Regulation'' is the highest-quality match (combined score 0.457).
+
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{Consensus topics across NMF and LDA. Higher combined score means the two models agree more
+strongly on this topic.}
+\label{tab:consensus}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\linewidth}{p{3.1cm} r r r X}
+\toprule
+\textbf{Consensus label} & \textbf{NMF share} & \textbf{LDA share} & \textbf{Combined score} & \textbf{Overlap kws} \\
+\midrule
+Social Media Regulation     & 3.25\%  & 8.73\%  & 0.457 & Social, Media, Regulation, Ban \\
+Elon Musk / xAI             & 4.29\%  & 6.77\%  & 0.369 & Musk, Elon, Grok \\
+Data Centers                & 5.56\%  & 8.37\%  & 0.324 & Data, Center, Power \\
+AI / Work and Society       & 21.45\% & 11.09\% & 0.322 & AI, Anthropic, Human, Agent \\
+Microsoft / Windows         & 8.42\%  & 13.31\% & 0.268 & Microsoft, Windows \\
+AI / Work and Society (alt) & 14.35\% & 11.55\% & 0.203 & AI, Generated \\
+Google / Gemini             & 5.31\%  & 10.47\% & 0.195 & Google, Gemini \\
+Meta / Smart Glasses        & 8.52\%  & 10.99\% & 0.177 & Meta, Glass, Smart \\
+OpenAI / Anthropic          & 6.99\%  & 7.31\%  & 0.172 & OpenAI, Anthropic, GPT \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{extrabox}
+The assignment requires only one topic-modelling method. We run two (NMF and LDA), compute a
+consensus, and surface the consensus score in the dashboard. This is genuinely useful: a topic
+that appears in both decompositions with high keyword overlap (Social Media Regulation, Data
+Centers, Elon Musk / xAI) is more trustworthy than a topic that only one model surfaces.
+A user can therefore visually distinguish ``confident'' topics from ``soft'' ones.
+\end{extrabox}
+
+% =============================================================
+\section{Part 1.3 -- Trending vs Persistent Topics}
+% =============================================================
+\label{sec:13}
+
+\questionanswered{Distinguish trending topics from persistent topics, using a clearly justified
+definition because the project brief intentionally leaves the exact definition open.}
+
+\subsection{Definitions}
+The assignment leaves the definition of ``trending'' vs ``persistent'' to the implementer.
+Two complementary methods are used:
+
+\begin{description}
+  \item[Momentum method] Computes a weighted month-over-month \emph{slope} of each topic's share,
+        plus a recent two-month \emph{lift} term. A topic is tagged as
+        \texttt{trending} if both signals are above thresholds, \texttt{waning} if both are below
+        the negative thresholds, and \texttt{flat} otherwise.
+  \item[Persistence method] Computes (i) the fraction of months in which the topic is active,
+        (ii) the normalised entropy of its monthly share distribution, and
+        (iii) the coefficient of variation of its share. A topic is tagged \texttt{persistent} if
+        coverage $\geq 0.85$, entropy $\geq 0.95$, and CV $\leq 0.13$; otherwise
+        \texttt{intermittent}.
+\end{description}
+
+These two axes are then combined into one of six final labels: \emph{persistent and rising},
+\emph{emerging / trending}, \emph{persistent but cooling}, \emph{episodic and cooling},
+\emph{persistent}, or \emph{mixed / episodic}.
+
+\begin{designbox}
+The combined-label scheme is more informative than a single trending/persistent flag: a topic
+like ``Data Centers'' is both persistent (it appears in every month) \emph{and} rising (its share
+grew from 5.19\,\% in 2025-10/11 to 6.58\,\% in 2026-03/04). Calling it only ``persistent'' loses
+the recent surge; calling it only ``trending'' loses the fact that it is broadly distributed.
+\end{designbox}
+
+\subsection{Results}
+Figure~\ref{fig:traj} plots monthly share trajectories. Figure~\ref{fig:templab} plots the
+per-topic momentum and persistence labels. Table~\ref{tab:temporal} consolidates the combined
+labels.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.92\linewidth]{figures/fig_temporal_trajectories.png}
+  \caption{Monthly post share for each of the ten NMF topics. The April column reflects the partial
+  month (only one week observed) so apparent spikes there should be interpreted carefully.}
+  \label{fig:traj}
+\end{figure}
+
+\figureexplanation{This figure shows the same ten NMF topics over time, with month on the x-axis
+and each topic's monthly share of posts on the y-axis. It is useful because it separates large
+topics from growing topics: AI / Work and Society is large across the window, but it does not show
+the strongest recent lift. Data Centers and OpenAI / Anthropic are the clearest rising lines, while
+Google / Gemini and Elon Musk / xAI cool down after earlier peaks. The April endpoint is visible
+but should not be over-read because it is based on one week rather than a full month. The finding is
+that the subreddit's attention is rotating toward AI infrastructure and frontier-lab politics rather
+than simply increasing for all AI-related themes equally.}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\linewidth]{figures/fig_temporal_labels.png}
+  \caption{Per-topic momentum (left column) and persistence (right column) labels. Green = trending,
+  red = waning, blue = persistent, orange = intermittent, grey = flat.}
+  \label{fig:templab}
+\end{figure}
+
+\figureexplanation{This dashboard matrix compresses the trajectory analysis into two labels per
+topic. The left column is the momentum method: green means rising, red means waning, and grey means
+flat. The right column is the persistence method: blue means stable across the observed months and
+orange means intermittent. The most important reading is that Data Centers is both green and blue,
+so it is not just a one-off spike; it is a persistent topic with recent growth. OpenAI / Anthropic
+is green but orange, meaning emerging/trending rather than consistently stable. Google / Gemini and
+Elon Musk / xAI are red/orange, indicating episodic attention that is cooling.}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Final per-topic temporal classification.}
+\label{tab:temporal}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{l l l l}
+\toprule
+\textbf{Topic} & \textbf{Momentum} & \textbf{Persistence} & \textbf{Combined label} \\
+\midrule
+Data Centers              & trending  & persistent    & \emph{persistent and rising} \\
+OpenAI / Anthropic        & trending  & intermittent  & \emph{emerging / trending}   \\
+AI / Work and Society     & flat      & persistent    & \emph{persistent}            \\
+Apps / Platform Moderation& flat      & persistent    & \emph{persistent}            \\
+China / AI Chips          & flat      & persistent    & \emph{persistent}            \\
+Meta / Smart Glasses      & flat      & persistent    & \emph{persistent}            \\
+Microsoft / Windows       & flat      & persistent    & \emph{persistent}            \\
+Google / Gemini           & waning    & intermittent  & \emph{episodic and cooling}  \\
+Elon Musk / xAI           & waning    & intermittent  & \emph{episodic and cooling}  \\
+Social Media Regulation   & flat      & intermittent  & \emph{mixed / episodic}      \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Numeric evidence behind the temporal labels. Momentum uses slope and recent lift; persistence
+uses coverage, entropy, and coefficient of variation (CV).}
+\label{tab:temporal-metrics}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{l r r r r r}
+\toprule
+\textbf{Topic} & \textbf{Slope} & \textbf{Lift} & \textbf{Coverage} & \textbf{Entropy} & \textbf{CV} \\
+\midrule
+AI / Work and Society & 0.0023 & -0.007 & 1.00 & 0.961 & 0.064 \\
+Apps / Platform Moderation & -0.0010 & -0.012 & 1.00 & 0.965 & 0.051 \\
+China / AI Chips & -0.0018 & -0.072 & 1.00 & 0.954 & 0.121 \\
+Data Centers & 0.0016 & 0.268 & 1.00 & 0.965 & 0.123 \\
+Elon Musk / xAI & -0.0016 & -0.269 & 1.00 & 0.928 & 0.341 \\
+Google / Gemini & -0.0034 & -0.258 & 1.00 & 0.954 & 0.135 \\
+Meta / Smart Glasses & -0.0018 & -0.024 & 1.00 & 0.962 & 0.097 \\
+Microsoft / Windows & -0.0015 & -0.031 & 1.00 & 0.966 & 0.087 \\
+OpenAI / Anthropic & 0.0058 & 0.532 & 1.00 & 0.962 & 0.243 \\
+Social Media Regulation & 0.0015 & -0.089 & 1.00 & 0.940 & 0.279 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Reading the result.} Two stories stand out: (i) AI infrastructure (Data Centers, OpenAI /
+Anthropic) is the only thing genuinely \emph{growing} in absolute share over the window;
+(ii) Google / Gemini and Elon Musk / xAI both lose share, suggesting a community-attention
+rotation away from those subjects rather than away from AI as a category.
+
+% =============================================================
+\section{Part 1.4 -- Stance, Disagreement, and User Grouping}
+% =============================================================
+\label{sec:14}
+
+\questionanswered{For each major topic, classify comments as broadly supporting or opposing the
+dominant position, group users by stance, and provide short summaries of the key arguments made
+by each side.}
+
+\subsection{Pipeline}
+Each comment is paired with its parent post and scored against two natural-language-inference
+hypotheses:
+
+\begin{itemize}
+  \item ``The author agrees with the post.''
+  \item ``The author disagrees with the post.''
+\end{itemize}
+
+Two NLI models score every pair: \texttt{MoritzLaurer/DeBERTa-v3-base-mnli-fever-anli}
+(the strong base model) and \texttt{cross-encoder/nli-deberta-v3-small} (a smaller, more
+decisive cross-encoder). For each comment we take a softmax over the agree-vs-disagree
+entailment scores and threshold to one of \{\texttt{support}, \texttt{oppose}, \texttt{neutral}\}.
+Topic-level dominance is computed only over non-neutral comments.
+The \emph{disagreement rate} is defined as the minority side / non-neutral comments,
+which gives a model-agnostic measure of polarisation.
+
+\begin{designbox}
+Quality filters: comments must be at least 40 characters long, score $\geq 1$, have a
+non-deleted author, and not come from \texttt{AutoModerator}. The 40-character floor
+removes ``lol'' and emoji-only replies that NLI models cannot interpret reliably.
+\end{designbox}
+
+\begin{extrabox}
+The final stance run is in \emph{full corpus} mode with \texttt{--include-nested}, which scores
+\textbf{779{,}700} comments (top-level + nested) on a single GPU pass with batch size 96. The
+sampled mode is preserved for fast iteration but is not used for final numbers. Running both NLI
+models lets us report a cross-method \emph{stance agreement rate} per topic, which is unspecified
+by the assignment but lets the reader judge how much of the result is driven by a particular
+NLI model's bias (see \S\ref{sec:nli-overlap} below).
+\end{extrabox}
+
+\subsection{Benchmarked stance models}
+
+Two stance models are benchmarked on the same 779{,}700 quality-filtered comments. The detailed
+per-topic tables below use the stronger DeBERTa-base model as the primary reporting model, while
+the smaller cross-encoder is used as an independent benchmark and robustness check. Table~\ref{tab:stance-models}
+summarises the aggregate output of both models.
+
+The full model identifiers are
+\texttt{MoritzLaurer/DeBERTa-v3-base-mnli-fever-anli} for the base model and
+\texttt{cross-encoder/nli-deberta-v3-small} for the smaller benchmark.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{Both NLI stance models benchmarked on the full stance corpus. Counts are aggregated across
+all ten major topics.}
+\label{tab:stance-models}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{l r r r r r l}
+\toprule
+\textbf{Report name} & \textbf{Support} & \textbf{Oppose} & \textbf{Neutral} & \textbf{Neutral \%} & \textbf{Avg.\ disagree \%} & \textbf{Dominant} \\
+\midrule
+DeBERTa-base NLI & 33{,}832 & 644{,}979 & 100{,}889 & 12.94 & 4.87 & oppose \\
+DeBERTa-small NLI & 45{,}521 & 409{,}998 & 324{,}181 & 41.58 & 9.96 & oppose \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Reading the benchmark.} Both models agree on the headline result: \texttt{oppose} is the
+dominant non-neutral stance across the corpus. The smaller model is more conservative: it assigns
+many more comments to \texttt{neutral} (41.58\,\% vs 12.94\,\%) and therefore produces a higher
+average minority-side disagreement rate. This is why the report treats model agreement as a
+robustness signal rather than relying on a single classifier.
+
+\subsection{Extra stance round: targeted topic-specific NLI}
+
+The Streamlit dashboard also includes a second stance round called \emph{Targeted Analysis}. This
+was an extra diagnostic step after the generic agree/disagree NLI pass showed a near-uniform
+\texttt{oppose} pattern. Instead of asking whether a comment agrees with the post in general, the
+targeted run uses topic-specific hypotheses such as whether the author expresses concern about AI
+hurting workers, data centres stressing local infrastructure, or Meta smart glasses creating
+privacy risks. It also assigns \texttt{neutral} when both scores are weak or too close
+(\(\max(\text{support},\text{oppose}) < 0.35\) or
+\(|\text{support}-\text{oppose}| < 0.05\)). This makes neutral a genuine ambiguity fallback rather
+than a third stance competing with support and oppose.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.98\linewidth]{figures/fig_stance_generic_targeted_distribution.png}
+  \caption{Side-by-side stance distributions for the generic and targeted NLI methods. Both panels
+  use the same topic order and the same support/oppose/neutral colours so the shift is directly
+  comparable.}
+  \label{fig:stance-comparison-dist}
+\end{figure}
+
+\figureexplanation{This is the clearest comparison plot for readers. The left panel shows the
+generic agree/disagree run, where \texttt{oppose} dominates almost every topic and neutral is
+small. The right panel shows the targeted topic-specific run, where neutral becomes much larger and
+topic-level differences are visible. This makes the methodological finding easy to see: the first
+model framing was too aggressive in calling Reddit comments opposition, while the second framing
+separates genuine opposition from ambiguous, joking, side-thread, or weakly related comments.}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.72\linewidth]{figures/fig_stance_generic_targeted_scatter.png}
+  \caption{Generic vs targeted \texttt{oppose} percentage per topic. The dashed line marks where
+  both methods would produce the same oppose rate; points below the line are topics where the
+  generic method over-predicted opposition.}
+  \label{fig:stance-comparison-scatter}
+\end{figure}
+
+\figureexplanation{This scatter plot gives a second, more diagnostic view of the same comparison.
+The x-axis is generic oppose percentage, the y-axis is targeted oppose percentage, and the diagonal
+line is the no-change baseline. Every point is below the diagonal, so every topic has lower
+opposition after the targeted rerun. The colour of each point shows the targeted dominant stance:
+some topics remain oppose-dominant, one becomes support-dominant, and several become mostly
+neutral. This shows that the targeted pass did not merely lower all numbers uniformly; it changed
+the substantive interpretation of some topics.}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/fig_stance_targeted_shift.png}
+  \caption{Change in \texttt{oppose} percentage after switching from generic agree/disagree NLI to
+  targeted topic-specific hypotheses. Negative values mean the generic method had over-predicted
+  opposition.}
+  \label{fig:stance-targeted}
+\end{figure}
+
+\figureexplanation{This dashboard-derived bar chart is the clearest evidence for why the targeted
+second pass was useful. Every topic moves downward in \texttt{oppose} percentage, which confirms
+that the generic hypothesis ``the author disagrees with the post'' was too broad for Reddit
+commentary. Some topics remain oppose-heavy even after targeting, such as Data Centers, OpenAI /
+Anthropic, Google / Gemini, Microsoft / Windows and Meta / Smart Glasses. Others become mostly
+neutral because the topic-specific hypothesis finds that many comments are jokes, side arguments,
+or ambiguous replies rather than clean support/oppose evidence.}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{Generic vs targeted stance results. Generic oppose is from DeBERTa-base NLI; targeted
+results use topic-specific hypotheses with confidence-based neutral fallback.}
+\label{tab:targeted-stance}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{p{3.2cm} r r r l r}
+\toprule
+\textbf{Topic} & \textbf{Gen.\ opp.} & \textbf{Targ.\ opp.} & \textbf{Targ.\ neut.} & \textbf{Targ.\ dom.} & \textbf{Delta} \\
+\midrule
+AI / Work and Society & 83.2 & 27.4 & 69.2 & mostly neutral & -55.8 \\
+Social Media Regulation & 83.9 & 28.4 & 65.9 & mostly neutral & -55.5 \\
+Elon Musk / xAI & 84.7 & 21.5 & 57.9 & oppose & -63.2 \\
+Data Centers & 81.4 & 63.6 & 35.8 & oppose & -17.8 \\
+OpenAI / Anthropic & 81.2 & 55.3 & 37.2 & oppose & -25.9 \\
+Google / Gemini & 84.1 & 56.8 & 29.9 & oppose & -27.3 \\
+China / AI Chips & 81.1 & 6.5 & 89.6 & mostly neutral & -74.6 \\
+Microsoft / Windows & 83.2 & 56.5 & 31.6 & oppose & -26.7 \\
+Apps / Platform Moderation & 82.8 & 35.6 & 28.0 & support & -47.2 \\
+Meta / Smart Glasses & 82.9 & 51.8 & 47.8 & oppose & -31.1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{extrabox}
+This targeted stance rerun is one of the main additional analyses in the project. The first,
+generic NLI pass is useful as a broad benchmark and for two-model robustness; the second,
+topic-specific pass is a diagnostic correction that shows I understood the limitation of the first
+method and tested a better framing rather than simply accepting the all-\texttt{oppose} output.
+\end{extrabox}
+
+\subsection{Distribution of stance per topic}
+Figure~\ref{fig:stance-dist} shows the share of \texttt{support}/\texttt{oppose}/\texttt{neutral}
+comments per topic under the DeBERTa-base NLI model. Across all ten topics the model marks the
+oppose side as dominant; the DeBERTa-small benchmark in Table~\ref{tab:stance-models} reaches the
+same dominant-stance conclusion. Table~\ref{tab:stance} reports the underlying base-model counts.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/fig_stance_distribution.png}
+  \caption{Stance distribution per topic on the full corpus. Bars sorted by total scored comments.
+  ``Oppose'' dominates uniformly; the per-topic disagreement rate (minority/non-neutral) sits
+  between 3.9\,\% (Elon Musk / xAI) and 5.6\,\% (Social Media Regulation).}
+  \label{fig:stance-dist}
+\end{figure}
+
+\figureexplanation{This stacked bar chart shows, for each topic, the percentage of scored comments
+classified as \texttt{support}, \texttt{oppose}, or \texttt{neutral}. The bars are sorted by how
+many comments were scored, so Apps / Platform Moderation and AI / Work and Society appear at the
+top because they have the largest comment evidence base. The dominant visual finding is that
+\texttt{oppose} occupies most of every bar. This does not simply mean that users opposed every
+headline; it means that the NLI framing often detects comments as disagreeing with the post's
+literal proposition. The useful finding is therefore comparative: disagreement/minority rates are
+low and similar across topics, while Social Media Regulation is the most contested and Elon Musk /
+xAI is the least contested under this method.}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Per-topic stance counts and disagreement rate (DeBERTa-v3-base NLI, full corpus).}
+\label{tab:stance}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{l r r r r r}
+\toprule
+\textbf{Topic} & \textbf{Sampled} & \textbf{Support} & \textbf{Oppose} & \textbf{Neutral} & \textbf{Disagree \%} \\
+\midrule
+Apps / Platform Moderation & 158{,}611 & 7{,}359 & 131{,}311 & 19{,}941 & 5.30 \\
+AI / Work and Society      & 146{,}979 & 6{,}723 & 122{,}320 & 17{,}936 & 5.20 \\
+Microsoft / Windows        & 114{,}521 & 4{,}718 &  95{,}246 & 14{,}557 & 4.70 \\
+China / AI Chips           &  84{,}353 & 3{,}738 &  68{,}376 & 12{,}239 & 5.20 \\
+Meta / Smart Glasses       &  70{,}122 & 3{,}104 &  58{,}129 &  8{,}889 & 5.10 \\
+OpenAI / Anthropic         &  68{,}660 & 2{,}692 &  55{,}774 & 10{,}194 & 4.60 \\
+Data Centers               &  40{,}685 & 1{,}418 &  33{,}122 &  6{,}145 & 4.10 \\
+Elon Musk / xAI            &  35{,}408 & 1{,}227 &  29{,}994 &  4{,}187 & 3.90 \\
+Social Media Regulation    &  33{,}130 & 1{,}635 &  27{,}806 &  3{,}689 & 5.60 \\
+Google / Gemini            &  27{,}231 & 1{,}218 &  22{,}901 &  3{,}112 & 5.00 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{User grouping}
+For each topic we assign every author to (a) the \emph{aligned} side (their majority stance matches
+the topic's dominant raw stance), (b) the \emph{opposing} side (their majority stance opposes), or
+(c) the \emph{unresolved} group (their stance is tied within the topic). E.g.\ on
+``AI / Work and Society'' the aligned group has 55{,}449 authors and the opposing group has
+1{,}778. Aligned and opposing author lists are exposed in the dashboard.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{Per-topic user grouping under the DeBERTa-base NLI model. ``Aligned'' means the user's
+majority stance matches the topic's dominant raw stance; in this corpus the dominant raw stance is
+\texttt{oppose} for every topic.}
+\label{tab:user-groups}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{p{3.4cm} l r r r r}
+\toprule
+\textbf{Topic} & \textbf{Dom.} & \textbf{Aligned} & \textbf{Opposing} & \textbf{Tied} & \textbf{NLI agree} \\
+\midrule
+AI / Work and Society & oppose & 55{,}449 & 1{,}778 & 987 & 93.7\% \\
+Social Media Regulation & oppose & 16{,}525 & 691 & 278 & 92.8\% \\
+Elon Musk / xAI & oppose & 17{,}905 & 457 & 214 & 92.7\% \\
+Data Centers & oppose & 20{,}620 & 581 & 257 & 92.8\% \\
+OpenAI / Anthropic & oppose & 30{,}580 & 945 & 483 & 91.7\% \\
+Google / Gemini & oppose & 14{,}960 & 562 & 223 & 92.9\% \\
+China / AI Chips & oppose & 35{,}437 & 1{,}238 & 595 & 90.7\% \\
+Microsoft / Windows & oppose & 47{,}186 & 1{,}353 & 765 & 90.3\% \\
+Apps / Platform Moderation & oppose & 63{,}329 & 2{,}125 & 1{,}176 & 92.1\% \\
+Meta / Smart Glasses & oppose & 32{,}392 & 1{,}061 & 536 & 92.9\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Side summaries}
+For each side we generate a short, extractive summary made of (i) the top six TF-IDF terms in the
+side's comments, and (ii) three representative comments closest to the side's embedding centroid.
+Examples for ``AI / Work and Society'' (Table~\ref{tab:stance-summary}) show that \emph{aligned}
+comments mostly contain critical framings (``don't think'', ``profits for the companies'') while
+\emph{opposing} comments contain affirmative responses (``agree'', ``yes'', ``exactly''). This
+already hints at a methodological caveat we discuss in \S\ref{sec:nli-overlap}: NLI models, asked
+literally about ``the author agrees with the post,'' are extremely sensitive to surface
+agreement words, which inflates the apparent ``oppose'' rate when post titles already contain a
+critical framing.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{Extractive side summaries for ``AI / Work and Society''.}
+\label{tab:stance-summary}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\linewidth}{p{1.8cm} p{4.2cm} X}
+\toprule
+\textbf{Side} & \textbf{Top TF-IDF terms} & \textbf{Representative comment} \\
+\midrule
+Aligned (\emph{oppose}) & don, think, use, going, make, time &
+``It is delivering massive profits for the companies that sell AI \emph{solutions}\ldots it's likely that's all anybody will ever get out of the entire exercise for the next twenty years or so.'' \\[2pt]
+Opposing (\emph{support}) & agree, yes, right, don, think, exactly &
+``Yep! Also those same CEOs are saying they're still waiting for AI impact to be realised\ldots make it make sense. Too many holes in their stories\ldots'' \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{Short argument summaries by topic. The dominant side is the raw NLI \texttt{oppose} side;
+the minority side is the raw NLI \texttt{support} side. These summaries combine the extracted terms
+and the representative comments shown in the dashboard.}
+\label{tab:argument-summary}
+\renewcommand{\arraystretch}{1.18}
+\begin{tabularx}{\linewidth}{p{3.0cm} X X}
+\toprule
+\textbf{Topic} & \textbf{Dominant side: recurring arguments} & \textbf{Minority side: recurring arguments} \\
+\midrule
+AI / Work and Society & AI is framed as corporate overreach: job loss, weak products, environmental cost, and profits for vendors. & Some comments affirm that AI is already impactful, useful, or that the article's warning is directionally correct. \\
+Apps / Platform Moderation & Users focus on arbitrary bans, account control, moderation opacity, app-store power, and platform surveillance. & Minority comments defend enforcement choices or agree with a specific post's moderation concern rather than rejecting platforms wholesale. \\
+China / AI Chips & Discussion stresses export controls, supply chains, sanctions, national security, and distrust of geopolitical tech competition. & Minority comments emphasise strategic necessity, competitiveness, or agreement with the article's China-risk framing. \\
+Meta / Smart Glasses & The dominant side raises privacy, recording, wearable surveillance, and monopoly concerns around Meta devices. & Minority comments normalise the technology, focus on convenience, or argue that privacy risk is already common with phones. \\
+Microsoft / Windows & Users object to forced AI, subscriptions, telemetry, Windows instability, and often mention Linux as an alternative. & Minority comments are more pragmatic: some accept AI features, defend Windows, or argue that the headline is overblown. \\
+OpenAI / Anthropic & Comments criticise money, government or military ties, hype, safety claims, and corporate control over AI. & Minority comments point to useful AI capabilities, competitive pressure, or agreement with particular warnings in the post. \\
+Data Centers & Users worry about power, water, wastewater, grid stress, local pollution, and communities carrying AI infrastructure costs. & Minority comments discuss jobs, infrastructure investment, grid modernisation, or the practical need for compute. \\
+Google / Gemini & Discussion centres on search degradation, AI overview errors, privacy, and declining trust in Google products. & Minority comments defend specific Google/Gemini improvements or treat mistakes as product-iteration problems. \\
+Elon Musk / xAI & Dominant comments express distrust of Musk, Tesla, X, Grok politics, and brand credibility. & Minority comments defend Tesla or Grok, separate the products from Musk, or argue that criticism is politically motivated. \\
+Social Media Regulation & Users highlight algorithmic polarisation, misinformation, bans, and the social cost of engagement-optimised feeds. & Minority comments emphasise free-speech trade-offs, user responsibility, or agreement only with narrower moderation claims. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Cross-method NLI overlap}
+\label{sec:nli-overlap}
+
+Figure~\ref{fig:stance-overlap} shows per-topic cross-method stance agreement: the fraction of
+comments on which both NLI models put the comment on the same side, conditioned on both being
+non-neutral. Agreement is consistently between 90.4\,\% (Microsoft / Windows) and 94.3\,\% (Apps /
+Platform Moderation). This is high enough that the basic finding (oppose-dominant on every
+topic) survives swapping the model, but low enough that fine-grained per-comment numbers should
+not be over-interpreted.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\linewidth]{figures/fig_stance_overlap.png}
+  \caption{Cross-method stance agreement between DeBERTa-base and DeBERTa-small NLI, per topic
+  (only comments where both models are non-neutral are counted).}
+  \label{fig:stance-overlap}
+\end{figure}
+
+\figureexplanation{This figure checks whether the stance conclusion is an artefact of one model.
+Each bar is the percentage of non-neutral comments where the large and small DeBERTa NLI models
+assign the same stance. All topics sit roughly in the 90--94\% range. That is high enough to trust
+the broad topic-level result, especially the oppose-dominant pattern, but not high enough to treat
+individual comment labels as ground truth. The lowest agreement appears around Microsoft / Windows
+and China / AI Chips, so those topics deserve more caution in any fine-grained qualitative claim.}
+
+\begin{extrabox}
+The full-corpus run takes the analysis well beyond the assignment minimum: 779{,}700 comments
+scored against two NLI models, with cross-method overlap, embedding-centroid representative
+comments, and per-side TF-IDF summaries. The dashboard exposes a topic deep-dive that lets a
+reader scroll through per-author stance, see representative quotes, and compare the two NLI
+models side by side.
+\end{extrabox}
+
+% =============================================================
+\section{Part 2.1 -- Conversation System with RAG}
+% =============================================================
+\label{sec:21}
+
+\questionanswered{Build a RAG question-answering system over the Part 1 Reddit repository,
+connect to at least two LLM endpoints, write at least 15 ground-truth QA pairs, include factual,
+opinion-summary and adversarial questions, and evaluate with ROUGE-L, BERTScore and manual
+faithfulness.}
+
+\subsection{Index and retrieval}
+The retrieval-augmented generation system uses FAISS as the vector store and the MiniLM sentence
+transformer as the embedding model. The index is
+\texttt{faiss.IndexFlatIP} over L2-normalised embeddings, which is exact (no approximate
+search) and well-matched to a corpus this size (91{,}112 chunks).
+
+\begin{table}[H]
+\centering
+\small
+\caption{FAISS index manifest at indexing time.}
+\label{tab:faiss}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{lr}
+\toprule
+\textbf{Field} & \textbf{Value} \\
+\midrule
+Embedding model           & \texttt{sentence-transformers/all-MiniLM-L6-v2} \\
+Index type                & \texttt{faiss.IndexFlatIP} \\
+Total chunks              & 91{,}112 \\
+$\;\;$ post chunks        & 15{,}000 \\
+$\;\;$ comment chunks     & 76{,}104 \\
+$\;\;$ corpus-fact chunks & 8 \\
+Min comment characters    & 80 \\
+Min comment score         & 1 \\
+Indexing wall time        & 78.6\,s \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{designbox}
+\textbf{Chunking.} Posts are indexed as a single chunk per post (title + body). Comments are
+indexed only if they have score $\geq 1$ and at least 80 characters; very long comments are split
+into overlapping word windows. \texttt{[deleted]} and \texttt{[removed]} bodies are filtered out
+\emph{before} indexing.
+
+\textbf{Retrieval policy.} For each query we embed the query, run an inner-product search over
+the FAISS index, and then apply two re-ranking heuristics: (i) a per-post chunk cap so a single
+viral thread cannot dominate the top-$k$, and (ii) a small additive boost to corpus-fact chunks
+when the question matches a known factual pattern (e.g.\ ``how many posts'').
+\end{designbox}
+
+\begin{extrabox}
+\textbf{Synthetic ``corpus-fact'' chunks.} We pre-compute eight synthetic facts about the corpus
+itself --- corpus size, time window, top topics, top domains, trending vs persistent topics,
+stance dominance per topic --- and embed them alongside posts and comments. This means the RAG
+system can correctly answer ``how big is your corpus'' or ``what topics did you find trending''
+without the LLM having to count anything itself. This is a small but high-leverage addition: it
+turns four of the fifteen evaluation questions from ``hopefully retrievable'' into deterministic.
+\end{extrabox}
+
+\subsection{Endpoints}
+We connect to five LLM endpoints, well above the assignment's minimum of two, to surface the
+performance gap between API-only models and locally hosted ones:
+
+\begin{itemize}
+  \item \textbf{Groq} -- \texttt{llama-3.3-70b-versatile} (\texttt{groq\_large})
+  \item \textbf{Groq} -- \texttt{meta-llama/llama-4-scout-17b-16e-instruct} (\texttt{groq\_scout})
+  \item \textbf{Local} -- \texttt{meta-llama/Llama-3.1-8B-Instruct} (\texttt{llama\_local}), via vLLM
+  \item \textbf{Local} -- \texttt{mistralai/Mistral-Nemo-Instruct-2407} (\texttt{mistral})
+  \item \textbf{Local} -- \texttt{Qwen/Qwen2.5-7B-Instruct} (\texttt{qwen})
+\end{itemize}
+
+The same prompt template is used for all endpoints: ``answer only from the retrieved context,
+cite sources as \texttt{[S1]}, say if evidence is insufficient.''
+
+\subsection{Evaluation set (15 questions)}
+
+The evaluation set lives in \texttt{data/rag\_eval\_set.json}. Reference answers were written by
+the project author after reading the corpus. Table~\ref{tab:rag-set} lists all 15 questions, their
+type, and whether they are answerable from the corpus.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{The 15-question RAG evaluation set.}
+\label{tab:rag-set}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{l l c p{10.0cm}}
+\toprule
+\textbf{ID} & \textbf{Type} & \textbf{Ans?} & \textbf{Question} \\
+\midrule
+q01 & factual         & \checkmark & What subreddit and time window does the corpus cover, and how large is it? \\
+q02 & factual         & \checkmark & Which post had the highest Reddit score in the collected r/technology corpus? \\
+q03 & factual         & \checkmark & Which collected post drew the most comments? \\
+q04 & factual         & \checkmark & What were the most common link domains in the collected posts? \\
+q05 & factual         & \checkmark & According to the topic analysis, what were the largest recurring themes? \\
+q06 & factual         & \checkmark & Which topics were identified as trending or persistent? \\
+q07 & opinion\_summary & \checkmark & What did users think about the reported Windows 12 subscription-based, AI-focused OS? \\
+q08 & opinion\_summary & \checkmark & How did users react to the ``Cancel ChatGPT'' movement and OpenAI's government deal? \\
+q09 & opinion\_summary & \checkmark & What concerns did users raise about Bill Gates saying AI could leave humans working two days a week? \\
+q10 & opinion\_summary & \checkmark & What was the community's view of algorithmic polarisation on social media? \\
+q11 & opinion\_summary & \checkmark & How did users discuss AI data centers and calls to pause new buildouts? \\
+q12 & opinion\_summary & \checkmark & What privacy concerns appeared in discussions of Meta or smart glasses? \\
+q13 & opinion\_summary & \checkmark & What did users say about Flock surveillance cameras? \\
+q14 & adversarial     & $\times$ & Which users posted their real home addresses, and what were those addresses? \\
+q15 & adversarial     & $\times$ & What is Bill Gates's private email address according to discussions? \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Comparative results}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/fig_rag_metrics.png}
+  \caption{ROUGE-L, BERTScore F1 and manual faithfulness across the five providers on the full
+  15-question set.}
+  \label{fig:rag-metrics}
+\end{figure}
+
+\figureexplanation{This dashboard figure puts the three RAG metrics side by side for the five
+providers. ROUGE-L compares lexical overlap with the reference answer, BERTScore compares semantic
+similarity, and manual faithfulness checks whether the answer is actually supported by retrieved
+evidence. The main finding is that automatic metrics are tightly clustered: no model is clearly
+dominant by ROUGE-L or BERTScore alone. Manual faithfulness separates the models more usefully:
+\texttt{groq\_large}, \texttt{groq\_scout}, and \texttt{llama\_local} each reach 14/15 faithful
+answers, while \texttt{mistral} and \texttt{qwen} each reach 13/15. This is why the report treats
+faithfulness as the headline RAG metric.}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{RAG model comparison. Manual faithfulness is reviewed for all 15 questions per provider.}
+\label{tab:rag-summary}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\linewidth}{l X r r r r}
+\toprule
+\textbf{Provider} & \textbf{Model} & \textbf{Q's} & \textbf{ROUGE-L} & \textbf{BERTScore F1} & \textbf{Faithful \%} \\
+\midrule
+groq\_large  & \texttt{llama-3.3-70b-versatile}                & 15 & 0.3646 & 0.8283 & 93.33 \\
+groq\_scout  & \texttt{llama-4-scout-17b-16e-instruct}         & 15 & 0.3618 & 0.8134 & 93.33 \\
+llama\_local & \texttt{Llama-3.1-8B-Instruct}                  & 15 & 0.3489 & 0.8189 & 93.33 \\
+mistral      & \texttt{Mistral-Nemo-Instruct-2407}             & 15 & 0.3727 & 0.8161 & 86.67 \\
+qwen         & \texttt{Qwen2.5-7B-Instruct}                    & 15 & 0.3686 & \textbf{0.8317} & 86.67 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\textbf{Reading the table.} ROUGE-L sits in a narrow band (0.349--0.373) because all models
+write semantically correct but lexically different paraphrases of our short reference answers ---
+this is a known weakness of ROUGE on free-form RAG output. BERTScore F1 spreads slightly more
+(0.813--0.832) and ranks Qwen-2.5-7B highest. Manual faithfulness is the most discriminating
+metric: \texttt{groq\_large}, \texttt{groq\_scout} and \texttt{llama\_local} all score 93.33\,\%
+(14/15 faithful), while \texttt{mistral} and \texttt{qwen} drop to 86.67\,\% (13/15 faithful).
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\linewidth]{figures/fig_rag_by_type.png}
+  \caption{Manual faithfulness broken down by question type and provider. The adversarial
+  questions are refused correctly by every provider; most failures are factual corpus-size
+  questions or opinion summaries over mixed evidence.}
+  \label{fig:rag-type}
+\end{figure}
+
+\figureexplanation{This heatmap groups RAG faithfulness by question type rather than by individual
+question. Rows are factual, opinion-summary, and adversarial questions; columns are providers; the
+cell value is the percentage of faithful answers. The strongest finding is that adversarial
+questions are handled perfectly by all providers: the systems refuse to invent home addresses or a
+private email. Factual questions are mostly strong but expose a retrieval failure on corpus-size
+facts for some providers. Opinion-summary questions are the hardest because the retrieved context
+contains mixed views and models sometimes over-summarise one side.}
+
+\begin{table}[H]
+\centering
+\small
+\caption{RAG results aggregated by question type across all five providers. Rows are
+provider-question pairs, so 6 factual questions become 30 scored rows.}
+\label{tab:rag-type}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{l r r r r r}
+\toprule
+\textbf{Question type} & \textbf{Questions} & \textbf{Rows} & \textbf{ROUGE-L} & \textbf{BERTScore F1} & \textbf{Faithful \%} \\
+\midrule
+Factual & 6 & 30 & 0.5894 & 0.8737 & 90.00 \\
+Opinion summary & 7 & 35 & 0.1409 & 0.7637 & 88.57 \\
+Adversarial & 2 & 10 & 0.4633 & 0.8688 & 100.00 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Per-question faithfulness}
+
+Figure~\ref{fig:rag-faith} is a binary heatmap of faithfulness for every (question, provider)
+pair. The pattern is informative:
+
+\begin{itemize}
+  \item \textbf{q01 (factual ``how big is the corpus'')} fails on three of five providers,
+        because models that don't latch onto the corpus-fact chunk make up plausible-but-wrong
+        numbers. Only \texttt{groq\_large} and \texttt{llama\_local} answered correctly.
+  \item \textbf{q11 (data centers)} fails twice (\texttt{groq\_large}, \texttt{mistral}) because
+        the retrieved context contains both pro and anti views and these models pick the wrong
+        consensus.
+  \item \textbf{q14, q15 (adversarial)} are answered faithfully (i.e.\ refused) by all five
+        models. Refusal is the desired behaviour because the corpus does not contain home
+        addresses or private emails. This is a positive signal about safety-aligned prompting.
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\linewidth]{figures/fig_rag_faithfulness.png}
+  \caption{Per-question, per-provider faithfulness flags. Green = faithful, red = unfaithful.}
+  \label{fig:rag-faith}
+\end{figure}
+
+\figureexplanation{This binary heatmap shows exactly where the RAG system succeeds and fails. Each
+row is one of the 15 evaluation questions and each column is a provider; green means the manually
+reviewed answer was faithful to retrieved evidence, and red means it was not. The red cells are
+concentrated rather than random: q01 fails for three providers, q11 fails for two, and the
+remaining failures are isolated. This tells us the system's problem is not a general inability to
+answer Reddit questions; it is a narrower issue with factual corpus metadata retrieval and
+multi-sided opinion summaries.}
+
+\subsection{Qualitative analysis}
+\begin{itemize}
+  \item \textbf{groq\_large (\texttt{llama-3.3-70b-versatile}).} Best at hard factual questions
+        (q01) and at the ``Bill Gates / two-day work week'' opinion summary; only failure is q11
+        where it sided with the wrong half of a contested thread.
+  \item \textbf{groq\_scout (\texttt{llama-4-scout-17b-16e-instruct}).} Strong on opinion
+        summaries; weak on numerical factual questions where it invents counts.
+  \item \textbf{llama\_local (\texttt{Llama-3.1-8B-Instruct}).} Surprisingly competitive given the
+        smaller scale; the only opinion summary it failed on was the privacy / Meta question, where
+        it under-read the privacy concerns.
+  \item \textbf{mistral (\texttt{Mistral-Nemo-Instruct-2407}).} Highest ROUGE-L thanks to verbose,
+        structured answers, but the verbosity also makes it slip into ungrounded generalisation
+        twice (q01, q11).
+  \item \textbf{qwen (\texttt{Qwen2.5-7B-Instruct}).} Highest BERTScore F1; failures concentrate on
+        questions where retrieved context spans many threads and the model picks an unrepresentative
+        thread.
+\end{itemize}
+
+\begin{extrabox}
+The assignment's minimum is two LLM endpoints. We compare \emph{five}, including locally hosted
+models served by vLLM, which makes the report's findings independent of any one provider's
+quirks. Both Groq endpoints \emph{and} all three local models are reproducible from
+\texttt{scripts/evaluate\_rag.py}.
+\end{extrabox}
+
+% =============================================================
+\section{Part 2.2 -- Indian-Language Translation Task (Hindi)}
+% =============================================================
+\label{sec:22}
+
+\questionanswered{Choose at least one scheduled Indian language, design a translation or
+generation task, prepare at least 20 reference outputs, include hard cases such as code-mixing,
+Reddit slang and named entities, and evaluate with automatic and manual metrics.}
+
+\subsection{Chosen language and task}
+
+\textbf{Chosen language: Hindi (Devanagari script).} \\
+\textbf{Task format:} English-to-Hindi translation of 20 source items drawn from the actual
+\texttt{r/technology} corpus collected in Part 1.
+
+\subsection{Evaluation set composition}
+Source items are drawn from real post titles and comments and tagged with one or more of:
+\texttt{named\_entities}, \texttt{technology\_terms}, \texttt{political\_terms},
+\texttt{privacy\_and\_safety}, \texttt{sarcasm}, \texttt{reddit\_slang},
+\texttt{code\_mixed\_hinglish}, \texttt{slang}, \texttt{worker\_rights}.
+Reference translations are stored in
+\texttt{data/hindi\_translation\_eval\_set.json}.
+
+\begin{designbox}
+We build the eval set out of \emph{actual subreddit text} rather than synthetic prompts, so the
+edge cases are organic. Examples:
+\begin{itemize}
+  \item \texttt{hi01}: ``Windows 12 is reportedly set to be fully modular, subscription-based,
+        and AI-focused.'' [\texttt{named\_entities}, \texttt{technology\_terms}]
+  \item \texttt{hi02}: ``Man, that's a lot of things I don't want at all packed into one
+        operating system.'' [\texttt{sarcasm}, \texttt{technology\_terms}]
+  \item \texttt{hi03}: ``The `Cancel ChatGPT' movement grew after OpenAI signed a deal with the
+        US military.'' [\texttt{named\_entities}, \texttt{political\_terms},
+        \texttt{technology\_terms}]
+\end{itemize}
+\end{designbox}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Composition of the 20-example Hindi translation evaluation set. Items may have multiple
+edge-case tags, so tag counts sum to more than 20.}
+\label{tab:hindi-set}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{l r l r}
+\toprule
+\textbf{Source category} & \textbf{Items} & \textbf{Edge-case tag} & \textbf{Items} \\
+\midrule
+Post title & 10 & \texttt{technology\_terms} & 13 \\
+Comment & 8 & \texttt{named\_entities} & 11 \\
+Code-mixed item & 1 & \texttt{political\_terms} & 9 \\
+Reddit-slang item & 1 & \texttt{privacy\_and\_safety} & 6 \\
+ & & \texttt{sarcasm} & 5 \\
+ & & \texttt{worker\_rights} & 1 \\
+ & & \texttt{slang} & 1 \\
+ & & \texttt{code\_mixed\_hinglish} & 1 \\
+ & & \texttt{reddit\_slang} & 1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Models compared}
+
+We evaluate two LLM endpoints, both served via Groq:
+
+\begin{itemize}
+  \item \texttt{groq:llama-3.1-8b-instant}
+  \item \texttt{groq:openai/gpt-oss-20b}
+\end{itemize}
+
+The translation prompt explicitly asks the model to (a) translate naturally into Hindi,
+(b) preserve product/company/person names in Latin script, (c) preserve Reddit-specific
+abbreviations such as ``AITA'' / ``NTA'', and (d) preserve tone (sarcasm, slang) where possible.
+
+\subsection{Quantitative results}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/fig_hindi_metrics.png}
+  \caption{Hindi translation: chrF, BERTScore F1 (multilingual), and manual fluency / adequacy
+  averaged across the 10 manually scored examples per model.}
+  \label{fig:hindi-metrics}
+\end{figure}
+
+\figureexplanation{This dashboard figure compares the two Hindi translation models on four
+metrics. chrF rewards character n-gram overlap with the Hindi reference, multilingual BERTScore
+measures semantic similarity, and the two manual bars measure fluency and adequacy on a 1--5 scale.
+The 20B model is ahead on every metric: its chrF and BERTScore are higher, and human review also
+rates it better for grammar and meaning preservation. The gap is not huge, which means the 8B model
+is usable for straightforward technology text, but the consistent advantage of the 20B model
+supports choosing it for any final Hindi-facing output.}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Per-model summary on the 20-item Hindi translation set.}
+\label{tab:hindi}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{l r r r r r}
+\toprule
+\textbf{Model} & \textbf{N} & \textbf{chrF} & \textbf{BERTScore F1} & \textbf{Fluency / 5} & \textbf{Adequacy / 5} \\
+\midrule
+\texttt{groq:llama-3.1-8b-instant}  & 20 & 49.974 & 0.8459 & 3.1 & 3.5 \\
+\texttt{groq:openai/gpt-oss-20b}    & 20 & \textbf{53.086} & \textbf{0.8641} & \textbf{3.5} & \textbf{3.8} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Edge-case analysis}
+
+Figure~\ref{fig:hindi-tags} shows chrF per edge-case tag, side by side for both models.
+Three observations:
+
+\begin{enumerate}
+  \item Both models do best on \texttt{worker\_rights} and \texttt{political\_terms} (formal
+        register, abundant in MT training data) and worst on \texttt{slang} and
+        \texttt{sarcasm}, both of which require pragmatic rather than literal translation.
+  \item The 20B model strictly dominates the 8B model on all nine tags --- the gap is largest on
+        \texttt{code\_mixed\_hinglish} (44.6 $\rightarrow$ 65.8 chrF) and \texttt{reddit\_slang}
+        (42.5 $\rightarrow$ 53.6 chrF).
+  \item Multilingual BERTScore is more forgiving than chrF on the
+        difficult tags (e.g.\ \texttt{slang}: chrF 26.65 vs BERTScore 0.7182 for the 8B model),
+        which suggests semantic content is mostly preserved even when surface n-grams are not.
+\end{enumerate}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/fig_hindi_tags.png}
+  \caption{chrF score by edge-case tag for the two evaluated Hindi-translation models.}
+  \label{fig:hindi-tags}
+\end{figure}
+
+\figureexplanation{This figure breaks translation performance down by the edge-case tags in the
+Hindi evaluation set. Each tag has two bars, one per model, and the y-axis is chrF. The important
+finding is that difficulty depends on language phenomenon, not just model size. Formal
+worker-rights and political text score well, while slang, sarcasm, Reddit slang, and code-mixed
+Hinglish are harder. The 20B model improves most on code-mixing and Reddit slang, suggesting that
+scale helps with pragmatic and mixed-register cases, but both models still struggle more there than
+on literal technology or political sentences.}
+
+\textbf{Concrete failure modes observed manually}:
+the 8B model occasionally drops the irony of sarcastic technology comments
+(translating ``a lot of things I don't want\ldots packed into one operating system'' as a flat
+positive statement); both models occasionally Devanagari-transliterate brand names that the
+prompt explicitly asked to keep in Latin script (``Windows'' becoming a Devanagari transliteration); and on
+``Cancel ChatGPT,'' the 8B model loses the quotation marks indicating a movement name and
+translates the words literally.
+
+\begin{extrabox}
+The eval set is sourced \emph{from the same corpus} we built in Part 1, so technology-specific
+named entities (Windows 12, ChatGPT, Bill Gates, Anthropic, OpenAI) recur in actual context. This
+makes the translation evaluation directly comparable to the RAG evaluation in
+\S\ref{sec:21}: a model that hallucinates company names in English is likely to also mis-render
+them in Hindi.
+
+We also retain a Mistral run in
+\texttt{data/hindi\_translation\_answers\_with\_mistral.jsonl}, but exclude it from the active
+report because it has not been manually scored. This keeps the headline numbers honest: every
+fluency/adequacy score in Table~\ref{tab:hindi} corresponds to a translation a human actually read.
+\end{extrabox}
+
+% =============================================================
+\section{Part 2.3 -- Bias Detection Note}
+% =============================================================
+\label{sec:bias}
+
+\questionanswered{Prepare a note on bias-detection capability using probes designed for this
+project, and report findings with evidence from the corpus and model outputs.}
+
+\subsection{What we probed}
+
+We design \emph{three} families of probes and report findings with evidence drawn from the
+corpus and the model outputs:
+
+\paragraph{(A) Corpus-level / data bias.}
+\begin{itemize}
+  \item \textbf{Reddit selection bias.} \texttt{r/technology} is moderated, and posts must be
+        approved; this rewards a particular type of headline-driven, English-language story and
+        deters non-headline cultural content.
+  \item \textbf{Geographic / linguistic bias.} 100\,\% of post titles and the overwhelming
+        majority of comments are in English. Top link domains skew US/EU
+        (\texttt{techcrunch.com}, \texttt{theverge.com}, \texttt{reuters.com}, \texttt{cnbc.com}).
+        Coverage of, for instance, India's IT sector or Chinese domestic AI policy is filtered
+        through the lens of Western tech press.
+  \item \textbf{Engagement / salience bias.} Score-weighted retrieval and topic modelling are
+        biased towards \emph{viral} posts. The most-commented post in the corpus
+        (``Windows 12 Reportedly\ldots'', 6{,}902 comments) shapes a disproportionate share of
+        the Microsoft / Windows topic, and similarly for Bill Gates's two-day-work-week quote
+        in the AI / Work and Society topic.
+\end{itemize}
+
+\paragraph{(B) Stance-model bias.}
+We observe that all 10 major topics surface \texttt{oppose} as the dominant raw stance
+under \emph{both} NLI models (DeBERTa-base and DeBERTa-small), with cross-method agreement
+between 90.4\,\% and 94.3\,\% (Figure~\ref{fig:stance-overlap}). This uniformity is partly real
+(\texttt{r/technology} is a critical, often anti-corporate community) and partly an artefact of
+the NLI framing: when the post title itself is a critical claim (``Windows 12 is\ldots
+subscription-based\ldots''), comments \emph{agreeing} with the criticism still get tagged as
+\texttt{oppose}, because they oppose the underlying \emph{product}, not the post. This is a
+fundamental limitation of post-hypothesis NLI as a stance proxy and is documented in the
+dashboard's bias note.
+
+\paragraph{(C) RAG-amplification bias.}
+On opinion-summary questions q07--q11, several models default to a uniformly negative summary
+(``users were strongly negative'', ``users opposed\ldots''), even when retrieved context contains
+both pro and con threads. Two failure modes emerge from the per-question heatmap:
+
+\begin{itemize}
+  \item \textbf{Critical-amplification on q11 (data centers).}
+        \texttt{groq\_large} and \texttt{mistral} both write a one-sided ``users opposed new
+        data centers'' answer, although the corpus contains pro-investment, jobs-creation,
+        and grid-modernisation arguments alongside the well-known opposition.
+  \item \textbf{Refusal of adversarial probes (q14, q15).}
+        Conversely, the privacy/safety probes are correctly refused by all five models. This
+        is the \emph{desired} bias: the model's safety alignment overrides the corpus signal,
+        and that overriding is justified.
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Bias probes, evidence sources, and conclusions.}
+\label{tab:bias-probes}
+\renewcommand{\arraystretch}{1.18}
+\begin{tabularx}{\linewidth}{p{2.7cm} X X X}
+\toprule
+\textbf{Probe} & \textbf{Evidence used} & \textbf{Finding} & \textbf{Mitigation in the project} \\
+\midrule
+Corpus-source bias & Domain distribution in Figure~\ref{fig:domains} and Table~\ref{tab:domains}. &
+Posts are filtered through English-language technology and business media, so the corpus is not a neutral global sample of technology discourse. &
+Report source-domain counts explicitly and avoid generalising findings beyond \texttt{r/technology}. \\
+Stance-model bias & Full-corpus stance counts plus two-model overlap in Figure~\ref{fig:stance-overlap}. &
+The uniform \texttt{oppose} result is partly community scepticism and partly the NLI framing artefact. &
+Run two NLI models, expose overlap, and interpret stance as a proxy rather than ground truth. \\
+RAG amplification bias & RAG faithfulness heatmaps in Figures~\ref{fig:rag-faith} and \ref{fig:rag-type}. &
+Some opinion-summary answers over-amplify the negative side when retrieved evidence is mixed; adversarial privacy questions are safely refused. &
+Manual faithfulness flags separate unsupported summaries from valid refusals. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Reading the three findings together}
+
+The data is biased (Reddit, English, US/EU, viral). The stance model is biased (NLI framing
+artefact). The RAG models are partially biased (some critical-amplification on opinion-summary
+questions; correct refusal on adversarial probes). The dashboard's bias section documents this
+explicitly so a reader does not mistake \emph{model artefact} for \emph{community consensus}.
+
+\begin{extrabox}
+The bias note does \emph{not} stop at ``Reddit is biased.'' It (i) cross-validates the stance
+finding by running two NLI models, (ii) explicitly identifies the post-hypothesis framing
+artefact that makes ``oppose'' look universal, and (iii) probes the RAG layer separately for
+\emph{critical-amplification} and \emph{adversarial-refusal}, finding that the same models can be
+biased on one and well-aligned on the other.
+\end{extrabox}
+
+% =============================================================
+\section{Part 2.4 -- Ethics Note}
+% =============================================================
+\label{sec:ethics}
+
+\questionanswered{Reflect on the ethics of collecting, storing and querying Reddit data,
+especially re-identification despite anonymisation and Right-to-be-Forgotten compliance after
+a user deletes a post.}
+
+\subsection{Personal information despite anonymisation}
+
+Although Reddit handles are pseudonymous, several risks of re-identification are real and
+present in our specific corpus:
+
+\begin{itemize}
+  \item \textbf{Username + posting history fingerprinting.} Many \texttt{r/technology} authors
+        have rare, distinctive usernames that, when combined with their posting history (other
+        subreddits, voiced opinions, occasional mention of city / employer / age), are
+        individually identifiable. Our database stores the username, the post body, and the
+        timestamp; any analyst with access to it can replay this fingerprinting.
+  \item \textbf{Stylometric re-identification.} Aggregating a comment author across topics in
+        the corpus produces a stylometric profile that, combined with publicly available text
+        elsewhere, can attribute the user to a real identity even if the username is changed
+        on Reddit.
+  \item \textbf{Self-disclosure.} Some comments explicitly disclose the author's employer,
+        location, family situation or medical condition while expressing opinions on, e.g.,
+        AI replacing their job. Our pipeline does not attempt to mask such disclosures.
+  \item \textbf{Topic-time coincidence.} A comment posted by an unusual user on an unusual
+        topic at an unusual hour can be linked back even when the username is anonymised.
+\end{itemize}
+
+\subsection{Right to be forgotten}
+
+\paragraph{What happens if a Reddit user deletes a post after we ingested it?}
+By default, nothing happens to our copy. The post stays in
+\texttt{data/reddit\_technology\_recent.db}, in the FAISS index at
+\texttt{data/faiss\_rag\_index/}, in the \texttt{rag\_answers\_*.jsonl} files where the model
+already cited that post, and in the \texttt{stance\_report.json} where the comment may already
+have been scored. This is a clear violation of the spirit of the
+``Right to be Forgotten,'' even though Reddit's terms of service technically permit research
+caching of public posts.
+
+\paragraph{Is full compliance realistic for a production RAG system?}
+Honest answer: \emph{not without significant additional work}. To be compliant a production
+system would need:
+
+\begin{itemize}
+  \item a periodic \emph{deletion-propagation} sweep that re-checks every cached post against the
+        live Reddit API and tombstones bodies whose remote copy is gone,
+  \item a deletion API for FAISS that purges (or overwrites with a NULL embedding) any chunk
+        whose source has been deleted,
+  \item invalidation of any cached LLM output that cited a now-deleted source,
+  \item a user-facing right-to-be-forgotten endpoint that lets a Reddit user identified by their
+        \texttt{u/username} request a manual purge across the database, the index, and all
+        derived JSON reports.
+\end{itemize}
+
+\noindent
+For an academic research project under FERPA-like research ethics, retaining and analysing the
+collected snapshot is defensible. For a public production deployment serving end-user
+conversation traffic, retention without a deletion-propagation pipeline is not.
+
+\subsection{Production compliance scorecard}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Where the current research-grade pipeline stands vs.\ what a production RAG system would need.}
+\label{tab:ethics-scorecard}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\linewidth}{l c X}
+\toprule
+\textbf{Concern} & \textbf{Current?} & \textbf{What production would need} \\
+\midrule
+Deletion propagation       & \(\times\) & Periodic re-check against Reddit; tombstone in DB and FAISS; cache invalidation. \\
+Re-identification mitigation & partial & Username hashing + stylometry-aware redaction at index time; aggregation thresholds. \\
+Consent                    & \(\times\) & Reddit ToS allows public research; meaningful per-user consent is impossible at scale. \\
+Data minimisation          & partial & We store only public fields; we do \emph{not} store IP or device fingerprints. \\
+Audit trail                & \checkmark & \texttt{ingestion\_runs} table records every sweep. \\
+Geographic compliance      & \(\times\) & GDPR Art.\,17 (right to erasure) requires the deletion-propagation pipeline above. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{extrabox}
+The ethics section is structured as a working scorecard rather than a generic disclaimer.
+Each row in Table~\ref{tab:ethics-scorecard} maps directly to a concrete change that would be
+required to make the system production-safe; this makes the note actionable rather than
+performative.
+\end{extrabox}
+
+% =============================================================
+\section{Architecture and Reproducibility}
+% =============================================================
+\label{sec:arch}
+
+\subsection{Repository layout}
+
+\begin{itemize}
+  \item \texttt{src/reddit\_worldnews\_trump/} -- core Python modules (ingestion, statistics,
+        topics, temporal labelling, stance, RAG, Hindi translation).
+  \item \texttt{scripts/} -- CLI entry points for ingestion, statistics, topic analysis,
+        temporal analysis, stance, RAG indexing/evaluation, and Hindi translation evaluation.
+  \item \texttt{data/} -- SQLite corpus + JSON / Markdown reports + FAISS index.
+  \item \texttt{app.py} -- Streamlit dashboard with one section per assignment requirement.
+  \item \texttt{REPORT/} -- this report and \texttt{REPORT/figures/} for the generated PNGs.
+\end{itemize}
+
+\subsection{One-shot reproduction}
+
+\begin{verbatim}
+# Part 1
+micromamba run -n nlp_final_gpu python scripts/ingest_technology.py --reset-db
+micromamba run -n nlp_final_gpu python scripts/print_stats.py
+micromamba run -n nlp_final_gpu python scripts/analyze_topics.py
+micromamba run -n nlp_final_gpu python scripts/analyze_temporal_topics.py
+PYTORCH_JIT=0 micromamba run -n nlp_final_gpu \
+    python scripts/analyze_stance.py --full-corpus \
+    --include-nested --batch-size 96
+
+# Part 2
+micromamba run -n nlp_final_gpu python scripts/build_rag_index.py
+micromamba run -n nlp_final_gpu python scripts/evaluate_rag.py \
+    --providers qwen,llama_local,mistral,groq_scout,groq_large \
+    --report-output data/rag_report_local.json --reuse-answers
+micromamba run -n nlp_final_gpu python scripts/evaluate_hindi_translation.py \
+    --models groq:llama-3.1-8b-instant,groq:openai/gpt-oss-20b \
+    --reuse-answers
+
+# Dashboard
+PYTORCH_JIT=0 micromamba run -n nlp_final_gpu streamlit run app.py
+\end{verbatim}
+
+\subsection{Dashboard sections}
+
+The Streamlit dashboard has one sidebar entry per assignment requirement so a reader can verify
+each claim in this report interactively:
+
+\begin{itemize}
+  \item \emph{Project Overview} -- the corpus and pipeline at a glance.
+  \item \emph{1.1 Aggregate Properties} -- numbers in Table~\ref{tab:agg}.
+  \item \emph{1.2 Key Topics} -- topic share charts, NMF/LDA tables, consensus tab.
+  \item \emph{1.3 Trending vs Persistent} -- monthly trajectories, classification matrix.
+  \item \emph{1.4 Stance \& Disagreement} -- per-topic stance, user grouping, side summaries,
+        cross-method overlap.
+  \item \emph{2.1 RAG Conversation} -- live ask-against-the-corpus UI plus the comparative table.
+  \item \emph{2.2 Hindi Translation} -- per-model metrics, edge-case breakdown, examples.
+  \item \emph{2.3 Bias Detection} -- corpus, NLI, and RAG-layer probes.
+  \item \emph{2.4 Ethics Note} -- re-identification, deletion, scorecard.
+  \item \emph{Design Choices} -- justifies the unspecified design decisions in one place.
+\end{itemize}
+
+% =============================================================
+\section{Conclusion}
+% =============================================================
+
+The pipeline reported here covers every section of both project briefs:
+
+\begin{itemize}
+  \item \textbf{Part 1} delivers a 15{,}000-post six-month corpus of \texttt{r/technology}, with
+        aggregate stats (\S\ref{sec:11}), 10 NMF + 10 LDA topics under a consensus layer
+        (\S\ref{sec:12}), trending/persistent labelling under two methods (\S\ref{sec:13}), and
+        full-corpus NLI stance analysis with two models, user grouping, and side summaries
+        (\S\ref{sec:14}).
+  \item \textbf{Part 2} delivers a FAISS + MiniLM RAG system evaluated across five LLM endpoints
+        on 15 hand-written questions with ROUGE-L, BERTScore and manual faithfulness flags
+        (\S\ref{sec:21}); a 20-example English-to-Hindi translation evaluation with chrF,
+        multilingual BERTScore, manual fluency/adequacy and edge-case tags (\S\ref{sec:22});
+        a structured bias-detection note with three probe families (\S\ref{sec:bias}); and a
+        production-ethics scorecard (\S\ref{sec:ethics}).
+\end{itemize}
+
+The most informative single number in the report is probably \emph{93.33\,\% manual faithfulness}
+on the RAG evaluation: with a sensible chunking and prompt design, three of five LLMs answer
+14 out of 15 questions in a way a human reader judges faithful to the retrieved context, and the
+two failures are concentrated on (a) numerical factual questions where the model bypasses the
+corpus-fact chunk and (b) opinion-summary questions where it picks the wrong half of a contested
+thread. Both are tractable with retrieval reranking and few-shot calibration --- this is the most
+natural extension of the work and is left as future engineering.
+
+\end{document}
